@@ -1,0 +1,14 @@
+Z_DELETE/
+*.sdf
+_Binary/*.cfg
+_Binary/00_SandboxD.exe
+_Binary/01_BasicsD.exe
+_Binary/02_InheritingD.exe
+_Binary/03_SFML_InputD.exe
+_Binary/04_MeshRenderingD.exe
+_Binary/05_InstanceRenderingD.exe
+_Binary/ModelViewerD.exe
+_Binary/E09_Projections.exe
+_Binary/E09_ProjectionsD.exe
+_Binary/GLFW_Example_d.exe
+_Binary/GLFW_Example.exe
