@@ -33,7 +33,8 @@ GameWindow::GameWindow( int width, int height, const std::string& title )
 {
     // Set the GLFW hints that we want
     glfwDefaultWindowHints();
-    glfwWindowHint( GLFW_VISIBLE, false );
+    glfwWindowHint( GLFW_RESIZABLE, false );
+    glfwWindowHint( GLFW_VISIBLE,   false );
 
     // Create the window
     GLFWwindow* window = glfwCreateWindow( width, height, title.c_str(), nullptr, nullptr );
@@ -56,7 +57,7 @@ GameWindow::GameWindow( int width, int height, const std::string& title )
 #if defined( DEBUG ) || defined( _DEBUG )
     else
     {
-        std::cout << "Failed to create window with title '" << title << "'." << std::endl;
+        std::cout << "Failed to create " << width << "x" << height << " window with title '" << title << "'." << std::endl;
     }
 #endif
 }

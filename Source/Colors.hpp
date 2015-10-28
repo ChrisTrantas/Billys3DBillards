@@ -2,6 +2,8 @@
 
 #include "Math.hpp"
 
+// Color values are taken from DirectX's "DirectXColor.h"
+
 /// <summary>
 /// Helper macro for defining a color.
 /// </summary>
@@ -158,3 +160,5 @@ namespace Colors
     DefineColor( Yellow,                1.000000000f, 1.000000000f, 0.000000000f );
     DefineColor( YellowGreen,           0.603921592f, 0.803921640f, 0.196078449f );
 }
+
+#undef DefineColor
