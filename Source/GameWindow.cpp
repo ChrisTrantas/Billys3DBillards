@@ -4,6 +4,9 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <unordered_map>
+#if defined( DEBUG ) || defined( _DEBUG )
+#   include <iostream>
+#endif
 
 // Helper macro for our window
 #define _myWindow static_cast<GLFWwindow*>( _window )
@@ -48,8 +51,14 @@ GameWindow::GameWindow( int width, int height, const std::string& title )
 
         // Set our local variables
         _window = window;
-        _title  = title;
+        _title  = std::make_shared<std::string>( title );
     }
+#if defined( DEBUG ) || defined( _DEBUG )
+    else
+    {
+        std::cout << "Failed to create window with title '" << title << "'." << std::endl;
+    }
+#endif
 }
 
 // Destroys this game window
@@ -73,7 +82,7 @@ GameWindow* GameWindow::GetCurrentWindow()
 // Gets this window's title
 std::string GameWindow::GetTitle() const
 {
-    return _title;
+    return *_title;
 }
 
 // Gets this window's width
@@ -108,6 +117,13 @@ bool GameWindow::IsVisible() const
 void GameWindow::PollEvents()
 {
     glfwPollEvents();
+}
+
+// Sets the window's title
+void GameWindow::SetTitle( const std::string& value )
+{
+    *_title = value;
+    glfwSetWindowTitle( _myWindow, _title->c_str() );
 }
 
 // Sets whether or not this window is visible

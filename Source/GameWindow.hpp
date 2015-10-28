@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <string>
 
 /// <summary>
@@ -7,12 +8,8 @@
 /// </summary>
 class GameWindow
 {
-    mutable void* _window;
-    std::string   _title;
-
-    // Hide the copy constructor and assignment operator
-    GameWindow( const GameWindow& ) = delete;
-    GameWindow& operator=( const GameWindow& ) = delete;
+    mutable void*                _window;
+    std::shared_ptr<std::string> _title;
 
     // Hide the move constructor and assignment operator
     GameWindow( GameWindow&& ) = delete;
@@ -31,6 +28,12 @@ public:
     /// <param name="height">The window's initial height.</param>
     /// <param name="title">The window's initial title.</param>
     GameWindow( int width, int height, const std::string& title );
+
+    /// <summary>
+    /// Creates a new game window.
+    /// </summary>
+    /// <param name="other">The other window to copy.</param>
+    GameWindow( const GameWindow& other ) = default;
 
     /// <summary>
     /// Destroys this game window.
@@ -68,6 +71,12 @@ public:
     void PollEvents();
 
     /// <summary>
+    /// Sets this window's title.
+    /// </summary>
+    /// <param name="value">The new title.</param>
+    void SetTitle( const std::string& value );
+
+    /// <summary>
     /// Sets whether or not this window is visible.
     /// </summary>
     /// <param name="value">True to show the window, false to hide it.</param>
@@ -77,6 +86,12 @@ public:
     /// Swaps this window's underlying OpenGL buffers.
     /// </summary>
     void SwapBuffers();
+
+    /// <summary>
+    /// Copies information from the given game window.
+    /// </summary>
+    /// <param name="other">The window to copy.</param>
+    GameWindow& operator=( const GameWindow& other ) = default;
 
     /// <summary>
     /// Ensures this window is valid.
