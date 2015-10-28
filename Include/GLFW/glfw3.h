@@ -119,6 +119,7 @@ extern "C" {
 
 /* Include the chosen client API headers.
  */
+#include <GL/glew.h>
 #if defined(__APPLE_CC__)
  #if defined(GLFW_INCLUDE_GLCOREARB)
   #include <OpenGL/gl3.h>
