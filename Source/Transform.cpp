@@ -72,7 +72,7 @@ void Transform::SetScale( glm::vec3 nSca )
     _isWorldDirty = true;
 }
 
-// Set the roattion
+// Set the rotation
 void Transform::SetRotation( glm::vec3 nRot )
 {
     _rotation = nRot;

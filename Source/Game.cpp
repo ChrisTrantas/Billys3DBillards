@@ -19,6 +19,26 @@ Game::~Game()
     _window = nullptr;
 }
 
+// Adds a game object to the game
+GameObject* Game::AddGameObject( const std::string& name )
+{
+    // Check if there's already a game object with the given name
+    auto search = _gameObjectCache.find( name );
+    if ( search != _gameObjectCache.end() )
+    {
+        return search->second.get();
+    }
+
+    // Create the game object
+    std::shared_ptr<GameObject> go = std::make_shared<GameObject>( name );
+
+    // Record the game object
+    _gameObjects.push_back( go );
+    _gameObjectCache[ name ] = go;
+
+    return go.get();
+}
+
 // Draws the game
 void Game::Draw()
 {

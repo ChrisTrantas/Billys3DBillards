@@ -1,8 +1,11 @@
 #pragma once
 
+#include "GameObject.hpp"
 #include "GameWindow.hpp"
 #include "Math.hpp"
 #include <memory>
+#include <map>
+#include <vector>
 
 /// <summary>
 /// Defines the game handler.
@@ -11,8 +14,10 @@ class Game
 {
     static std::shared_ptr<Game> _instance;
 
+    std::map<std::string, std::shared_ptr<GameObject>> _gameObjectCache;
+    std::vector<std::shared_ptr<GameObject>> _gameObjects;
     std::shared_ptr<GameWindow> _window;
-    glm::vec4                   _clearColor;
+    glm::vec4 _clearColor;
 
     /// <summary>
     /// Creates a new game.
@@ -52,6 +57,12 @@ public:
     /// Gets this game's clear color.
     /// </summary>
     glm::vec4 GetClearColor() const;
+
+    /// <summary>
+    /// Adds a game object to this scene.
+    /// </summary>
+    /// <param name="name">The name of the game object.</param>
+    GameObject* AddGameObject( const std::string& name );
 
     /// <summary>
     /// Runs the game.
