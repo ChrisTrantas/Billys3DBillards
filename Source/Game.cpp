@@ -100,4 +100,10 @@ void Game::Update()
         frameCount = 0;
         tickCount -= 1.0f;
     }
+
+    // If escape is being pressed, then we should close the window
+    if ( glfwGetKey( glfwGetCurrentContext(), GLFW_KEY_ESCAPE ) )
+    {
+        _window->Close();
+    }
 }

@@ -113,6 +113,12 @@ bool GameWindow::IsVisible() const
     return static_cast<bool>( glfwGetWindowAttrib( _myWindow, GLFW_VISIBLE ) );
 }
 
+// Closes this window
+void GameWindow::Close()
+{
+    glfwSetWindowShouldClose( _myWindow, true );
+}
+
 // Poll and process events
 void GameWindow::PollEvents()
 {

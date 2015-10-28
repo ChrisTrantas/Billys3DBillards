@@ -66,6 +66,11 @@ public:
     bool IsVisible() const;
 
     /// <summary>
+    /// Closes this window.
+    /// </summary>
+    void Close();
+
+    /// <summary>
     /// Polls for pending events and processes them.
     /// </summary>
     void PollEvents();
