@@ -44,15 +44,27 @@ GameWindow::GameWindow( int width, int height, const std::string& title )
         glm::ivec2 center = GetPrimaryMonitorCenter();
         glfwSetWindowPos( window, center.x - width / 2, center.y - height / 2 );
 
-        // Make the window the current context
-        glfwMakeContextCurrent( window );
-
         // Register us in the cache
         WindowCache[ window ] = this;
 
         // Set our local variables
         _window = window;
         _title  = std::make_shared<std::string>( title );
+
+
+        // Make the window the current context
+        glfwMakeContextCurrent( window );
+
+        // Initialize GLEW
+        glewExperimental = GL_TRUE;
+        GLenum initialized = glewInit();
+        if ( initialized != GLEW_OK )
+        {
+#if defined( DEBUG ) || defined( _DEBUG )
+            const char* errorMessage = reinterpret_cast<const char*>( glewGetErrorString( initialized ) );
+            std::cout << "Failed to initialize GLEW. Reason: " << errorMessage << std::endl;
+#endif
+        }
     }
 #if defined( DEBUG ) || defined( _DEBUG )
     else
@@ -65,7 +77,6 @@ GameWindow::GameWindow( int width, int height, const std::string& title )
 // Destroys this game window
 GameWindow::~GameWindow()
 {
-    glfwDestroyWindow( _myWindow );
     _window = nullptr;
 }
 

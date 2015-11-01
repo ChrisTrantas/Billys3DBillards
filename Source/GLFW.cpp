@@ -18,7 +18,7 @@ class GLFW
         glfwSetErrorCallback( ErrorCallback );
         if ( !glfwInit() )
         {
-            std::cout << "Failed to intialize GLFW. Exiting." << std::endl;
+            std::cout << "Failed to initialize GLFW. Exiting." << std::endl;
             exit( -1 );
         }
     }

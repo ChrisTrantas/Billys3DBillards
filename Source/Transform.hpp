@@ -8,10 +8,6 @@
 /// </summary>
 class Transform : public Component
 {
-    friend class TweenRotation;
-    friend class TweenPosition;
-    friend class TweenScale;
-
 protected:
     glm::mat4 _world;
     glm::vec3 _position;

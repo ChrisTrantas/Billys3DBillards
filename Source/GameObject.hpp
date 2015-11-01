@@ -34,8 +34,6 @@ public:
     /// Creates a new game object.
     /// </summary>
     /// <param name="name">The name of this game object.</param>
-    /// <param name="device">The device this game object belongs to.</param>
-    /// <param name="deviceContext">The device context this game object belongs to.</param>
     GameObject( const std::string& name );
 
     /// <summary>
