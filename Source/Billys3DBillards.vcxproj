@@ -69,7 +69,7 @@ mkdir "$(OutDir)Textures"
 xcopy "$(SolutionDir)Content\Models" "$(OutDir)Models\" /y /d /q
 xcopy "$(SolutionDir)Content\Scenes" "$(OutDir)Scenes\" /y /d /q
 xcopy "$(SolutionDir)Content\Textures" "$(OutDir)Textures\" /y /d /q
-xcopy "$(SolutionDir)Bin\x86\$(Configuration)\*" "$(OutDir)*" /y /d /q</Command>
+</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -95,7 +95,7 @@ mkdir "$(OutDir)Textures"
 xcopy "$(SolutionDir)Content\Models" "$(OutDir)Models\" /y /d /q
 xcopy "$(SolutionDir)Content\Scenes" "$(OutDir)Scenes\" /y /d /q
 xcopy "$(SolutionDir)Content\Textures" "$(OutDir)Textures\" /y /d /q
-xcopy "$(SolutionDir)Bin\x86\$(Configuration)\*" "$(OutDir)*" /y /d /q</Command>
+</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -106,6 +106,7 @@ xcopy "$(SolutionDir)Bin\x86\$(Configuration)\*" "$(OutDir)*" /y /d /q</Command>
     <ClCompile Include="GLFW.cpp" />
     <ClCompile Include="JSON.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
   </ItemGroup>
@@ -117,6 +118,7 @@ xcopy "$(SolutionDir)Bin\x86\$(Configuration)\*" "$(OutDir)*" /y /d /q</Command>
     <ClInclude Include="GameWindow.hpp" />
     <ClInclude Include="Math.hpp" />
     <ClInclude Include="OpenGL.hpp" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="Time.hpp" />
     <ClInclude Include="Transform.hpp" />
   </ItemGroup>
