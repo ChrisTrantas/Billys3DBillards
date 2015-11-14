@@ -1,0 +1,16 @@
+{
+    "TestObject": {
+        "Transform": {
+            "Position": [0, 0, 0],
+            "Rotation": [0, 0, 0],
+            "Scale": [1, 1, 1]
+        },
+        "DefaultMaterial": {
+
+        }
+        "MeshRenderer": {
+            "Mesh": "Meshes\\cube.obj",
+            "Material": "this DefaultMaterial"
+        }
+    }
+}

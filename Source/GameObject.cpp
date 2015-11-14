@@ -71,9 +71,8 @@ glm::mat4 GameObject::GetWorldMatrix() const
 void GameObject::Update()
 {
     // Update all of our components
-    for ( auto iter = _components.begin(); iter != _components.end(); ++iter )
+    for ( auto& component : _components )
     {
-        std::shared_ptr<Component>& component = iter->second;
         if ( component->IsEnabled() )
         {
             component->Update();
@@ -81,9 +80,8 @@ void GameObject::Update()
     }
 
     // Perform the late update on all of our components
-    for ( auto iter = _components.begin(); iter != _components.end(); ++iter )
+    for ( auto& component : _components )
     {
-        std::shared_ptr<Component>& component = iter->second;
         if ( component->IsEnabled() && component->UsesLateUpdate() )
         {
             component->LateUpdate();
@@ -101,10 +99,9 @@ void GameObject::Update()
 void GameObject::Draw()
 {
     // Draw all of our components
-    for ( auto iter = _components.begin(); iter != _components.end(); ++iter )
+    for ( auto& component : _components )
     {
-        std::shared_ptr<Component>& component = iter->second;
-        if ( component->IsDrawable() )
+        if ( component->IsEnabled() && component->IsDrawable() )
         {
             component->Draw();
         }

@@ -10,15 +10,16 @@ template<class T> T* GameObject::AddComponent()
     std::string typeName = std::string( type.name() );
     
     // Check to see if the component already exists
-    auto search = _components.find( typeName );
-    if ( search != _components.end() )
+    auto search = _componentCache.find( typeName );
+    if ( search != _componentCache.end() )
     {
         return reinterpret_cast<T*>( search->second.get() );
     }
 
     // Otherwise we need to create and add the component
     std::shared_ptr<T> component = std::make_shared<T>( this );
-    _components[ typeName ] = component;
+    _componentCache[ typeName ] = component;
+    _components.push_back( component );
     return component.get();
 }
 
@@ -30,8 +31,8 @@ template<class T> const T* GameObject::GetComponent() const
     std::string typeName = std::string( type.name() );
 
     // Check to see if the component already exists
-    auto search = _components.find( typeName );
-    if ( search != _components.end() )
+    auto search = _componentCache.find( typeName );
+    if ( search != _componentCache.end() )
     {
         return reinterpret_cast<const T*>( search->second.get() );
     }
@@ -50,8 +51,8 @@ template<class T> T* GameObject::GetComponent()
     std::string typeName = std::string( type.name() );
 
     // Check to see if the component already exists
-    auto search = _components.find( typeName );
-    if ( search != _components.end() )
+    auto search = _componentCache.find( typeName );
+    if ( search != _componentCache.end() )
     {
         return reinterpret_cast<T*>( search->second.get() );
     }
@@ -62,7 +63,7 @@ template<class T> T* GameObject::GetComponent()
 // Get the component of the given base type, if it exists
 template<class T> const T* GameObject::GetComponentOfType() const
 {
-    for ( auto iter = _components.begin(); iter != _components.end(); ++iter )
+    for ( auto iter = _componentCache.begin(); iter != _componentCache.end(); ++iter )
     {
         // Get the component and the component as T
         const std::shared_ptr<Component>& component = iter->second;
@@ -81,7 +82,7 @@ template<class T> const T* GameObject::GetComponentOfType() const
 // Get the component of the given base type, if it exists
 template<class T> T* GameObject::GetComponentOfType()
 {
-    for ( auto iter = _components.begin(); iter != _components.end(); ++iter )
+    for ( auto iter = _componentCache.begin(); iter != _componentCache.end(); ++iter )
     {
         // Get the component and the component as T
         std::shared_ptr<Component>& component = iter->second;
@@ -104,7 +105,7 @@ template<class T> void GameObject::GetComponentsOfType( std::vector<const T*>& c
     components.clear();
 
     // Then iterate over all of our components to check if we have the given type
-    for ( auto iter = _components.begin(); iter != _components.end(); ++iter )
+    for ( auto iter = _componentCache.begin(); iter != _componentCache.end(); ++iter )
     {
         const std::shared_ptr<Component>& component = iter->second;
         const T* typedComponent = dynamic_cast<const T*>( component.get() );
@@ -124,7 +125,7 @@ template<class T> void GameObject::GetComponentsOfType( std::vector<T*>& compone
     components.clear();
 
     // Then iterate over all of our components to check if we have the given type
-    for ( auto iter = _components.begin(); iter != _components.end(); ++iter )
+    for ( auto iter = _componentCache.begin(); iter != _componentCache.end(); ++iter )
     {
         const std::shared_ptr<Component>& component = iter->second;
         T* typedComponent = dynamic_cast<T*>( component.get() );

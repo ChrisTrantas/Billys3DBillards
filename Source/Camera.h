@@ -41,8 +41,8 @@ public:
 	Camera( GameObject* gameObject);
 	~Camera();
 
-	glm::mat4 GetView();
-	glm::mat4 GetProjection();
+	glm::mat4 GetView() const;
+	glm::mat4 GetProjection() const;
 
 	glm::vec3 GetPosition();
 	void SetPosition(glm::vec3 a_v3Position);	// Sets the position, but does not change the orientation

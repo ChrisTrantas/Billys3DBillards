@@ -21,10 +21,10 @@ void Camera::Init()
 
 	m_fFOVy = 45.0f;
 
-	m_fAspectRatio = GameWindow::GetCurrentWindow()->GetWidth() / GameWindow::GetCurrentWindow()->GetHeight();
+	m_fAspectRatio = static_cast<float>( GameWindow::GetCurrentWindow()->GetWidth() ) / GameWindow::GetCurrentWindow()->GetHeight();
 	m_fMinPlane = 0.001f;
 	m_fMaxPlane = 100.0f;
-	m_fHeight = GameWindow::GetCurrentWindow()->GetHeight();
+	m_fHeight = static_cast<float>( GameWindow::GetCurrentWindow()->GetHeight() );
 
 	CalculateDirectionVectors();
 	CalculateView();
@@ -98,11 +98,11 @@ void Camera::CalculateDirectionVectors()
 	m_v3Right = glm::normalize(m_v3Right);
 }
 
-glm::mat4 Camera::GetView()
+glm::mat4 Camera::GetView() const
 {
 	return m_m4View;
 }
-glm::mat4  Camera::GetProjection()
+glm::mat4  Camera::GetProjection() const
 {
 	return m_m4Projection;
 }

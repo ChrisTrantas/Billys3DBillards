@@ -14,9 +14,10 @@ class Transform;
 /// </summary>
 class GameObject
 {
-    std::unordered_map<std::string, std::shared_ptr<Component>> _components;
+    std::unordered_map<std::string, std::shared_ptr<Component>> _componentCache;
     std::unordered_map< std::string, std::shared_ptr<GameObject>> _childrenCache;
     std::vector<std::shared_ptr<GameObject>> _children;
+    std::vector<std::shared_ptr<Component>> _components;
     const std::string _name;
     GameObject* _parent;
     Transform* _transform;

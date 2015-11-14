@@ -59,7 +59,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>OpenGL32.lib;glew32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenGL32.lib;glew32.lib;glfw3.lib;Assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PreBuildEvent>
@@ -85,7 +85,7 @@ xcopy "$(SolutionDir)Content\Textures" "$(OutDir)Textures\" /y /d /q
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>OpenGL32.lib;glew32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenGL32.lib;glew32.lib;glfw3.lib;Assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PreBuildEvent>
@@ -108,6 +108,10 @@ xcopy "$(SolutionDir)Content\Textures" "$(OutDir)Textures\" /y /d /q
     <ClCompile Include="GLFW.cpp" />
     <ClCompile Include="JSON.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Material.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="MeshLoader.cpp" />
+    <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="SmoothFollow.cpp" />
     <ClCompile Include="Time.cpp" />
@@ -122,13 +126,18 @@ xcopy "$(SolutionDir)Content\Textures" "$(OutDir)Textures\" /y /d /q
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameObject.hpp" />
     <ClInclude Include="GameWindow.hpp" />
+    <ClInclude Include="Material.hpp" />
     <ClInclude Include="Math.hpp" />
+    <ClInclude Include="Mesh.hpp" />
+    <ClInclude Include="MeshLoader.hpp" />
+    <ClInclude Include="MeshRenderer.hpp" />
     <ClInclude Include="OpenGL.hpp" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SmoothFollow.h" />
     <ClInclude Include="Time.hpp" />
     <ClInclude Include="Tracker.h" />
     <ClInclude Include="Transform.hpp" />
+    <ClInclude Include="Vertex.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="GameObject.inl" />
