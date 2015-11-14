@@ -12,7 +12,8 @@ class Mesh
     struct MeshData
     {
         unsigned int VBO;
-        unsigned int VAO;
+        unsigned int IBO;
+        unsigned int VertexCount;
         unsigned int IndexCount;
 
         MeshData();

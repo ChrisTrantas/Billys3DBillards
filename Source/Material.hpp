@@ -21,8 +21,15 @@ class Material : public Component
     Material& operator=( Material&& ) = delete;
 
 protected:
-    std::unordered_map<std::string, unsigned int> _uniforms;
+    mutable std::unordered_map<std::string, GLint> _attributes;
+    mutable std::unordered_map<std::string, GLint> _uniforms;
     GLuint _program;
+
+    /// <summary>
+    /// Gets a uniform's location.
+    /// </summary>
+    /// <param name="name">The uniform name.</param>
+    GLint GetUniformLocation( const std::string& name ) const;
 
     /// <summary>
     /// Loads the shader program
@@ -46,13 +53,40 @@ public:
     /// <summary>
     /// Activates this material to be the current material.
     /// </summary>
-    void Activate();
+    void Activate() const;
 
     /// <summary>
     /// Applies the given camera to this material.
     /// </summary>
     /// <param name="camera">The camera to apply.</param>
     void ApplyCamera( const Camera* camera );
+
+    /// <summary>
+    /// Gets an attribute's location.
+    /// </summary>
+    /// <param name="name">The uniform name.</param>
+    GLint Material::GetAttributeLocation( const std::string& name ) const;
+
+    /// <summary>
+    /// Sets a vector in this material.
+    /// </summary>
+    /// <param name="name">The vector name.</param>
+    /// <param name="value">The vector value.</param>
+    void SetVec2( const std::string& name, const glm::vec2& value );
+
+    /// <summary>
+    /// Sets a vector in this material.
+    /// </summary>
+    /// <param name="name">The vector name.</param>
+    /// <param name="value">The vector value.</param>
+    void SetVec3( const std::string& name, const glm::vec2& value );
+
+    /// <summary>
+    /// Sets a vector in this material.
+    /// </summary>
+    /// <param name="name">The vector name.</param>
+    /// <param name="value">The vector value.</param>
+    void SetVec4( const std::string& name, const glm::vec2& value );
 
     /// <summary>
     /// Sets a matrix in this material.
