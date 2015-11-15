@@ -99,7 +99,9 @@ xcopy "$(SolutionDir)Content\Textures" "$(OutDir)Textures\" /y /d /q
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Collider.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="FPSContoller.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -112,14 +114,18 @@ xcopy "$(SolutionDir)Content\Textures" "$(OutDir)Textures\" /y /d /q
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshLoader.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
+    <ClCompile Include="Physics.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="SmoothFollow.cpp" />
+    <ClCompile Include="SphereCollider.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Tracker.cpp" />
     <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BoxCollider.hpp" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Collider.hpp" />
     <ClInclude Include="Colors.hpp" />
     <ClInclude Include="Component.hpp" />
     <ClInclude Include="FPSContoller.h" />
@@ -132,8 +138,10 @@ xcopy "$(SolutionDir)Content\Textures" "$(OutDir)Textures\" /y /d /q
     <ClInclude Include="MeshLoader.hpp" />
     <ClInclude Include="MeshRenderer.hpp" />
     <ClInclude Include="OpenGL.hpp" />
+    <ClInclude Include="Physics.hpp" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SmoothFollow.h" />
+    <ClInclude Include="SphereCollider.hpp" />
     <ClInclude Include="Time.hpp" />
     <ClInclude Include="Tracker.h" />
     <ClInclude Include="Transform.hpp" />
