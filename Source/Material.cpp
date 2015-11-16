@@ -115,3 +115,10 @@ void Material::SetVec4( const std::string& name, const glm::vec2& value )
     GLint location = GetUniformLocation( name );
     glProgramUniform4fv( _program, location, 1, glm::value_ptr( value ) );
 }
+
+// Set a Texture2D
+void Material::SetTexture( const std::string& name, const Texture2D& value )
+{
+    GLint location = GetUniformLocation( name );
+    // TODO - This!
+}

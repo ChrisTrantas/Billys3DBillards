@@ -5,7 +5,8 @@
 #include <memory> // for std::shared_ptr
 #include <unordered_map>
 
-class Camera; // forward declaration
+class Camera;
+class Texture2D;
 
 /// <summary>
 /// Defines a material.
@@ -94,4 +95,11 @@ public:
     /// <param name="name">The matrix name.</param>
     /// <param name="value">The matrix value.</param>
     void SetMatrix( const std::string& name, const glm::mat4& value );
+
+    /// <summary>
+    /// Sets a texture in this material.
+    /// </summary>
+    /// <param name="name">The texture name.</param>
+    /// <param name="value">The texture value.</param>
+    void SetTexture( const std::string& name, const Texture2D& value );
 };

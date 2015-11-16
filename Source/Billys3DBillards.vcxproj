@@ -65,9 +65,11 @@
     <PreBuildEvent>
       <Command>mkdir "$(OutDir)Models"
 mkdir "$(OutDir)Scenes"
+mkdir "$(OutDir)Shaders"
 mkdir "$(OutDir)Textures"
 xcopy "$(SolutionDir)Content\Models" "$(OutDir)Models\" /y /d /q
 xcopy "$(SolutionDir)Content\Scenes" "$(OutDir)Scenes\" /y /d /q
+xcopy "$(SolutionDir)Content\Shaders" "$(OutDir)Shaders\" /y /d /q
 xcopy "$(SolutionDir)Content\Textures" "$(OutDir)Textures\" /y /d /q
 </Command>
     </PreBuildEvent>
@@ -91,9 +93,11 @@ xcopy "$(SolutionDir)Content\Textures" "$(OutDir)Textures\" /y /d /q
     <PreBuildEvent>
       <Command>mkdir "$(OutDir)Models"
 mkdir "$(OutDir)Scenes"
+mkdir "$(OutDir)Shaders"
 mkdir "$(OutDir)Textures"
 xcopy "$(SolutionDir)Content\Models" "$(OutDir)Models\" /y /d /q
 xcopy "$(SolutionDir)Content\Scenes" "$(OutDir)Scenes\" /y /d /q
+xcopy "$(SolutionDir)Content\Shaders" "$(OutDir)Shaders\" /y /d /q
 xcopy "$(SolutionDir)Content\Textures" "$(OutDir)Textures\" /y /d /q
 </Command>
     </PreBuildEvent>
@@ -116,6 +120,7 @@ xcopy "$(SolutionDir)Content\Textures" "$(OutDir)Textures\" /y /d /q
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="SimpleMaterial.cpp" />
     <ClCompile Include="SmoothFollow.cpp" />
     <ClCompile Include="SphereCollider.cpp" />
     <ClCompile Include="Time.cpp" />
@@ -140,6 +145,7 @@ xcopy "$(SolutionDir)Content\Textures" "$(OutDir)Textures\" /y /d /q
     <ClInclude Include="OpenGL.hpp" />
     <ClInclude Include="Physics.hpp" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="SimpleMaterial.hpp" />
     <ClInclude Include="SmoothFollow.h" />
     <ClInclude Include="SphereCollider.hpp" />
     <ClInclude Include="Time.hpp" />
@@ -148,6 +154,8 @@ xcopy "$(SolutionDir)Content\Textures" "$(OutDir)Textures\" /y /d /q
     <ClInclude Include="Vertex.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Content\Shaders\SimpleMaterial.frag" />
+    <None Include="..\Content\Shaders\SimpleMaterial.vert" />
     <None Include="GameObject.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
