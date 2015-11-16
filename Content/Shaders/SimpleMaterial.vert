@@ -1,4 +1,4 @@
-#version 330
+#version 430
 
 in vec3 vertPosition;
 in vec3 vertNormal;
@@ -14,5 +14,5 @@ uniform mat4 Projection;
 void main()
 {
     fragUV = vertUV;
-    gl_Position = vec4(vertPosition, 1.0) * Projection * View * World;
+    gl_Position = Projection * View * World * vec4(vertPosition, 1.0);
 }

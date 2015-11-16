@@ -3,6 +3,7 @@
 #include "GameObject.hpp"
 #include "Shader.h"
 #include <assert.h>
+#include "Texture2D.hpp"
 
 // Create a new material
 Material::Material( GameObject* gameObject )
@@ -117,8 +118,15 @@ void Material::SetVec4( const std::string& name, const glm::vec2& value )
 }
 
 // Set a Texture2D
-void Material::SetTexture( const std::string& name, const Texture2D& value )
+void Material::SetTexture( const std::string& name, const std::shared_ptr<Texture2D> value )
 {
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, value->GetHandle());
+
     GLint location = GetUniformLocation( name );
-    // TODO - This!
+	glProgramUniform1i(_program, location, 0);
+}
+
+void Material::Update()
+{
 }

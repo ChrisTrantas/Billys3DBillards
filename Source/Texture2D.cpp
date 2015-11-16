@@ -39,10 +39,8 @@ Texture2D::Texture2D( unsigned int width, unsigned int height, const void* data,
     glGenTextures( 1, &_texture );
     glBindTexture( GL_TEXTURE_2D, _texture );
     
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_FLOAT, data);
-
-
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	
     glBindTexture( GL_TEXTURE_2D, 0 );
 }
 
@@ -50,6 +48,12 @@ Texture2D::Texture2D( unsigned int width, unsigned int height, const void* data,
 Texture2D::~Texture2D()
 {
     glDeleteTextures( 1, &_texture );
+}
+
+// Gets this texture's handle
+GLuint Texture2D::GetHandle() const
+{
+	return _texture;
 }
 
 // Get the texture's height

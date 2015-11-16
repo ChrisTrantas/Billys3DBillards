@@ -1,4 +1,5 @@
 #include "MeshRenderer.hpp"
+#include "GameObject.hpp"
 #include <assert.h>
 
 // Create a new mesh renderer
@@ -6,6 +7,7 @@ MeshRenderer::MeshRenderer( GameObject* gameObj )
     : Component( gameObj )
 {
     _isDrawable = true;
+	_isEnabled = true;
 
     _mesh = nullptr;
     _material = nullptr;
@@ -52,6 +54,7 @@ void MeshRenderer::Draw()
     // Draw the mesh
     if ( _mesh && _material )
     {
+		_material->SetMatrix("World", _gameObject->GetWorldMatrix());
         _mesh->Draw( _material );
     }
 }

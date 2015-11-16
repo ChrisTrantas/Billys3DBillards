@@ -39,11 +39,13 @@ Mesh::~Mesh()
 // Draw this mesh
 void Mesh::Draw( const Material* material )
 {
+	glUseProgram(material->GetProgramID());
+
     // Get the attribute locations
-    GLint attrVertex  = material->GetAttributeLocation( "Vertex" );
-    GLint attrNormal  = material->GetAttributeLocation( "Normal" );
-    GLint attrTangent = material->GetAttributeLocation( "Tangent" );
-    GLint attrUV      = material->GetAttributeLocation( "UV" );
+    GLint attrVertex  = material->GetAttributeLocation( "vertPosition" );
+    GLint attrNormal  = material->GetAttributeLocation( "vertNormal" );
+    GLint attrTangent = material->GetAttributeLocation( "vertTangent" );
+    GLint attrUV      = material->GetAttributeLocation( "vertUV" );
 
     // Bind the buffers
     glBindBuffer( GL_ARRAY_BUFFER, _data.VBO );

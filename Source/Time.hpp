@@ -10,7 +10,7 @@ class Time
     static double _startTime;
     static double _lastFrame;
     static double _currFrame;
-
+	
     /// <summary>
     /// Starts timing.
     /// </summary>
