@@ -104,14 +104,14 @@ void Material::SetVec2( const std::string& name, const glm::vec2& value )
 }
 
 // Set a vec3
-void Material::SetVec3( const std::string& name, const glm::vec2& value )
+void Material::SetVec3( const std::string& name, const glm::vec3& value )
 {
     GLint location = GetUniformLocation( name );
     glProgramUniform3fv( _program, location, 1, glm::value_ptr( value ) );
 }
 
 // Set a vec4
-void Material::SetVec4( const std::string& name, const glm::vec2& value )
+void Material::SetVec4( const std::string& name, const glm::vec4& value )
 {
     GLint location = GetUniformLocation( name );
     glProgramUniform4fv( _program, location, 1, glm::value_ptr( value ) );

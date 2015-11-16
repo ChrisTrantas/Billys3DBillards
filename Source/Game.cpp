@@ -15,7 +15,7 @@ static void APIENTRY MyGLCallback(GLenum source, GLenum type, GLuint id, GLenum 
 	if (source == GL_DEBUG_SOURCE_API)
 	{
 		std::cout << message << std::endl;
-	}
+	} 
 }
 
 // Creates a new game
@@ -36,10 +36,10 @@ Game::Game()
 	meshRenderer->SetMesh(MeshLoader::Load("Models\\Sphere.obj"));
 	meshRenderer->SetMaterial(material);
 
-	texture = Texture2D::FromFile("Textures\\Rocks.jpg");
+	texture = Texture2D::FromFile("Textures\\Test_Texture.png");
 
 	material->SetTexture("textureSampler", texture);
-	
+	material->SetVec3("tint", glm::vec3(1, 0, 1));
 	material->SetMatrix("View", glm::lookAt(vec3(4, 0, 0), vec3(0), vec3(0, 1, 0)));
 	material->SetMatrix("Projection", glm::perspective(glm::quarter_pi<float>(), 1.33f, 0.001f, 1000.0f));
 }
