@@ -90,6 +90,12 @@
     <ClCompile Include="SimpleMaterial.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="Texture2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameWindow.hpp">
@@ -163,6 +169,12 @@
     </ClInclude>
     <ClInclude Include="MeshRenderer.hpp">
       <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture2D.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Image.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
