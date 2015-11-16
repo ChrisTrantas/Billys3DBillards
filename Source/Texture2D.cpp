@@ -40,7 +40,7 @@ Texture2D::Texture2D( unsigned int width, unsigned int height, const void* data,
     glBindTexture( GL_TEXTURE_2D, _texture );
     
 
-    // TODO - This!
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_FLOAT, data);
 
 
     glBindTexture( GL_TEXTURE_2D, 0 );
