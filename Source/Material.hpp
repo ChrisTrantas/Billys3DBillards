@@ -85,14 +85,14 @@ public:
     /// </summary>
     /// <param name="name">The vector name.</param>
     /// <param name="value">The vector value.</param>
-    void SetVec3( const std::string& name, const glm::vec2& value );
+    void SetVec3( const std::string& name, const glm::vec3& value );
 
     /// <summary>
     /// Sets a vector in this material.
     /// </summary>
     /// <param name="name">The vector name.</param>
     /// <param name="value">The vector value.</param>
-    void SetVec4( const std::string& name, const glm::vec2& value );
+    void SetVec4( const std::string& name, const glm::vec4& value );
 
     /// <summary>
     /// Sets a matrix in this material.
