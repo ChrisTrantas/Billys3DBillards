@@ -1,13 +1,14 @@
-#version 430
+#version 440
 
 in vec2 fragUV;
 
-out layout(location = 0) vec4 fragColor;
+layout(location = 0) out vec4 fragColor;
 
-uniform sampler2D textureSampler;
+uniform sampler2D MyTexture;
 
 void main()
 {
-    vec4 textureColor = texture(textureSampler, fragUV);
-    fragColor = textureColor;
+    vec4 textureColor = texture(MyTexture, fragUV);
+    fragColor = vec4(textureColor.rgb, 1.0);
+    //fragColor = vec4(fragUV, 0, 1);
 }

@@ -62,7 +62,10 @@ public:
     /// <param name="camera">The camera to apply.</param>
     void ApplyCamera( const Camera* camera );
 
-	GLuint GetProgramID() const { return _program; }
+    /// <summary>
+    /// Gets this material's program ID.
+    /// </summary>
+    GLuint GetProgramID() const { return _program; }
 
     /// <summary>
     /// Gets an attribute's location.
@@ -105,5 +108,5 @@ public:
     /// <param name="value">The texture value.</param>
     void SetTexture( const std::string& name, const std::shared_ptr<Texture2D> value );
 
-	void Update() override;
+    void Update() override;
 };

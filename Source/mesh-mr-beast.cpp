@@ -39,13 +39,11 @@ Mesh::~Mesh()
 // Draw this mesh
 void Mesh::Draw( const Material* material )
 {
-    glUseProgram(material->GetProgramID());
-
     // Get the attribute locations
-    GLint attrVertex  = material->GetAttributeLocation( "vertPosition" );
-    GLint attrNormal  = material->GetAttributeLocation( "vertNormal" );
-    GLint attrTangent = material->GetAttributeLocation( "vertTangent" );
-    GLint attrUV      = material->GetAttributeLocation( "vertUV" );
+    GLint attrVertex  = material->GetAttributeLocation( "Vertex" );
+    GLint attrNormal  = material->GetAttributeLocation( "Normal" );
+    GLint attrTangent = material->GetAttributeLocation( "Tangent" );
+    GLint attrUV      = material->GetAttributeLocation( "UV" );
 
     // Bind the buffers
     glBindBuffer( GL_ARRAY_BUFFER, _data.VBO );
@@ -54,26 +52,14 @@ void Mesh::Draw( const Material* material )
 
 
     // Enable the attributes
-    if ( attrVertex >= 0 )
-    {
-        glEnableVertexAttribArray( attrVertex );
-        glVertexAttribPointer( attrVertex, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ), glOffset( glm::vec3, 0 ) );
-    }
-    if ( attrNormal >= 0 )
-    {
-        glEnableVertexAttribArray( attrNormal );
-        glVertexAttribPointer( attrNormal, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ), glOffset( glm::vec3, 1 ) );
-    }
-    if ( attrTangent >= 0 )
-    {
-        glEnableVertexAttribArray( attrTangent );
-        glVertexAttribPointer( attrTangent, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ), glOffset( glm::vec3, 2 ) );
-    }
-    if ( attrUV >= 0 )
-    {
-        glEnableVertexAttribArray( attrUV );
-        glVertexAttribPointer( attrUV, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ), glOffset( glm::vec3, 3 ) );
-    }
+    glEnableVertexAttribArray( attrVertex );
+    glEnableVertexAttribArray( attrNormal );
+    glEnableVertexAttribArray( attrTangent );
+    glEnableVertexAttribArray( attrUV );
+    glVertexAttribPointer( attrVertex,  3, GL_FLOAT, GL_FALSE, sizeof( Vertex ), glOffset( glm::vec3, 0 ) );
+    glVertexAttribPointer( attrNormal,  3, GL_FLOAT, GL_FALSE, sizeof( Vertex ), glOffset( glm::vec3, 1 ) );
+    glVertexAttribPointer( attrTangent, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ), glOffset( glm::vec3, 2 ) );
+    glVertexAttribPointer( attrUV,      2, GL_FLOAT, GL_FALSE, sizeof( Vertex ), glOffset( glm::vec3, 3 ) );
 
 
 
@@ -83,10 +69,10 @@ void Mesh::Draw( const Material* material )
 
 
     // Disable the attributes
-    if ( attrVertex  >= 0 ) glDisableVertexAttribArray( attrVertex );
-    if ( attrNormal  >= 0 ) glDisableVertexAttribArray( attrNormal );
-    if ( attrTangent >= 0 ) glDisableVertexAttribArray( attrTangent );
-    if ( attrUV      >= 0 ) glDisableVertexAttribArray( attrUV );
+    glDisableVertexAttribArray( attrVertex );
+    glDisableVertexAttribArray( attrNormal );
+    glDisableVertexAttribArray( attrTangent );
+    glDisableVertexAttribArray( attrUV );
 
     // Un-bind the buffers
     glBindBuffer( GL_ARRAY_BUFFER, 0 );

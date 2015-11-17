@@ -71,6 +71,7 @@ xcopy "$(SolutionDir)Content\Models" "$(OutDir)Models\" /y /d /q
 xcopy "$(SolutionDir)Content\Scenes" "$(OutDir)Scenes\" /y /d /q
 xcopy "$(SolutionDir)Content\Shaders" "$(OutDir)Shaders\" /y /d /q
 xcopy "$(SolutionDir)Content\Textures" "$(OutDir)Textures\" /y /d /q
+xcopy "$(SolutionDir)Bin\x86\$(Configuration)" "$(OutDir)" /y /d /q
 </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -99,6 +100,7 @@ xcopy "$(SolutionDir)Content\Models" "$(OutDir)Models\" /y /d /q
 xcopy "$(SolutionDir)Content\Scenes" "$(OutDir)Scenes\" /y /d /q
 xcopy "$(SolutionDir)Content\Shaders" "$(OutDir)Shaders\" /y /d /q
 xcopy "$(SolutionDir)Content\Textures" "$(OutDir)Textures\" /y /d /q
+xcopy "$(SolutionDir)Bin\x86\$(Configuration)" "$(OutDir)" /y /d /q
 </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>

@@ -12,10 +12,10 @@ std::shared_ptr<Texture2D> texture;
 
 static void APIENTRY MyGLCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam)
 {
-	if (source == GL_DEBUG_SOURCE_API)
-	{
-		std::cout << message << std::endl;
-	}
+    if (source == GL_DEBUG_SOURCE_API)
+    {
+        std::cout << message << std::endl;
+    }
 }
 
 // Creates a new game
@@ -25,23 +25,20 @@ Game::Game()
 {
     // Create the window
     _window = std::make_shared<GameWindow>( 1280, 720, "Billy's 3D Billiards" );
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-	glDebugMessageCallback(MyGLCallback, nullptr);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_TEXTURE_2D);
+#if defined( _DEBUG ) || defined( DEBUG )
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(MyGLCallback, nullptr);
+#endif
 
-	GameObject* imageTest = AddGameObject("ImageTest");
-	SimpleMaterial* material = imageTest->AddComponent<SimpleMaterial>();
-	MeshRenderer* meshRenderer = imageTest->AddComponent<MeshRenderer>();
-	meshRenderer->SetMesh(MeshLoader::Load("Models\\Sphere.obj"));
-	meshRenderer->SetMaterial(material);
+    GameObject* imageTest = AddGameObject("ImageTest");
+    SimpleMaterial* material = imageTest->AddComponent<SimpleMaterial>();
+    MeshRenderer* meshRenderer = imageTest->AddComponent<MeshRenderer>();
+    meshRenderer->SetMesh(MeshLoader::Load("Models\\Cube.obj"));
+    meshRenderer->SetMaterial(material);
 
-	texture = Texture2D::FromFile("Textures\\Rocks.jpg");
-
-	material->SetTexture("textureSampler", texture);
-	
-	material->SetMatrix("View", glm::lookAt(vec3(4, 0, 0), vec3(0), vec3(0, 1, 0)));
-	material->SetMatrix("Projection", glm::perspective(glm::quarter_pi<float>(), 1.33f, 0.001f, 1000.0f));
+    texture = Texture2D::FromFile("Textures\\Rocks.jpg");
 }
 
 // Destroys the game instance
@@ -73,10 +70,10 @@ GameObject* Game::AddGameObject( const std::string& name )
 // Draws the game
 void Game::Draw()
 {
-	for (auto& object : _gameObjects)
-	{
-		object->Draw();
-	}
+    for (auto& object : _gameObjects)
+    {
+        object->Draw();
+    }
 }
 
 // Get the game instance
@@ -157,11 +154,24 @@ void Game::Update()
     }
 
 
-	for (auto& object : _gameObjects)
-	{
-		object->GetTransform()->SetRotation(glm::vec3(0, Time::GetTotalTime(), 0));
-		object->Update();
-	}
+
+    for (auto& object : _gameObjects)
+    {
+        Material* material = object->GetComponentOfType<Material>();
+        if ( material )
+        {
+            float aspectRatio = static_cast<float>( _window->GetWidth() ) / _window->GetHeight();
+
+            material->SetTexture( "MyTexture", texture );
+
+            material->SetMatrix( "View", glm::lookAt( vec3( 4, 0, 0 ), vec3( 0 ), vec3( 0, 1, 0 ) ) );
+            material->SetMatrix( "Projection", glm::perspective( glm::quarter_pi<float>(), aspectRatio, 0.001f, 1000.0f ) );
+        }
+
+        object->GetTransform()->SetRotation( glm::vec3( Time::GetTotalTime(), Time::GetTotalTime(), Time::GetTotalTime() ) );
+        object->Update();
+    }
+
 
 
     // If escape is being pressed, then we should close the window

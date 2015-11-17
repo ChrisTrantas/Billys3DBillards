@@ -75,7 +75,7 @@ std::shared_ptr<Mesh> MeshLoader::Load( const std::string& fname )
 
     // If we failed to load the mesh, then we have nothing to return
     std::shared_ptr<Mesh> mesh;
-    if ( scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode )
+    if ( !scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode )
     {
         return mesh;
     }
