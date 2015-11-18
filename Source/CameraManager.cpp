@@ -19,6 +19,11 @@ CameraManager::~CameraManager()
 void CameraManager::AddCamera(Camera* camera)
 {
 	cameras.push_back(camera);
+	
+	if (cameras.size() > 1)
+	{
+		camera->GetGameObject()->SetActive(false);
+	}
 }
 
 Camera* CameraManager::GetActiveCamera()
@@ -35,13 +40,17 @@ void CameraManager::Update()
 
 	if (upKeyPrevState == GLFW_PRESS && upKeyState == GLFW_RELEASE)
 	{
+		cameras[activeCameraIndex]->GetGameObject()->SetActive(false);
 		activeCameraIndex++;
 		activeCameraIndex = activeCameraIndex % cameras.size();
+		cameras[activeCameraIndex]->GetGameObject()->SetActive(true);
 	}
 	else if (downKeyPrevState == GLFW_PRESS && downKeyState == GLFW_RELEASE)
 	{
+		cameras[activeCameraIndex]->GetGameObject()->SetActive(false);
 		activeCameraIndex--;
 		activeCameraIndex = activeCameraIndex % cameras.size();
+		cameras[activeCameraIndex]->GetGameObject()->SetActive(true);
 	}
 	
 	upKeyPrevState = upKeyState;

@@ -17,6 +17,9 @@ private:
 	float m_fSpeed;
 	float m_fSensitivity;
 
+	void HandleCameraMove();
+	void HandleCameraRotate();
+
 public:
 	FPSController(GameObject* gameObject);
 	~FPSController();
