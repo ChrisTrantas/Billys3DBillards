@@ -125,7 +125,8 @@ void Game::Draw()
 {
     for (auto& object : _gameObjects)
     {
-        object->Draw();
+		if (object->GetActive())
+			object->Draw();
     }
 }
 
@@ -210,16 +211,19 @@ void Game::Update()
 
     for (auto& object : _gameObjects)
     {
-        Material* material = object->GetComponentOfType<Material>();
-        if ( material )
-        {
-            float aspectRatio = static_cast<float>( _window->GetWidth() ) / _window->GetHeight();
+		if (object->GetActive())
+		{
+			Material* material = object->GetComponentOfType<Material>();
+			if (material)
+			{
+				float aspectRatio = static_cast<float>(_window->GetWidth()) / _window->GetHeight();
 
-            material->SetTexture( "MyTexture", texture );
+				material->SetTexture("MyTexture", texture);
 
-			material->ApplyCamera(cameraManager->GetActiveCamera());
-        }
-        object->Update();
+				material->ApplyCamera(cameraManager->GetActiveCamera());
+			}
+			object->Update();
+		}
     }
 
 	

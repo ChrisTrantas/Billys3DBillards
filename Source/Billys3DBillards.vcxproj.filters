@@ -99,12 +99,15 @@
     <ClCompile Include="CameraManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< HEAD
+=======
     <ClCompile Include="CollisionListener.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
     <ClCompile Include="RigidBody.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+>>>>>>> dcc5fcd2b352a9a5edc4666bf13978e84ef966de
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameWindow.hpp">
@@ -191,8 +194,8 @@
     <ClInclude Include="CameraManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CollisionListener.h">
-      <Filter>Header Files\Components</Filter>
+    <ClInclude Include="EventListener.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RigidBody.h">
       <Filter>Header Files\Components</Filter>

@@ -9,11 +9,26 @@ FPSController::FPSController(GameObject* gameObject)
 	m_fSensitivity = 1.0f / 10.0f;
 
 	window = glfwGetCurrentContext();
+
+	EventListener* eventListener = gameObject->GetEventListener();
+
+	eventListener->AddEventListener("OnMove", std::bind(&FPSController::HandleCameraMove, this));
+	eventListener->AddEventListener("OnRotateCamera", std::bind(&FPSController::HandleCameraRotate, this));
 }
 
 
 FPSController::~FPSController()
 {
+}
+
+void FPSController::HandleCameraMove()
+{
+	std::cout << "I am moving: " << _gameObject->GetName() << endl;
+}
+
+void FPSController::HandleCameraRotate()
+{
+	std::cout << "I am rotating the camera | Mouse Position: x: " << m_v2MousePosition.x << " y: " << m_v2MousePosition.y << endl;
 }
 
 void FPSController::Update()
@@ -22,17 +37,35 @@ void FPSController::Update()
 
 	// Movement Controls
 	if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_W))
+	{
 		m_pCamera->MoveForward(m_fSpeed * fDeltaTime);
+		_gameObject->SendEvent("OnMove");
+	}
 	if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_S))
+	{
 		m_pCamera->MoveForward(-m_fSpeed * fDeltaTime);
+		_gameObject->SendEvent("OnMove");
+	}
 	if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_A))
+	{
 		m_pCamera->MoveRight(-m_fSpeed * fDeltaTime);
+		_gameObject->SendEvent("OnMove");
+	}
 	if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_D))
+	{
 		m_pCamera->MoveRight(m_fSpeed * fDeltaTime);
+		_gameObject->SendEvent("OnMove");
+	}
 	if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_Q))
+	{
 		m_pCamera->MoveUp(-m_fSpeed * fDeltaTime);
+		_gameObject->SendEvent("OnMove");
+	}
 	if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_E))
+	{
 		m_pCamera->MoveUp(m_fSpeed * fDeltaTime);
+		_gameObject->SendEvent("OnMove");
+	}
 
 	// Mouse Aiming
 	double x, y;
@@ -42,8 +75,17 @@ void FPSController::Update()
 	glm::vec2 v2NewMousePosition = glm::vec2(x, y);
 	glm::vec2 v2MouseMovement = v2NewMousePosition - m_v2MousePosition;
 
-	m_pCamera->ChangeYaw(-v2MouseMovement.x * m_fSensitivity * fDeltaTime);
-	m_pCamera->ChangePitch(-v2MouseMovement.y * m_fSensitivity * fDeltaTime);
+	if (v2MouseMovement.x != 0)
+	{
+		m_pCamera->ChangeYaw(-v2MouseMovement.x * m_fSensitivity * fDeltaTime);
+		_gameObject->SendEvent("OnRotateCamera");
+	}
+
+	if (v2MouseMovement.y != 0)
+	{
+		m_pCamera->ChangePitch(-v2MouseMovement.y * m_fSensitivity * fDeltaTime);
+		_gameObject->SendEvent("OnRotateCamera");
+	}
 
 	m_v2MousePosition = v2NewMousePosition;
 }
