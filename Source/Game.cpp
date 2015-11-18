@@ -9,18 +9,9 @@ std::shared_ptr<Game> Game::_instance = nullptr;
 
 std::shared_ptr<Texture2D> texture;
 
+CameraManager* cameraManager;
+
 GameObject* cube, * cylinder, * sphere;
-
-Camera* camera;
-
-Camera* cameraSmoothFollower;
-SmoothFollow* smoothFollow;
-
-Camera* cameraTracker;
-Tracker* tracker;
-
-Camera* cameraFPS;
-FPSController* fPSController;
 
 static void APIENTRY MyGLCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam)
 {
@@ -69,31 +60,39 @@ Game::Game()
     texture = Texture2D::FromFile("Textures\\Rocks.jpg");
 
 
-	// Defualt Camera
+	// Camera Manager
+	GameObject* cameraManagerObject = AddGameObject("CameraManager");
+	cameraManager = cameraManagerObject->AddComponent<CameraManager>();
+
+	// Default Camera
 	GameObject* cameraObject = AddGameObject("CameraObject");
-	camera = cameraObject->AddComponent<Camera>();
+	Camera* camera = cameraObject->AddComponent<Camera>();
 	camera->SetPosition(vec3(5, 0, 0));
 	camera->LookAtPosition(vec3(0, 0, 0));
+	cameraManager->AddCamera(camera);
 
 	// Smooth Follow Camera
 	GameObject* cameraObjectSmoothFollower = AddGameObject("CameraObjectSmoothFollow");
-	cameraSmoothFollower = cameraObjectSmoothFollower->AddComponent<Camera>();
+	Camera* cameraSmoothFollower = cameraObjectSmoothFollower->AddComponent<Camera>();
 	cameraSmoothFollower->SetPosition(vec3(-4, 4, -4));
-	smoothFollow = cameraObjectSmoothFollower->AddComponent<SmoothFollow>();
+	SmoothFollow* smoothFollow = cameraObjectSmoothFollower->AddComponent<SmoothFollow>();
 	smoothFollow->SetTarget(cube->GetTransform());
+	cameraManager->AddCamera(cameraSmoothFollower);
 
 	// Tracker Camera
 	GameObject* cameraObjectTracker = AddGameObject("CameraObjectTracker");
-	cameraTracker = cameraObjectTracker->AddComponent<Camera>();
+	Camera* cameraTracker = cameraObjectTracker->AddComponent<Camera>();
 	cameraTracker->SetPosition(vec3(4, 2, -8));
-	tracker = cameraObjectTracker->AddComponent<Tracker>();
+	Tracker* tracker = cameraObjectTracker->AddComponent<Tracker>();
 	tracker->SetTarget(sphere->GetTransform());
+	cameraManager->AddCamera(cameraTracker);
 
 	// FPS Camera
 	GameObject* cameraObjectFPS = AddGameObject("CameraObjectFPS");
-	cameraFPS = cameraObjectFPS->AddComponent<Camera>();
+	Camera* cameraFPS = cameraObjectFPS->AddComponent<Camera>();
 	cameraFPS->SetPosition(vec3(0));
-	fPSController = cameraObjectFPS->AddComponent<FPSController>();
+	FPSController* fPSController = cameraObjectFPS->AddComponent<FPSController>();
+	cameraManager->AddCamera(cameraFPS);
 }
 
 // Destroys the game instance
@@ -219,8 +218,7 @@ void Game::Update()
 
             material->SetTexture( "MyTexture", texture );
 
-			material->ApplyCamera(camera);
-            
+			material->ApplyCamera(cameraManager->GetActiveCamera());
         }
         object->Update();
     }

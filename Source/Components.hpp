@@ -3,6 +3,7 @@
 #include "Transform.hpp"
 
 // Camera Components
+#include "CameraManager.h"
 #include "Camera.h"
 #include "FPSController.h"
 #include "SmoothFollow.h"

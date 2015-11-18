@@ -107,6 +107,7 @@ xcopy "$(SolutionDir)Bin\x86\$(Configuration)" "$(OutDir)" /y /d /q
   <ItemGroup>
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CameraManager.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="FPSController.cpp" />
@@ -135,6 +136,7 @@ xcopy "$(SolutionDir)Bin\x86\$(Configuration)" "$(OutDir)" /y /d /q
   <ItemGroup>
     <ClInclude Include="BoxCollider.hpp" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CameraManager.h" />
     <ClInclude Include="Collider.hpp" />
     <ClInclude Include="Colors.hpp" />
     <ClInclude Include="Component.hpp" />
