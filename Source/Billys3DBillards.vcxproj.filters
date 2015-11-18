@@ -96,6 +96,9 @@
     <ClCompile Include="FPSController.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="RigidBody.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameWindow.hpp">
@@ -178,6 +181,9 @@
     </ClInclude>
     <ClInclude Include="FPSController.h">
       <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBody.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

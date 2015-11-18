@@ -122,6 +122,7 @@ xcopy "$(SolutionDir)Bin\x86\$(Configuration)" "$(OutDir)" /y /d /q
     <ClCompile Include="MeshLoader.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="Physics.cpp" />
+    <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="SimpleMaterial.cpp" />
     <ClCompile Include="SmoothFollow.cpp" />
@@ -150,6 +151,7 @@ xcopy "$(SolutionDir)Bin\x86\$(Configuration)" "$(OutDir)" /y /d /q
     <ClInclude Include="MeshRenderer.hpp" />
     <ClInclude Include="OpenGL.hpp" />
     <ClInclude Include="Physics.hpp" />
+    <ClInclude Include="RigidBody.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SimpleMaterial.hpp" />
     <ClInclude Include="SmoothFollow.h" />
