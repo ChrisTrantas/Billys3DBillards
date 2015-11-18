@@ -19,8 +19,9 @@ class RigidBody : public Component
 
 	float m_fMass;
 	float m_fMaxAcc;
+	const float m_fBallFriction = 0.1f;
+	//const float m_CushionFriction = 0.2f;
 
-	Mesh* m_pMesh = nullptr;
 
 public:
 
