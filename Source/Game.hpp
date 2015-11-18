@@ -6,6 +6,7 @@
 #include <memory>
 #include <map>
 #include <vector>
+#include "Components.hpp"
 
 /// <summary>
 /// Defines the game handler.

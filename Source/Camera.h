@@ -38,7 +38,7 @@ private:
 	void CalculateProjection();	// Calculates the Projection Matrix	
 	void CalculateDirectionVectors(); // Calculates the direction vectors
 public:
-	Camera( GameObject* gameObject);
+	Camera(GameObject* gameObject);
 	~Camera();
 
 	glm::mat4 GetView() const;
@@ -70,5 +70,10 @@ public:
 	void ChangePitch(float a_fIncrement);
 	void ChangeYaw(float a_fIncrement);
 	void ChangeRoll(float a_fIncrement);
+
+	/// <summary>
+	/// Updates this component.
+	/// </summary>
+	virtual void Update() {}
 };
 

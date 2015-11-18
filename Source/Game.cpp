@@ -1,14 +1,26 @@
 #include "Game.hpp"
 #include "Time.hpp"
 #include <GLFW/glfw3.h>
-#include "SimpleMaterial.hpp"
 #include "Texture2D.hpp"
-#include "MeshRenderer.hpp"
 #include "MeshLoader.hpp"
+
 
 std::shared_ptr<Game> Game::_instance = nullptr;
 
 std::shared_ptr<Texture2D> texture;
+
+GameObject* cube, * cylinder, * sphere;
+
+Camera* camera;
+
+Camera* cameraSmoothFollower;
+SmoothFollow* smoothFollow;
+
+Camera* cameraTracker;
+Tracker* tracker;
+
+Camera* cameraFPS;
+FPSController* fPSController;
 
 static void APIENTRY MyGLCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam)
 {
@@ -31,14 +43,57 @@ Game::Game()
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     glDebugMessageCallback(MyGLCallback, nullptr);
 #endif
+	
+	// Cube
+	cube = AddGameObject("Cube");
+	SimpleMaterial* materialCube = cube->AddComponent<SimpleMaterial>();
+	MeshRenderer* meshRendererCube = cube->AddComponent<MeshRenderer>();
+	meshRendererCube->SetMesh(MeshLoader::Load("Models\\Cube.obj"));
+	meshRendererCube->SetMaterial(materialCube);
 
-    GameObject* imageTest = AddGameObject("ImageTest");
-    SimpleMaterial* material = imageTest->AddComponent<SimpleMaterial>();
-    MeshRenderer* meshRenderer = imageTest->AddComponent<MeshRenderer>();
-    meshRenderer->SetMesh(MeshLoader::Load("Models\\Cube.obj"));
-    meshRenderer->SetMaterial(material);
+	// Cylinder
+	cylinder = AddGameObject("Cylinder");
+	SimpleMaterial* materialCylinder = cylinder->AddComponent<SimpleMaterial>();
+	MeshRenderer* meshRendererCylinder = cylinder->AddComponent<MeshRenderer>();
+	meshRendererCylinder->SetMesh(MeshLoader::Load("Models\\Cylinder.obj"));
+	meshRendererCylinder->SetMaterial(materialCylinder);
 
+	// Sphere
+	sphere = AddGameObject("Sphere");
+	SimpleMaterial* materialSphere = sphere->AddComponent<SimpleMaterial>();
+	MeshRenderer* meshRendererSphere = sphere->AddComponent<MeshRenderer>();
+	meshRendererSphere->SetMesh(MeshLoader::Load("Models\\Sphere.obj"));
+	meshRendererSphere->SetMaterial(materialCylinder);
+
+	// Texture
     texture = Texture2D::FromFile("Textures\\Rocks.jpg");
+
+
+	// Defualt Camera
+	GameObject* cameraObject = AddGameObject("CameraObject");
+	camera = cameraObject->AddComponent<Camera>();
+	camera->SetPosition(vec3(5, 0, 0));
+	camera->LookAtPosition(vec3(0, 0, 0));
+
+	// Smooth Follow Camera
+	GameObject* cameraObjectSmoothFollower = AddGameObject("CameraObjectSmoothFollow");
+	cameraSmoothFollower = cameraObjectSmoothFollower->AddComponent<Camera>();
+	cameraSmoothFollower->SetPosition(vec3(-4, 4, -4));
+	smoothFollow = cameraObjectSmoothFollower->AddComponent<SmoothFollow>();
+	smoothFollow->SetTarget(cube->GetTransform());
+
+	// Tracker Camera
+	GameObject* cameraObjectTracker = AddGameObject("CameraObjectTracker");
+	cameraTracker = cameraObjectTracker->AddComponent<Camera>();
+	cameraTracker->SetPosition(vec3(4, 2, -8));
+	tracker = cameraObjectTracker->AddComponent<Tracker>();
+	tracker->SetTarget(sphere->GetTransform());
+
+	// FPS Camera
+	GameObject* cameraObjectFPS = AddGameObject("CameraObjectFPS");
+	cameraFPS = cameraObjectFPS->AddComponent<Camera>();
+	cameraFPS->SetPosition(vec3(0));
+	fPSController = cameraObjectFPS->AddComponent<FPSController>();
 }
 
 // Destroys the game instance
@@ -164,15 +219,18 @@ void Game::Update()
 
             material->SetTexture( "MyTexture", texture );
 
-            material->SetMatrix( "View", glm::lookAt( vec3( 4, 0, 0 ), vec3( 0 ), vec3( 0, 1, 0 ) ) );
-            material->SetMatrix( "Projection", glm::perspective( glm::quarter_pi<float>(), aspectRatio, 0.001f, 1000.0f ) );
+			material->ApplyCamera(camera);
+            
         }
-
-        object->GetTransform()->SetRotation( glm::vec3( Time::GetTotalTime(), Time::GetTotalTime(), Time::GetTotalTime() ) );
         object->Update();
     }
 
+	
+	vec3 cubePosition(glm::sin(Time::GetTotalTime() / 4) * 4, 0, glm::cos(Time::GetTotalTime() / 4) * 4);
+	vec3 spherePosition = vec3(5.0f, abs(sin(Time::GetTotalTime())) , -5);
 
+	cube->GetTransform()->SetPosition(cubePosition);
+	sphere->GetTransform()->SetPosition(spherePosition);
 
     // If escape is being pressed, then we should close the window
     if ( glfwGetKey( glfwGetCurrentContext(), GLFW_KEY_ESCAPE ) )

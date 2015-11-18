@@ -3,7 +3,7 @@
 #include "Camera.h"
 #include "Time.hpp"
 
-class FPSContoller :
+class FPSController :
 	public Component
 {
 private:
@@ -15,8 +15,8 @@ private:
 	float m_fSensitivity;
 
 public:
-	FPSContoller(GameObject* gameObject);
-	~FPSContoller();
+	FPSController(GameObject* gameObject);
+	~FPSController();
 
 	void Update() override;
 };

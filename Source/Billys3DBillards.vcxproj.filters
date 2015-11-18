@@ -54,9 +54,6 @@
     <ClCompile Include="SmoothFollow.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="FPSContoller.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
     <ClCompile Include="Tracker.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
@@ -96,6 +93,9 @@
     <ClCompile Include="Image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FPSController.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameWindow.hpp">
@@ -129,9 +129,6 @@
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="SmoothFollow.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="FPSContoller.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="Tracker.h">
@@ -175,6 +172,12 @@
     </ClInclude>
     <ClInclude Include="Image.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Components.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FPSController.h">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

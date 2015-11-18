@@ -16,6 +16,8 @@ private:
 public:
 	Tracker(GameObject* gameObject);
 	~Tracker();
+
+	void SetTarget(Transform* transform);
 	void Update() override;
 };
 

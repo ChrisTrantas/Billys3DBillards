@@ -109,7 +109,7 @@ xcopy "$(SolutionDir)Bin\x86\$(Configuration)" "$(OutDir)" /y /d /q
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="Component.cpp" />
-    <ClCompile Include="FPSContoller.cpp" />
+    <ClCompile Include="FPSController.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameWindow.cpp" />
@@ -137,7 +137,8 @@ xcopy "$(SolutionDir)Bin\x86\$(Configuration)" "$(OutDir)" /y /d /q
     <ClInclude Include="Collider.hpp" />
     <ClInclude Include="Colors.hpp" />
     <ClInclude Include="Component.hpp" />
-    <ClInclude Include="FPSContoller.h" />
+    <ClInclude Include="Components.hpp" />
+    <ClInclude Include="FPSController.h" />
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameObject.hpp" />
     <ClInclude Include="GameWindow.hpp" />

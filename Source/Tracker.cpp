@@ -16,6 +16,11 @@ Tracker::~Tracker()
 {
 }
 
+void Tracker::SetTarget(Transform* transform)
+{
+	m_TargetTransform = transform;
+}
+
 void Tracker::Update()
 {
 	float fDeltaTime = Time::GetElapsedTime();
