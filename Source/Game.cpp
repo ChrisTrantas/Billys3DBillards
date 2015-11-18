@@ -56,9 +56,8 @@ Game::Game()
 	meshRendererSphere->SetMesh(MeshLoader::Load("Models\\Sphere.obj"));
 	meshRendererSphere->SetMaterial(materialCylinder);
 
-	// Texture
-    texture = Texture2D::FromFile("Textures\\Rocks.jpg");
-
+	// Textures
+	texture = Texture2D::FromFile("Textures\\8-Ball.png");
 
 	// Camera Manager
 	GameObject* cameraManagerObject = AddGameObject("CameraManager");
