@@ -1,10 +1,12 @@
 #pragma once
 
 #include "Math.hpp"
+#include <set>
 #include <vector>
 
 class BoxCollider;
 class SphereCollider;
+class RigidBody;
 
 /// <summary>
 /// Defines a static class used for physics constants and methods.
@@ -13,6 +15,7 @@ class Physics
 {
     static std::vector<glm::vec3> _lhsCorners;
     static std::vector<glm::vec3> _rhsCorners;
+	static std::set<RigidBody*> _rigidbodies;
 
     // Hide all instance methods
     Physics() = delete;
@@ -37,10 +40,19 @@ public:
     /// <param name="rhs">The sphere.</param>
     static bool BoxSphereCollision( const BoxCollider* lhs, const SphereCollider* rhs );
 
+	// Registers a rigidbody with the physics system.
+	static void RegisterRigidbody(RigidBody* rigidBody);
+
     /// <summary>
     /// Checks for sphere <--> sphere collision.
     /// </summary>
     /// <param name="lhs">The first sphere.</param>
     /// <param name="rhs">The second sphere.</param>
     static bool SphereSphereCollision( const SphereCollider* lhs, const SphereCollider* rhs );
+
+	// Unregisters a rigidbody with the physics system.
+	static void UnregisterRigidbody(RigidBody* rigidBody);
+
+	// Updates the physics system.
+	static void Update();
 };

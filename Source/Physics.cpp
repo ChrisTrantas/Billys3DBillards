@@ -1,9 +1,12 @@
 #include "Physics.hpp"
 #include "BoxCollider.hpp"
 #include "SphereCollider.hpp"
+#include "RigidBody.h"
+#include "Time.hpp"
 
-std::vector<glm::vec3> Physics::_lhsCorners( 8 );
-std::vector<glm::vec3> Physics::_rhsCorners( 8 );
+std::vector<glm::vec3>	Physics::_lhsCorners( 8 );
+std::vector<glm::vec3>	Physics::_rhsCorners( 8 );
+std::set<RigidBody*>	Physics::_rigidbodies;
 
 // Perform box <--> box collision
 bool Physics::BoxBoxCollision( const BoxCollider* lhs, const BoxCollider* rhs )
@@ -26,6 +29,15 @@ bool Physics::BoxSphereCollision( const BoxCollider* lhs, const SphereCollider* 
     return false;
 }
 
+// Register a rigid body
+void Physics::RegisterRigidbody(RigidBody* rigidBody)
+{
+	if (_rigidbodies.find(rigidBody) != _rigidbodies.end())
+	{
+		_rigidbodies.insert(rigidBody);
+	}
+}
+
 // Perform sphere <--> sphere collision
 bool Physics::SphereSphereCollision( const SphereCollider* lhs, const SphereCollider* rhs )
 {
@@ -33,4 +45,20 @@ bool Physics::SphereSphereCollision( const SphereCollider* lhs, const SphereColl
     // TODO - This!
 
     return false;
+}
+
+// Un-register a rigid body
+void Physics::UnregisterRigidbody(RigidBody* rigidBody)
+{
+	if (_rigidbodies.find(rigidBody) != _rigidbodies.end())
+	{
+		_rigidbodies.erase(rigidBody);
+	}
+}
+
+// Updates the physics system
+void Physics::Update()
+{
+	float time = Time::GetElapsedTime();
+
 }

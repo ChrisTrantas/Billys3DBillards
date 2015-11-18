@@ -3,7 +3,7 @@
 #include <GLFW/glfw3.h>
 #include "Texture2D.hpp"
 #include "MeshLoader.hpp"
-
+#include "Physics.hpp"
 
 std::shared_ptr<Game> Game::_instance = nullptr;
 
@@ -228,6 +228,11 @@ void Game::Update()
 
 	cube->GetTransform()->SetPosition(cubePosition);
 	sphere->GetTransform()->SetPosition(spherePosition);
+
+
+	// Update the physics
+	Physics::Update();
+
 
     // If escape is being pressed, then we should close the window
     if ( glfwGetKey( glfwGetCurrentContext(), GLFW_KEY_ESCAPE ) )

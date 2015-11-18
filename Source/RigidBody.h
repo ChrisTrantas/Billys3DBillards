@@ -2,12 +2,13 @@
 
 #include "Mesh.hpp"
 #include "Math.hpp"
+#include "Component.hpp"
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 
-class RigidBody
+class RigidBody : public Component
 {
 	glm::vec3 m_v3Position;
 	glm::vec3 m_v3Scale;
@@ -23,11 +24,7 @@ class RigidBody
 
 public:
 
-	RigidBody();
-
-	RigidBody(RigidBody const& other);
-
-	RigidBody& operator=(RigidBody const& other);
+	RigidBody( GameObject* gameObject );
 
 	~RigidBody();
 
@@ -39,13 +36,5 @@ public:
 	void SetVelocity(glm::vec3 a_v3Velocity);
 	void SetAcceleration(glm::vec3 a_v3Acceleration);
 	void AddForce(const glm::vec3& force);
-
-protected:
-
-	void Init(void);
-
-	void Swap(RigidBody& other);
-
-	void Release(void);
 };
 
