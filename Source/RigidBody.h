@@ -32,9 +32,14 @@ public:
 
 	void SetMaxAcc(float a_fMaxAcc);
 	void SetMass(float a_fMass);
+	float GetMass();
 	void SetPosition(glm::vec3 a_v3Position);
+	vec3 GetPosition();
 	void SetVelocity(glm::vec3 a_v3Velocity);
+	vec3 GetVelocity();
 	void SetAcceleration(glm::vec3 a_v3Acceleration);
+	vec3 GetAcceleration();
 	void AddForce(const glm::vec3& force);
+	vec3 GetForce();
 };
 
