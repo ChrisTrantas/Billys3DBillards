@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include "Texture2D.hpp"
 #include "MeshLoader.hpp"
+#include "RigidBody.h"
 #include "Physics.hpp"
 
 std::shared_ptr<Game> Game::_instance = nullptr;
@@ -11,7 +12,7 @@ std::shared_ptr<Texture2D> texture;
 
 CameraManager* cameraManager;
 
-GameObject* cube, * cylinder, * sphere;
+GameObject* cube, *cylinder, *sphere, *otherSphere;
 
 static void APIENTRY MyGLCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam)
 {
@@ -39,6 +40,7 @@ Game::Game()
 	cube = AddGameObject("Cube");
 	SimpleMaterial* materialCube = cube->AddComponent<SimpleMaterial>();
 	MeshRenderer* meshRendererCube = cube->AddComponent<MeshRenderer>();
+	RigidBody* rigidCube = cube->AddComponent<RigidBody>();
 	meshRendererCube->SetMesh(MeshLoader::Load("Models\\Cube.obj"));
 	meshRendererCube->SetMaterial(materialCube);
 
@@ -46,6 +48,7 @@ Game::Game()
 	cylinder = AddGameObject("Cylinder");
 	SimpleMaterial* materialCylinder = cylinder->AddComponent<SimpleMaterial>();
 	MeshRenderer* meshRendererCylinder = cylinder->AddComponent<MeshRenderer>();
+	RigidBody* rigidCylinder = cylinder->AddComponent<RigidBody>();
 	meshRendererCylinder->SetMesh(MeshLoader::Load("Models\\Cylinder.obj"));
 	meshRendererCylinder->SetMaterial(materialCylinder);
 
@@ -53,8 +56,20 @@ Game::Game()
 	sphere = AddGameObject("Sphere");
 	SimpleMaterial* materialSphere = sphere->AddComponent<SimpleMaterial>();
 	MeshRenderer* meshRendererSphere = sphere->AddComponent<MeshRenderer>();
+	RigidBody* rigidSphere = sphere->AddComponent<RigidBody>();
+	//rigidSphere->SetPosition(vec3(10.0f, 10.0f, 10.0f));
+	rigidSphere->Update();
 	meshRendererSphere->SetMesh(MeshLoader::Load("Models\\Sphere.obj"));
 	meshRendererSphere->SetMaterial(materialCylinder);
+
+	// Other Sphere
+	otherSphere = AddGameObject("OtherSphere");
+	SimpleMaterial* materialOtherSphere = otherSphere->AddComponent<SimpleMaterial>();
+	MeshRenderer* meshRendererOtherSphere = otherSphere->AddComponent<MeshRenderer>();
+	RigidBody* rigidOtherSphere = otherSphere->AddComponent<RigidBody>();
+	otherSphere->Update();
+	meshRendererOtherSphere->SetMesh(MeshLoader::Load("Models\\Sphere.obj"));
+	meshRendererOtherSphere->SetMaterial(materialCylinder);
 
 	// Textures
 	texture = Texture2D::FromFile("Textures\\8-Ball.png");
@@ -226,13 +241,13 @@ void Game::Update()
 		}
     }
 
-	
 	vec3 cubePosition(glm::sin(Time::GetTotalTime() / 4) * 4, 0, glm::cos(Time::GetTotalTime() / 4) * 4);
 	vec3 spherePosition = vec3(5.0f, abs(sin(Time::GetTotalTime())) , -5);
+	vec3 otherSpherePosition = vec3(5.0f, abs(cos(Time::GetTotalTime())), -5);
 
 	cube->GetTransform()->SetPosition(cubePosition);
 	sphere->GetTransform()->SetPosition(spherePosition);
-
+	otherSphere->GetTransform()->SetPosition(otherSpherePosition);
 
 	// Update the physics
 	Physics::Update();

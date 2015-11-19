@@ -89,7 +89,4 @@ void Physics::Update()
 
 
 
-// Do physics for sphere v sphere in update
-
-
 

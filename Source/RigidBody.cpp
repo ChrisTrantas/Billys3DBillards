@@ -1,5 +1,7 @@
 #include "RigidBody.h"
 #include "Physics.hpp"
+#include "GameObject.hpp"
+#include "Transform.hpp"
 
 RigidBody::RigidBody(GameObject* gameObject)
 	: Component(gameObject)
@@ -47,23 +49,23 @@ float RigidBody::GetMass(){ return m_fMass; }
 
 void RigidBody::AddForce(const glm::vec3& force)
 {
+	// Calculate acceleration based off of applied force and mass
 	float invMass = (m_fMass == 0.0f) ? 0.0f : (1.0f / m_fMass);
 	m_v3Acceleration += force * invMass;
+	m_v3Acceleration = glm::clamp(m_v3Acceleration, -m_fMaxAcc, m_fMaxAcc);
 }
 
 
 void RigidBody::Update(void)
 {
-	glm::vec3 v3Acceleration = m_v3Acceleration * 1.0f / m_fMass;
-	v3Acceleration = glm::clamp(v3Acceleration, -m_fMaxAcc, m_fMaxAcc);
-	
-	m_v3Velocity = m_v3Velocity + (v3Acceleration);
+	// Apply Friction
+	AddForce(-m_v3Acceleration * m_fBallFriction);
+
+	m_v3Velocity = m_v3Velocity + (m_v3Acceleration);
+
 	m_v3Position = m_v3Position + m_v3Velocity;
+
+	Transform* transformPointer = _gameObject->GetTransform();
+	transformPointer->SetPosition(m_v3Position);
 	
-	glm::mat4 m4ToWorld = glm::translate(m_v3Position);
 }
-
-
-// gravity?
-// friction
-// collisions
