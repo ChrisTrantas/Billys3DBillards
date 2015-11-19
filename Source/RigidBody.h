@@ -11,7 +11,6 @@
 class RigidBody : public Component
 {
 	glm::vec3 m_v3Position;
-	glm::vec3 m_v3Scale;
 	glm::vec3 m_v3Velocity;
 	glm::vec3 m_v3Acceleration;
 
