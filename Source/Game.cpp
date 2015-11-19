@@ -211,6 +211,7 @@ void Game::Update()
     tickCount += Time::GetElapsedTime();
     ++frameCount;
 
+	// counts Frames per second
     if ( tickCount >= 1.0f )
     {
         std::string title = "Billy's 3D Billiards";
@@ -222,8 +223,7 @@ void Game::Update()
         tickCount -= 1.0f;
     }
 
-
-
+	// Sets materials on Objects
     for (auto& object : _gameObjects)
     {
 		if (object->GetActive())
@@ -241,10 +241,12 @@ void Game::Update()
 		}
     }
 
+	// Sets positons
 	vec3 cubePosition(glm::sin(Time::GetTotalTime() / 4) * 4, 0, glm::cos(Time::GetTotalTime() / 4) * 4);
 	vec3 spherePosition = vec3(5.0f, abs(sin(Time::GetTotalTime())) , -5);
 	vec3 otherSpherePosition = vec3(5.0f, abs(cos(Time::GetTotalTime())), -5);
 
+	// get transformations then set positons
 	cube->GetTransform()->SetPosition(cubePosition);
 	sphere->GetTransform()->SetPosition(spherePosition);
 	otherSphere->GetTransform()->SetPosition(otherSpherePosition);

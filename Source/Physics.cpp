@@ -80,6 +80,7 @@ void Physics::Update()
                 continue;
             }
 
+			// Check the others
             Collider* otherCollider = otherBody->GetGameObject()->GetComponentOfType<Collider>();
             if ( otherCollider == nullptr )
             {
