@@ -91,6 +91,8 @@ void Physics::Update()
             // Checks if collides
             if (thisCollider->CollidesWith(otherCollider))
             {
+				std::cout << thisCollider->GetGameObject()->GetName() << " collided with " << otherCollider->GetGameObject()->GetName() << std::endl;
+
                 // Do collision stuff
                 rigidbody->SetVelocity(vec3(0));
                 rigidbody->SetAcceleration(-rigidbody->GetAcceleration());

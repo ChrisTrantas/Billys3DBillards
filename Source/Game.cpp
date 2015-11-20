@@ -244,21 +244,22 @@ void Game::Update()
 			object->Update();
 		}
     }
-
+	
 	// Sets positons
 	vec3 cubePosition(glm::sin(Time::GetTotalTime() / 4) * 4, 0, glm::cos(Time::GetTotalTime() / 4) * 4);
 	vec3 spherePosition = vec3(5.0f, abs(sin(Time::GetTotalTime())) , -5);
 	vec3 otherSpherePosition = vec3(5.0f, abs(cos(Time::GetTotalTime())), -5);
-
+	
 	// get transformations then set positons
 	cube->GetTransform()->SetPosition(cubePosition);
-	sphere->GetTransform()->SetPosition(spherePosition);
-	otherSphere->GetTransform()->SetPosition(otherSpherePosition);
+	sphere->GetComponent<RigidBody>()->SetAcceleration(vec3(1.0f, 1.0f, 1.0f));
+	sphere->GetTransform()->SetPosition(vec3(1.0f,1.0f,1.0f));
+	otherSphere->GetTransform()->SetPosition(vec3(2.0f, 2.0f, 2.0f));
 
 	// Update the physics
 	Physics::Update();
 
-
+	
     // If escape is being pressed, then we should close the window
     if ( glfwGetKey( glfwGetCurrentContext(), GLFW_KEY_ESCAPE ) )
     {

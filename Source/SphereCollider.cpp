@@ -1,5 +1,6 @@
 #include "SphereCollider.hpp"
 #include "GameObject.hpp"
+#include "Mesh.hpp"
 
 // Creates a new sphere collider
 SphereCollider::SphereCollider( GameObject* gameObject )
