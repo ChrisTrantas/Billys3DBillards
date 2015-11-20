@@ -41,6 +41,7 @@ Game::Game()
 	SimpleMaterial* materialCube = cube->AddComponent<SimpleMaterial>();
 	MeshRenderer* meshRendererCube = cube->AddComponent<MeshRenderer>();
 	RigidBody* rigidCube = cube->AddComponent<RigidBody>();
+	Collider* cubeCollider = cube->AddComponent<SphereCollider>();
 	meshRendererCube->SetMesh(MeshLoader::Load("Models\\Cube.obj"));
 	meshRendererCube->SetMaterial(materialCube);
 
@@ -49,6 +50,7 @@ Game::Game()
 	SimpleMaterial* materialCylinder = cylinder->AddComponent<SimpleMaterial>();
 	MeshRenderer* meshRendererCylinder = cylinder->AddComponent<MeshRenderer>();
 	RigidBody* rigidCylinder = cylinder->AddComponent<RigidBody>();
+	Collider* cylinderColider = cylinder->AddComponent<SphereCollider>();
 	meshRendererCylinder->SetMesh(MeshLoader::Load("Models\\Cylinder.obj"));
 	meshRendererCylinder->SetMaterial(materialCylinder);
 
@@ -58,6 +60,7 @@ Game::Game()
 	MeshRenderer* meshRendererSphere = sphere->AddComponent<MeshRenderer>();
 	RigidBody* rigidSphere = sphere->AddComponent<RigidBody>();
 	//rigidSphere->SetPosition(vec3(10.0f, 10.0f, 10.0f));
+	Collider* sphereCollider = sphere->AddComponent<SphereCollider>();
 	rigidSphere->Update();
 	meshRendererSphere->SetMesh(MeshLoader::Load("Models\\Sphere.obj"));
 	meshRendererSphere->SetMaterial(materialCylinder);
@@ -67,6 +70,7 @@ Game::Game()
 	SimpleMaterial* materialOtherSphere = otherSphere->AddComponent<SimpleMaterial>();
 	MeshRenderer* meshRendererOtherSphere = otherSphere->AddComponent<MeshRenderer>();
 	RigidBody* rigidOtherSphere = otherSphere->AddComponent<RigidBody>();
+	Collider* othersphereCollider = otherSphere->AddComponent<SphereCollider>();
 	otherSphere->Update();
 	meshRendererOtherSphere->SetMesh(MeshLoader::Load("Models\\Sphere.obj"));
 	meshRendererOtherSphere->SetMaterial(materialCylinder);

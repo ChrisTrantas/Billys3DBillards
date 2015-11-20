@@ -67,7 +67,7 @@ void Physics::Update()
         Collider* thisCollider = rigidbody->GetGameObject()->GetComponentOfType<Collider>();
         if ( thisCollider == nullptr )
         {
-            std::cout << rigidbody->GetGameObject()->GetName() << " does not have a RigidBody!" << std::endl;
+            std::cout << rigidbody->GetGameObject()->GetName() << " does not have a Collider!" << std::endl;
             continue;
         }
 
@@ -84,7 +84,7 @@ void Physics::Update()
             Collider* otherCollider = otherBody->GetGameObject()->GetComponentOfType<Collider>();
             if ( otherCollider == nullptr )
             {
-                std::cout << otherBody->GetGameObject()->GetName() << " does not have a RigidBody!" << std::endl;
+                std::cout << otherBody->GetGameObject()->GetName() << " does not have a Collider!" << std::endl;
                 continue;
             }
 
