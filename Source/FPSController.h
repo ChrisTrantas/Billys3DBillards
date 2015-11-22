@@ -2,7 +2,7 @@
 #include "Component.hpp"
 #include "Camera.h"
 #include "Time.hpp"
-#include <GLFW\glfw3.h>;
+#include <GLFW\glfw3.h>
 
 class FPSController :
 	public Component

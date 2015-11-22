@@ -7,7 +7,8 @@
 
 std::vector<glm::vec3>	Physics::_lhsCorners( 8 );
 std::vector<glm::vec3>	Physics::_rhsCorners( 8 );
-std::set<RigidBody*>	Physics::_rigidbodies;
+std::vector<RigidBody*>	Physics::_rigidbodies;
+std::vector<Collision>	Physics::_collisions;
 
 // Perform box <--> box collision
 bool Physics::BoxBoxCollision( const BoxCollider* lhs, const BoxCollider* rhs )
@@ -162,20 +163,32 @@ bool Physics::BoxSphereCollision( const BoxCollider* lhs, const SphereCollider* 
 
 	// Checks for corners
 	float distanceFromCornor = glm::length(distance - lhsHalfWidth);
-    return distanceFromCornor > sphereRadius;
+    return distanceFromCornor < sphereRadius;
 }
 
 // Register a rigid body
 void Physics::RegisterRigidbody(RigidBody* rigidBody)
 {
-    _rigidbodies.insert( rigidBody );
+    _rigidbodies.push_back( rigidBody );
 }
 
 // Perform sphere <--> sphere collision
 bool Physics::SphereSphereCollision( const SphereCollider* lhs, const SphereCollider* rhs )
 {
     float centerDistance = glm::distance(lhs->GetGlobalCenter(), rhs->GetGlobalCenter());
-    return centerDistance <= (lhs->GetRadius() + rhs->GetRadius());
+
+
+	float sumOfRadii = lhs->GetRadius() + rhs->GetRadius();
+	if (centerDistance <= sumOfRadii)
+	{
+		float magnitude = sumOfRadii - centerDistance;
+		glm::vec3 collisionNormal = glm::normalize(rhs->GetGlobalCenter() - lhs->GetGlobalCenter()) * magnitude;
+
+		Collision collision = Collision((Collider*)lhs, (Collider*)rhs, collisionNormal);
+		_collisions.push_back(collision);
+		return true;
+	}
+    return false;
 }
 
 // Un-register a rigid body
@@ -183,10 +196,15 @@ void Physics::UnregisterRigidbody(RigidBody* rigidBody)
 {
     if ( _rigidbodies.size() > 0 )
     {
-        if ( _rigidbodies.find( rigidBody ) != _rigidbodies.end() )
-        {
-            _rigidbodies.erase( rigidBody );
-        }
+
+		for (unsigned int i = 0; i < _rigidbodies.size(); i++)
+		{
+			if (_rigidbodies[i] = rigidBody)
+			{
+				_rigidbodies.erase(_rigidbodies.begin() + i);
+				return;
+			}
+		}
     }
 }
 
@@ -197,29 +215,27 @@ void Physics::Update()
 
     //  Update physics
     // List of collisions with first rigid body
-    for (auto& rigidbody : _rigidbodies)
+	for (unsigned int i = 0; i < _rigidbodies.size(); i++)
     {
-        Collider* thisCollider = rigidbody->GetGameObject()->GetComponentOfType<Collider>();
+		RigidBody* thisRigidBody = _rigidbodies[i];
+		Collider* thisCollider = thisRigidBody->GetGameObject()->GetComponentOfType<Collider>();
+
         if ( thisCollider == nullptr )
         {
-            std::cout << rigidbody->GetGameObject()->GetName() << " does not have a Collider!" << std::endl;
+			std::cout << thisRigidBody->GetGameObject()->GetName() << " does not have a Collider!" << std::endl;
             continue;
         }
 
         // List of collisions with rest of list 
-        for (auto& otherBody : _rigidbodies)
+		for (unsigned int j = i + 1; j < _rigidbodies.size(); j++)
         {
-            // No need to check ourselves
-            if ( otherBody == rigidbody )
-            {
-                continue;
-            }
+			RigidBody* otherRigidBody = _rigidbodies[j];
 
 			// Check the others
-            Collider* otherCollider = otherBody->GetGameObject()->GetComponentOfType<Collider>();
+			Collider* otherCollider = otherRigidBody->GetGameObject()->GetComponentOfType<Collider>();
             if ( otherCollider == nullptr )
             {
-                std::cout << otherBody->GetGameObject()->GetName() << " does not have a Collider!" << std::endl;
+				std::cout << otherRigidBody->GetGameObject()->GetName() << " does not have a Collider!" << std::endl;
                 continue;
             }
 
@@ -227,16 +243,26 @@ void Physics::Update()
             if (thisCollider->CollidesWith(otherCollider))
             {
 				std::cout << thisCollider->GetGameObject()->GetName() << " collided with " << otherCollider->GetGameObject()->GetName() << std::endl;
-
-                // Do collision stuff
-                rigidbody->SetVelocity(vec3(0));
-                rigidbody->SetAcceleration(-rigidbody->GetAcceleration());
-
-                // Pushes entity back
-                otherBody->SetVelocity(vec3(0));
-                otherBody->SetAcceleration(-otherBody->GetAcceleration());
             }
         }
-        rigidbody->Update();
+		thisRigidBody->Update();
     }
+
+	// Goes through list of collisions to resolve
+	for (auto& collision : _collisions)
+	{
+		Collider* thisCollider = collision._lhs;
+		RigidBody* thisRigidBody = thisCollider->GetGameObject()->GetComponent<RigidBody>();
+
+		Collider* otherCollider = collision._rhs;
+		RigidBody* otherRigidBody = otherCollider->GetGameObject()->GetComponent<RigidBody>();
+
+		// Do collision stuff
+		thisRigidBody->SetVelocity(vec3(0));
+		thisRigidBody->SetAcceleration(-thisRigidBody->GetAcceleration());
+
+		// Pushes entity back
+		otherRigidBody->SetVelocity(vec3(0));
+		otherRigidBody->SetAcceleration(-otherRigidBody->GetAcceleration());
+	}
 }

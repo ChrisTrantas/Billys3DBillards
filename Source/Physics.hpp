@@ -4,9 +4,24 @@
 #include <set>
 #include <vector>
 
+class Collider;
 class BoxCollider;
 class SphereCollider;
 class RigidBody;
+
+struct Collision
+{
+	Collider* _lhs;
+	Collider* _rhs;
+	glm::vec3 _collisionNormal;
+
+	Collision(Collider* lhs, Collider* rhs, glm::vec3 collisionNormal)
+	{
+		_lhs = lhs;
+		_rhs = rhs;
+		_collisionNormal = collisionNormal;
+	}
+};
 
 /// <summary>
 /// Defines a static class used for physics constants and methods.
@@ -15,7 +30,8 @@ class Physics
 {
     static std::vector<glm::vec3> _lhsCorners;
     static std::vector<glm::vec3> _rhsCorners;
-	static std::set<RigidBody*> _rigidbodies;
+	static std::vector<RigidBody*> _rigidbodies;
+	static std::vector<Collision> _collisions;
 
     // Hide all instance methods
     Physics() = delete;
