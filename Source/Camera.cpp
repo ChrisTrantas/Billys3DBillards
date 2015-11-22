@@ -146,7 +146,7 @@ glm::vec3 Camera::GetOrientation()
 }
 void Camera::SetOrientation(glm::vec3 a_v3Orientation)
 {
-	m_Transform->SetPosition(a_v3Orientation);
+	m_Transform->SetRotation(a_v3Orientation);
 
 	CalculateDirectionVectors();
 	CalculateView();
