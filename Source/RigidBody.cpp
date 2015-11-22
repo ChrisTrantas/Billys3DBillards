@@ -12,6 +12,7 @@ RigidBody::RigidBody(GameObject* gameObject)
     , m_v3Velocity( 0, 0, 0 )
 {
     Physics::RegisterRigidbody(this);
+	transform = gameObject->GetTransform();
 }
 
 RigidBody::~RigidBody()
@@ -67,9 +68,7 @@ void RigidBody::Update(void)
 
     m_v3Velocity = m_v3Velocity + (m_v3Acceleration);
 
-    m_v3Position = m_v3Position + m_v3Velocity;
-
-    Transform* transformPointer = _gameObject->GetTransform();
-    transformPointer->SetPosition(m_v3Position);
-    
+    //m_v3Position = m_v3Position + m_v3Velocity;
+	m_v3Position = transform->GetPosition();
+	transform->SetPosition(m_v3Position + m_v3Velocity);    
 }

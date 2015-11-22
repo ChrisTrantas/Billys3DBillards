@@ -2,7 +2,7 @@
 
 #include "Mesh.hpp"
 #include "Math.hpp"
-#include "Component.hpp"
+#include "Components.hpp"
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -10,9 +10,11 @@
 
 class RigidBody : public Component
 {
+	
 	glm::vec3 m_v3Position;
 	glm::vec3 m_v3Velocity;
 	glm::vec3 m_v3Acceleration;
+	Transform* transform;
 
 	glm::quat m_qOrientation;
 
