@@ -8,12 +8,15 @@
 /// </summary>
 class GameWindow
 {
-    mutable void*                _window;
-    std::shared_ptr<std::string> _title;
+    friend class Game;
 
     // Hide the move constructor and assignment operator
     GameWindow( GameWindow&& ) = delete;
     GameWindow& operator=( GameWindow&& ) = delete;
+
+private:
+    mutable void*                _window;
+    std::shared_ptr<std::string> _title;
 
 public:
     /// <summary>

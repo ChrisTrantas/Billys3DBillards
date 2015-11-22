@@ -116,6 +116,7 @@ xcopy "$(SolutionDir)Bin\x86\$(Configuration)" "$(OutDir)" /y /d /q
     <ClCompile Include="GameWindow.cpp" />
     <ClCompile Include="GLFW.cpp" />
     <ClCompile Include="Image.cpp" />
+    <ClCompile Include="Input.cpp" />
     <ClCompile Include="JSON.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Material.cpp" />
@@ -147,6 +148,7 @@ xcopy "$(SolutionDir)Bin\x86\$(Configuration)" "$(OutDir)" /y /d /q
     <ClInclude Include="GameObject.hpp" />
     <ClInclude Include="GameWindow.hpp" />
     <ClInclude Include="Image.hpp" />
+    <ClInclude Include="Input.hpp" />
     <ClInclude Include="Material.hpp" />
     <ClInclude Include="Math.hpp" />
     <ClInclude Include="Mesh.hpp" />
