@@ -79,6 +79,21 @@ void Transform::SetRotation( glm::vec3 nRot )
     _isWorldDirty = true;
 }
 
+// Gets the local coordinate systems
+CoordinateSystem Transform::GetLocalCoordinateSystem() const
+{
+	// Remove the translation from the world matrix
+	glm::mat4 rotation = _world;
+	rotation[3] = glm::vec4(0, 0, 0, 1);	// Gets the rotation matrix
+
+	// Get the local coordinate axes (we need to normalize in case the matrix scales)
+	CoordinateSystem local;
+	local[0] = glm::normalize(TransformVector(rotation, glm::vec3(1, 0, 0)));	// Gives the X-axis
+	local[1] = glm::normalize(TransformVector(rotation, glm::vec3(0, 1, 0)));	// Gives the Y-axis
+	local[2] = glm::normalize(TransformVector(rotation, glm::vec3(0, 0, -1)));	// Gives the z-axis
+	return local;
+}
+
 // Updates this transform
 void Transform::Update()
 {

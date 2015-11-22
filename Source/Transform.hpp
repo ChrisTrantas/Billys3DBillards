@@ -4,6 +4,32 @@
 #include "GameObject.hpp"
 
 /// <summary>
+/// Defines a coordinate system
+/// </summary>
+struct CoordinateSystem
+{
+	// The axis of the coordinate system
+	glm::vec3 XAxis;
+	glm::vec3 YAxis;
+	glm::vec3 ZAxis;
+
+	/// <summary>
+	/// Gets one of the axis
+	/// </summary>
+	inline glm::vec3 operator[](size_t index) const
+	{
+		glm::vec3 result;
+		switch (index)
+		{
+		case 0: result = XAxis; break;
+		case 1: result = YAxis; break;
+		case 2: result = ZAxis; break;
+		}
+		return result;
+	}
+};
+
+/// <summary>
 /// Defines a transform.
 /// </summary>
 class Transform : public Component
@@ -64,6 +90,11 @@ public:
     /// </summary>
     /// <param name="">The rotation to set this transform to.</param>
     void SetRotation( glm::vec3 nRot );
+
+	/// <summary>
+	/// Gets an array of unit vectors the represent the local coordinate system of the game object
+	/// </summary>
+	CoordinateSystem GetLocalCoordinateSystem() const;
 
     /// <summary>
     /// Updates this component.
