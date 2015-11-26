@@ -253,16 +253,36 @@ void Physics::Update()
 	{
 		Collider* thisCollider = collision._lhs;
 		RigidBody* thisRigidBody = thisCollider->GetGameObject()->GetComponent<RigidBody>();
+		SphereCollider* thisSphere = thisCollider->GetGameObject()->GetComponent<SphereCollider>();
 
 		Collider* otherCollider = collision._rhs;
 		RigidBody* otherRigidBody = otherCollider->GetGameObject()->GetComponent<RigidBody>();
+		SphereCollider* otherSphere = otherCollider->GetGameObject()->GetComponent<SphereCollider>();
+
 
 		// Do collision stuff
-		thisRigidBody->SetVelocity(vec3(0));
+		float centerDistance = glm::distance(thisSphere->GetGlobalCenter(), otherSphere->GetGlobalCenter());
+
+		float sumOfRadii = thisSphere->GetRadius() + otherSphere->GetRadius();
+		float magnitude = sumOfRadii - centerDistance;
+		glm::vec3 collisionNormal = glm::normalize(otherSphere->GetGlobalCenter() - thisSphere->GetGlobalCenter()) * magnitude;
+
+		float a1 = glm::dot(thisRigidBody->GetVelocity(), collisionNormal);
+		float a2 = glm::dot(otherRigidBody->GetVelocity(), collisionNormal);
+
+		float optimizedP = (2.0f * (a1 - a2)) / (thisRigidBody->GetMass() + otherRigidBody->GetMass());
+
+		glm::vec3 newThisVelocity = thisRigidBody->GetVelocity() - optimizedP * otherRigidBody->GetMass() * collisionNormal;
+
+		glm::vec3 newOtherVelocity = otherRigidBody->GetVelocity() - optimizedP * thisRigidBody->GetMass() * collisionNormal;
+
+		// Collision stuff for this entity
+		thisRigidBody->SetVelocity(newThisVelocity);
 		thisRigidBody->SetAcceleration(-thisRigidBody->GetAcceleration());
 
-		// Pushes entity back
-		otherRigidBody->SetVelocity(vec3(0));
+
+		// Pushes Other entity back
+		otherRigidBody->SetVelocity(newOtherVelocity);
 		otherRigidBody->SetAcceleration(-otherRigidBody->GetAcceleration());
 	}
 }
