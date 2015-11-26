@@ -7,7 +7,7 @@
 #include <vector>
 #include <string>
 
-#include "EventListener.h"
+#include "EventListener.hpp"
 
 class Component;
 class Transform;
@@ -17,7 +17,7 @@ class Transform;
 /// </summary>
 class GameObject
 {
-	bool _isActive = true;
+    bool _isActive = true;
 
     std::unordered_map<std::string, std::shared_ptr<Component>> _componentCache;
     std::unordered_map< std::string, std::shared_ptr<GameObject>> _childrenCache;
@@ -26,7 +26,7 @@ class GameObject
     const std::string _name;
     GameObject* _parent;
     Transform* _transform;
-	EventListener _eventListener;
+    EventListener _eventListener;
 
     // Prevent the use of the copy constructor and copy assignment operator
     GameObject( const GameObject& ) = delete;
@@ -115,30 +115,30 @@ public:
     /// </summary>
     glm::mat4 GetWorldMatrix() const;
 
-	/// <summary>
-	/// Gets this game object's world matrix.
-	/// </summary>
-	EventListener* GetEventListener()
-	{
-		return &_eventListener;
-	}
+    /// <summary>
+    /// Gets this game object's world matrix.
+    /// </summary>
+    EventListener* GetEventListener()
+    {
+        return &_eventListener;
+    }
 
-	/// <summary>
-	/// Gets this game object's world matrix.
-	/// </summary>
-	void SendEvent(std::string eventName)
-	{
-		_eventListener.FireEvent(eventName);
-	}
+    /// <summary>
+    /// Gets this game object's world matrix.
+    /// </summary>
+    void SendEvent(std::string eventName)
+    {
+        _eventListener.FireEvent(eventName);
+    }
 
-	void SetActive(bool active)
-	{
-		_isActive = active;
-	}
-	bool GetActive()
-	{
-		return _isActive;
-	}
+    void SetActive(bool active)
+    {
+        _isActive = active;
+    }
+    bool GetActive()
+    {
+        return _isActive;
+    }
 
     /// <summary>
     /// Draws this game object and all components inside of it.

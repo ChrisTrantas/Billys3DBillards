@@ -191,13 +191,13 @@
     <ClInclude Include="CameraManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EventListener.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="RigidBody.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="Input.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EventListener.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -210,6 +210,9 @@
     </None>
     <None Include="..\Content\Shaders\SimpleMaterial.frag">
       <Filter>Shader Files</Filter>
+    </None>
+    <None Include="EventListener.inl">
+      <Filter>Header Files</Filter>
     </None>
   </ItemGroup>
 </Project>

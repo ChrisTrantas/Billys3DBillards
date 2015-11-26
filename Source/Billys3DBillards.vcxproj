@@ -142,7 +142,7 @@ xcopy "$(SolutionDir)Bin\x86\$(Configuration)" "$(OutDir)" /y /d /q
     <ClInclude Include="Colors.hpp" />
     <ClInclude Include="Component.hpp" />
     <ClInclude Include="Components.hpp" />
-    <ClInclude Include="EventListener.h" />
+    <ClInclude Include="EventListener.hpp" />
     <ClInclude Include="FPSController.h" />
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameObject.hpp" />
@@ -170,6 +170,7 @@ xcopy "$(SolutionDir)Bin\x86\$(Configuration)" "$(OutDir)" /y /d /q
   <ItemGroup>
     <None Include="..\Content\Shaders\SimpleMaterial.frag" />
     <None Include="..\Content\Shaders\SimpleMaterial.vert" />
+    <None Include="EventListener.inl" />
     <None Include="GameObject.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
