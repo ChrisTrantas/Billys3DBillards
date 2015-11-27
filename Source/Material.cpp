@@ -93,28 +93,60 @@ void Material::LoadProgram( const std::string& vertShaderFName, const std::strin
 void Material::SetMatrix( const std::string& name, const glm::mat4& value )
 {
     GLint location = GetUniformLocation( name );
-    glProgramUniformMatrix4fv( _program, location, 1, GL_FALSE, glm::value_ptr( value ) );
+    if ( glProgramUniformMatrix4fv )
+    {
+        glProgramUniformMatrix4fv( _program, location, 1, GL_FALSE, glm::value_ptr( value ) );
+    }
+    else
+    {
+        glUseProgram( _program );
+        glUniformMatrix4fv( location, 1, GL_FALSE, glm::value_ptr( value ) );
+    }
 }
 
 // Set a vec2
 void Material::SetVec2( const std::string& name, const glm::vec2& value )
 {
     GLint location = GetUniformLocation( name );
-    glProgramUniform2fv( _program, location, 1, glm::value_ptr( value ) );
+    if ( glProgramUniform2fv )
+    {
+        glProgramUniform2fv( _program, location, 1, glm::value_ptr( value ) );
+    }
+    else
+    {
+        glUseProgram( _program );
+        glUniform2fv( location, 1, glm::value_ptr( value ) );
+    }
 }
 
 // Set a vec3
 void Material::SetVec3( const std::string& name, const glm::vec3& value )
 {
     GLint location = GetUniformLocation( name );
-    glProgramUniform3fv( _program, location, 1, glm::value_ptr( value ) );
+    if ( glProgramUniform3fv )
+    {
+        glProgramUniform3fv( _program, location, 1, glm::value_ptr( value ) );
+    }
+    else
+    {
+        glUseProgram( _program );
+        glUniform3fv( location, 1, glm::value_ptr( value ) );
+    }
 }
 
 // Set a vec4
 void Material::SetVec4( const std::string& name, const glm::vec4& value )
 {
     GLint location = GetUniformLocation( name );
-    glProgramUniform4fv( _program, location, 1, glm::value_ptr( value ) );
+    if ( glProgramUniform4fv )
+    {
+        glProgramUniform4fv( _program, location, 1, glm::value_ptr( value ) );
+    }
+    else
+    {
+        glUseProgram( _program );
+        glUniform4fv( location, 1, glm::value_ptr( value ) );
+    }
 }
 
 // Set a Texture2D
@@ -124,7 +156,15 @@ void Material::SetTexture( const std::string& name, const std::shared_ptr<Textur
     glBindTexture( GL_TEXTURE_2D, value->GetHandle() );
 
     GLint location = GetUniformLocation( name );
-    glProgramUniform1i( _program, location, 0 );
+    if ( glProgramUniform1i )
+    {
+        glProgramUniform1i( _program, location, 0 );
+    }
+    else
+    {
+        glUseProgram( _program );
+        glUniform1i( location, 0 );
+    }
 }
 
 // Update this material

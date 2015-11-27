@@ -33,7 +33,10 @@ Game::Game()
     glEnable(GL_TEXTURE_2D);
 #if defined( _DEBUG ) || defined( DEBUG )
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-    glDebugMessageCallback(MyGLCallback, nullptr);
+    if ( glDebugMessageCallback )
+    {
+        glDebugMessageCallback( MyGLCallback, nullptr );
+    }
 #endif
 	
 	// Cube
