@@ -281,12 +281,17 @@ void Game::Update()
 	otherSphere->GetTransform()->SetPosition(vec3(2.0f, 2.0f, 2.0f));
 
 	// Test positions
-	testSphere->GetTransform()->SetPosition(vec3(5.0f, 0.0f, 0.0f));
-	otherTestSphere->GetTransform()->SetPosition(vec3(-5.0f, 0.0f, 0.0f));
+	testSphere->GetTransform()->SetPosition(vec3(5.0f, 0.0f, 0.0f));	
+	testSphere->GetComponent<RigidBody>()->SetPosition(testSphere->GetTransform()->GetPosition());
 	testSphere->GetComponent<RigidBody>()->SetVelocity(vec3(-1.0f, 0.0f, 0.0f));
-	otherTestSphere->GetComponent<RigidBody>()->SetVelocity(vec3(1.0f, 0.0f, 0.0f));
 	testSphere->GetComponent<RigidBody>()->SetAcceleration(vec3(-.5f, .0f, .0f));
+
+
+	otherTestSphere->GetTransform()->SetPosition(vec3(-5.0f, 0.0f, 0.0f));
+	otherTestSphere->GetComponent<RigidBody>()->SetPosition(otherTestSphere->GetTransform()->GetPosition());
+	otherTestSphere->GetComponent<RigidBody>()->SetVelocity(vec3(1.0f, 0.0f, 0.0f));
 	otherTestSphere->GetComponent<RigidBody>()->SetAcceleration(vec3(.5f, .0f, .0f));
+
 
 	// Update the physics
 	Physics::Update();
