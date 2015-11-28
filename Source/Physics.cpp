@@ -145,6 +145,8 @@ bool Physics::BoxSphereCollision( const BoxCollider* lhs, const SphereCollider* 
 	distance.y = glm::abs(glm::dot(distance, lhsCoordinateSystem[1]));
 	distance.z = glm::abs(glm::dot(distance, lhsCoordinateSystem[2]));
 
+	glm::vec3 collisionNormal = glm::normalize(rhs->GetGlobalCenter() - lhs->GetGlobalCenter()) * distance;
+	Collision collision = Collision((Collider*)lhs, (Collider*)rhs, collisionNormal);
 	// Checks if the distance is greater than the sum of radii
 	if (distance.x >= lhsHalfWidth.x + sphereRadius)
 		return false;
@@ -155,15 +157,24 @@ bool Physics::BoxSphereCollision( const BoxCollider* lhs, const SphereCollider* 
 
 	// Check if the distance is less the boxes radii
 	if (distance.x < lhsHalfWidth.x)
+	{			
+		_collisions.push_back(collision);
 		return true;
+	}
 	if (distance.y < lhsHalfWidth.y)
+	{
+		_collisions.push_back(collision);
 		return true;
-	if (distance.z <lhsHalfWidth.z)
+	}
+	if (distance.z < lhsHalfWidth.z)
+	{
+		_collisions.push_back(collision);
 		return true;
+	}
 
 	// Checks for corners
 	float distanceFromCornor = glm::length(distance - lhsHalfWidth);
-    return distanceFromCornor < sphereRadius;
+    return distanceFromCornor < sphereRadius;	
 }
 
 // Register a rigid body
@@ -259,6 +270,11 @@ void Physics::Update()
 		RigidBody* otherRigidBody = otherCollider->GetGameObject()->GetComponent<RigidBody>();
 		SphereCollider* otherSphere = otherCollider->GetGameObject()->GetComponent<SphereCollider>();
 
+		/*
+		Collider* otherBoxCollider = collsion._rhs;
+		RigidBody* boxRigidBody = boxCollider->GetGameObject()->GetComponent<RigidBody>();
+		BoxCollider* boxCollider = otherBoxCollider->GetGameObject()->GetComponent<BoxCollider>();
+		*/
 
 		// Do collision stuff
 		float centerDistance = glm::distance(thisSphere->GetGlobalCenter(), otherSphere->GetGlobalCenter());
@@ -284,5 +300,11 @@ void Physics::Update()
 		// Pushes Other entity back
 		otherRigidBody->SetVelocity(newOtherVelocity);
 		otherRigidBody->SetAcceleration(-otherRigidBody->GetAcceleration());
+
+		// cue physics 
+		/*
+		otherRigidBody->SetVelocity(thisRigidBody->GetVelocity);
+		otherRigidBody->SetAcceleration(-otherRigidBody->GetAcceleration());
+		*/
 	}
 }
