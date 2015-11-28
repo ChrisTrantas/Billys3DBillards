@@ -80,7 +80,7 @@ Game::Game()
 
 	// Test Sphere
 	testSphere = AddGameObject("TestSphere");
-	SimpleMaterial* materialSphere = testSphere->AddComponent<SimpleMaterial>();
+	SimpleMaterial* materialTestSphere = testSphere->AddComponent<SimpleMaterial>();
 	MeshRenderer* meshRendererTestSphere = testSphere->AddComponent<MeshRenderer>();
 	RigidBody* rigidTestSphere = testSphere->AddComponent<RigidBody>();
 	//rigidSphere->SetPosition(vec3(10.0f, 10.0f, 10.0f));
@@ -91,7 +91,7 @@ Game::Game()
 
 	// Other Test Sphere
 	otherTestSphere = AddGameObject("otherTestSphere");
-	SimpleMaterial* materialOtherSphere = otherTestSphere->AddComponent<SimpleMaterial>();
+	SimpleMaterial* materialOtherTestSphere = otherTestSphere->AddComponent<SimpleMaterial>();
 	MeshRenderer* meshRendererOtherTestSphere = otherTestSphere->AddComponent<MeshRenderer>();
 	RigidBody* rigidOtherTestSphere = otherTestSphere->AddComponent<RigidBody>();
 	Collider* otherTestsphereCollider = otherTestSphere->AddComponent<SphereCollider>();
