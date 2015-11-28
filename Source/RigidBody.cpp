@@ -13,6 +13,7 @@ RigidBody::RigidBody(GameObject* gameObject)
 {
     Physics::RegisterRigidbody(this);
 	transform = gameObject->GetTransform();
+	m_v3Position = transform->GetPosition();
 }
 
 RigidBody::~RigidBody()
@@ -23,6 +24,7 @@ RigidBody::~RigidBody()
 void RigidBody::SetPosition(glm::vec3 a_v3Position)
 {
     m_v3Position = a_v3Position;
+	transform->SetPosition(m_v3Position);
 }
 
 vec3 RigidBody::GetPosition(){ return m_v3Position; }
@@ -70,5 +72,7 @@ void RigidBody::Update(void)
 
     //m_v3Position = m_v3Position + m_v3Velocity;
 	m_v3Position = transform->GetPosition();
-	transform->SetPosition(m_v3Position + m_v3Velocity);    
+	m_v3Position += m_v3Velocity;
+	transform->SetPosition(m_v3Position);
+	
 }
