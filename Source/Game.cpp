@@ -12,7 +12,7 @@ std::shared_ptr<Texture2D> texture;
 
 CameraManager* cameraManager;
 
-GameObject* cube, *cylinder, *sphere, *otherSphere, *testSphere, *otherTestSphere;
+GameObject* cube, *cylinder, *sphere, *otherSphere, *testSphere, *otherTestSphere, *boxSphereTest, *box;
 
 static void APIENTRY MyGLCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam)
 {
@@ -48,6 +48,16 @@ Game::Game()
 	meshRendererCube->SetMesh(MeshLoader::Load("Models\\Cube.obj"));
 	meshRendererCube->SetMaterial(materialCube);
 
+	// box
+	box = AddGameObject("box");
+	SimpleMaterial* materialbox = box->AddComponent<SimpleMaterial>();
+	MeshRenderer* meshRendererbox = box->AddComponent<MeshRenderer>();
+	RigidBody* rigidbox = box->AddComponent<RigidBody>();
+	Collider* boxCollider = box->AddComponent<SphereCollider>();
+	meshRendererbox->SetMesh(MeshLoader::Load("Models\\Cube.obj"));
+	meshRendererbox->SetMaterial(materialbox);
+
+
 	// Cylinder
 	cylinder = AddGameObject("Cylinder");
 	SimpleMaterial* materialCylinder = cylinder->AddComponent<SimpleMaterial>();
@@ -66,7 +76,7 @@ Game::Game()
 	Collider* sphereCollider = sphere->AddComponent<SphereCollider>();
 	rigidSphere->Update();
 	meshRendererSphere->SetMesh(MeshLoader::Load("Models\\Sphere.obj"));
-	meshRendererSphere->SetMaterial(materialCylinder);
+	meshRendererSphere->SetMaterial(materialSphere);
 
 	// Other Sphere
 	otherSphere = AddGameObject("OtherSphere");
@@ -76,7 +86,7 @@ Game::Game()
 	Collider* othersphereCollider = otherSphere->AddComponent<SphereCollider>();
 	otherSphere->Update();
 	meshRendererOtherSphere->SetMesh(MeshLoader::Load("Models\\Sphere.obj"));
-	meshRendererOtherSphere->SetMaterial(materialCylinder);
+	meshRendererOtherSphere->SetMaterial(materialOtherSphere);
 
 	// Test Sphere
 	testSphere = AddGameObject("TestSphere");
@@ -85,9 +95,9 @@ Game::Game()
 	RigidBody* rigidTestSphere = testSphere->AddComponent<RigidBody>();
 	//rigidSphere->SetPosition(vec3(10.0f, 10.0f, 10.0f));
 	Collider* sphereTestCollider = testSphere->AddComponent<SphereCollider>();
-	rigidSphere->Update();
+	rigidTestSphere->Update();
 	meshRendererTestSphere->SetMesh(MeshLoader::Load("Models\\Sphere.obj"));
-	meshRendererTestSphere->SetMaterial(materialCylinder);
+	meshRendererTestSphere->SetMaterial(materialTestSphere);
 
 	// Other Test Sphere
 	otherTestSphere = AddGameObject("otherTestSphere");
@@ -95,10 +105,20 @@ Game::Game()
 	MeshRenderer* meshRendererOtherTestSphere = otherTestSphere->AddComponent<MeshRenderer>();
 	RigidBody* rigidOtherTestSphere = otherTestSphere->AddComponent<RigidBody>();
 	Collider* otherTestsphereCollider = otherTestSphere->AddComponent<SphereCollider>();
-	otherSphere->Update();
+	otherTestSphere->Update();
 	meshRendererOtherTestSphere->SetMesh(MeshLoader::Load("Models\\Sphere.obj"));
-	meshRendererOtherTestSphere->SetMaterial(materialCylinder);
+	meshRendererOtherTestSphere->SetMaterial(materialOtherTestSphere);
 
+	// box Test Sphere
+	boxSphereTest = AddGameObject("boxSphereTest");
+	SimpleMaterial* materialboxTestSphere = boxSphereTest->AddComponent<SimpleMaterial>();
+	MeshRenderer* meshRendererboxTestSphere = boxSphereTest->AddComponent<MeshRenderer>();
+	RigidBody* rigidOtherTestSphere = boxSphereTest->AddComponent<RigidBody>();
+	Collider* boxTestsphereCollider = boxSphereTest->AddComponent<SphereCollider>();
+	boxTestsphereCollider->Update();
+	meshRendererboxTestSphere->SetMesh(MeshLoader::Load("Models\\Sphere.obj"));
+	meshRendererboxTestSphere->SetMaterial(materialboxTestSphere);
+	
 	// Textures
 	texture = Texture2D::FromFile("Textures\\8-Ball.png");
 
@@ -292,6 +312,13 @@ void Game::Update()
 	otherTestSphere->GetComponent<RigidBody>()->SetVelocity(vec3(1.0f, 0.0f, 0.0f));
 	otherTestSphere->GetComponent<RigidBody>()->SetAcceleration(vec3(.5f, .0f, .0f));
 
+	// Test for sphere on box
+	boxSphereTest->GetTransform()->SetPosition(vec3(-5.0f, 0.0f, 0.0f));
+	boxSphereTest->GetComponent<RigidBody>()->SetPosition(boxSphereTest->GetTransform()->GetPosition());
+	boxSphereTest->GetComponent<RigidBody>()->SetVelocity(vec3(1.0f, 0.0f, 0.0f));
+	boxSphereTest->GetComponent<RigidBody>()->SetAcceleration(vec3(.5f, .0f, .0f));
+	
+	box->GetTransform()->SetPosition(vec3(0.0f, 0.0f, 0.0f));
 
 	// Update the physics
 	Physics::Update();
