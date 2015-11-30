@@ -5,7 +5,7 @@
 
 RigidBody::RigidBody(GameObject* gameObject)
     : Component(gameObject)
-    , m_fBallFriction( 0.0f )
+    , m_fBallFriction( 0.000f )
     , m_fMass( 1.0f )
     , m_fMaxAcc( 9.8f )
     , m_v3Position( 0, 0, 0 )
@@ -66,13 +66,14 @@ void RigidBody::AddForce(const glm::vec3& force)
 void RigidBody::Update(void)
 {
     // Apply Friction
-    AddForce(-m_v3Acceleration * m_fBallFriction);
+	AddForce(-m_v3Velocity * m_fBallFriction);
 
-    m_v3Velocity = m_v3Velocity + (m_v3Acceleration);
+	m_v3Velocity = m_v3Velocity + (m_v3Acceleration); 
+	m_v3Acceleration = glm::vec3(0);
 
     //m_v3Position = m_v3Position + m_v3Velocity;
 	m_v3Position = transform->GetPosition();
 	m_v3Position += m_v3Velocity;
-	transform->SetPosition(m_v3Position);
+    transform->SetPosition(m_v3Position);
 	
 }
