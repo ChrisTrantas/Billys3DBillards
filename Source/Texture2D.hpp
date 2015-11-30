@@ -4,6 +4,7 @@
 #include "Image.hpp"
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 /// <summary>
 /// Defines a 2D texture.
@@ -12,6 +13,8 @@ class Texture2D
 {
     friend class Font;
     friend class Image;
+
+    static std::unordered_map<std::string, std::shared_ptr<Texture2D>> _textureCache;
 
     GLuint       _texture;
     unsigned int _width;

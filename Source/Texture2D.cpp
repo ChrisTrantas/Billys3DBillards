@@ -1,5 +1,7 @@
 #include "Texture2D.hpp"
 
+std::unordered_map<std::string, std::shared_ptr<Texture2D>> Texture2D::_textureCache;
+
 // Create an empty texture
 std::shared_ptr<Texture2D> Texture2D::Create( unsigned int width, unsigned int height )
 {
@@ -9,6 +11,13 @@ std::shared_ptr<Texture2D> Texture2D::Create( unsigned int width, unsigned int h
 // Load a texture from a file
 std::shared_ptr<Texture2D> Texture2D::FromFile( const std::string& fname )
 {
+    // We don't need to re-load textures
+    auto search = _textureCache.find( fname );
+    if ( search != _textureCache.end() )
+    {
+        return search->second;
+    }
+
     std::shared_ptr<Texture2D> texture;
 
     // Attempt to load the file as an image

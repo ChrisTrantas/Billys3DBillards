@@ -3,6 +3,7 @@
 #include "Mesh.hpp"
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 struct aiNode;
 struct aiMesh;
@@ -13,6 +14,8 @@ struct aiScene;
 /// </summary>
 class MeshLoader
 {
+    static std::unordered_map<std::string, std::shared_ptr<Mesh>> _meshCache;
+
     /// <summary>
     /// Processes a mesh's node into the given vertices and indices.
     /// </summary>
