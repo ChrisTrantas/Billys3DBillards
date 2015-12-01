@@ -23,7 +23,7 @@ void Camera::Init()
 
 	m_fAspectRatio = static_cast<float>( GameWindow::GetCurrentWindow()->GetWidth() ) / GameWindow::GetCurrentWindow()->GetHeight();
 	m_fMinPlane = 0.001f;
-	m_fMaxPlane = 100.0f;
+	m_fMaxPlane = 1024.0f;
 	m_fHeight = static_cast<float>( GameWindow::GetCurrentWindow()->GetHeight() );
 
 	CalculateDirectionVectors();
