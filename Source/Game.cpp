@@ -12,7 +12,10 @@ std::shared_ptr<Texture2D> texture;
 
 CameraManager* cameraManager;
 
-GameObject* cube, *cylinder, *sphere, *otherSphere, *testSphere, *otherTestSphere;
+std::vector<GameObject*> balls = std::vector<GameObject*>();
+
+GameObject* table;
+
 
 static void APIENTRY MyGLCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam)
 {
@@ -38,111 +41,162 @@ Game::Game()
         glDebugMessageCallback( MyGLCallback, nullptr );
     }
 #endif
-    
-    // Cube
-    {
-        cube = AddGameObject( "Cube" );
-        SimpleMaterial* materialCube = cube->AddComponent<SimpleMaterial>();
-        MeshRenderer* meshRendererCube = cube->AddComponent<MeshRenderer>();
-        RigidBody* rigidCube = cube->AddComponent<RigidBody>();
-        Collider* cubeCollider = cube->AddComponent<SphereCollider>();
-        meshRendererCube->SetMesh( MeshLoader::Load( "Models\\Cube.obj" ) );
-        meshRendererCube->SetMaterial( materialCube );
-    }
 
-    // Cylinder
-    {
-        cylinder = AddGameObject( "Cylinder" );
-        SimpleMaterial* materialCylinder = cylinder->AddComponent<SimpleMaterial>();
-        MeshRenderer* meshRendererCylinder = cylinder->AddComponent<MeshRenderer>();
-        RigidBody* rigidCylinder = cylinder->AddComponent<RigidBody>();
-        Collider* cylinderColider = cylinder->AddComponent<SphereCollider>();
-        meshRendererCylinder->SetMesh( MeshLoader::Load( "Models\\Cylinder.obj" ) );
-        meshRendererCylinder->SetMaterial( materialCylinder );
-    }
+	// Textures
+	texture = Texture2D::FromFile("Textures\\8-Ball.png");
 
-    // Sphere
-    {
-        sphere = AddGameObject( "Sphere" );
-        SimpleMaterial* materialSphere = sphere->AddComponent<SimpleMaterial>();
-        MeshRenderer* meshRendererSphere = sphere->AddComponent<MeshRenderer>();
-        RigidBody* rigidSphere = sphere->AddComponent<RigidBody>();
-        //rigidSphere->SetPosition(vec3(10.0f, 10.0f, 10.0f));
-        Collider* sphereCollider = sphere->AddComponent<SphereCollider>();
-        meshRendererSphere->SetMesh( MeshLoader::Load( "Models\\Sphere.obj" ) );
-        meshRendererSphere->SetMaterial( materialSphere );
-    }
+	// Table
+	table = AddGameObject("Table");
+	Material* tableMaterial = table->AddComponent<SimpleMaterial>();
+	MeshRenderer* tableMeshRenderer = table->AddComponent<MeshRenderer>();
+	
+	tableMeshRenderer->SetMesh(MeshLoader::Load("Models\\Pool_Table.fbx"));
+	tableMeshRenderer->SetMaterial(tableMaterial);
 
-    // Other Sphere
-    {
-        otherSphere = AddGameObject( "OtherSphere" );
-        SimpleMaterial* materialOtherSphere = otherSphere->AddComponent<SimpleMaterial>();
-        MeshRenderer* meshRendererOtherSphere = otherSphere->AddComponent<MeshRenderer>();
-        RigidBody* rigidOtherSphere = otherSphere->AddComponent<RigidBody>();
-        Collider* othersphereCollider = otherSphere->AddComponent<SphereCollider>();
-        meshRendererOtherSphere->SetMesh( MeshLoader::Load( "Models\\Sphere.obj" ) );
-        meshRendererOtherSphere->SetMaterial( materialOtherSphere );
-    }
+	tableMaterial->SetTexture("MyTexture", texture);
 
-    // Test Sphere
-    {
-        testSphere = AddGameObject( "TestSphere" );
-        SimpleMaterial* materialSphere = testSphere->AddComponent<SimpleMaterial>();
-        MeshRenderer* meshRendererTestSphere = testSphere->AddComponent<MeshRenderer>();
-        RigidBody* rigidTestSphere = testSphere->AddComponent<RigidBody>();
-        //rigidSphere->SetPosition(vec3(10.0f, 10.0f, 10.0f));
-        Collider* sphereTestCollider = testSphere->AddComponent<SphereCollider>();
-        meshRendererTestSphere->SetMesh( MeshLoader::Load( "Models\\Sphere.obj" ) );
-        meshRendererTestSphere->SetMaterial( materialSphere );
-    }
+	// Colliders
+	/*
+	GameObject* tableFloor = AddGameObject("TableFloor");
+	Material* tableFloorMaterial = tableFloor->AddComponent<SimpleMaterial>();
+	MeshRenderer* tableFloorMeshRenderer = tableFloor->AddComponent<MeshRenderer>();
+	BoxCollider* tableFloorCollider = tableFloor->AddComponent<BoxCollider>();
 
-    // Other Test Sphere
-    {
-        otherTestSphere = AddGameObject( "otherTestSphere" );
-        SimpleMaterial* materialOtherSphere = otherTestSphere->AddComponent<SimpleMaterial>();
-        MeshRenderer* meshRendererOtherTestSphere = otherTestSphere->AddComponent<MeshRenderer>();
-        RigidBody* rigidOtherTestSphere = otherTestSphere->AddComponent<RigidBody>();
-        Collider* otherTestsphereCollider = otherTestSphere->AddComponent<SphereCollider>();
-        meshRendererOtherTestSphere->SetMesh( MeshLoader::Load( "Models\\Sphere.obj" ) );
-        meshRendererOtherTestSphere->SetMaterial( materialOtherSphere );
-    }
+	tableFloorMeshRenderer->SetMesh(MeshLoader::Load("Models\\Cube.obj"));
+	tableFloorMeshRenderer->SetMaterial(tableFloorMaterial);
 
-    // Textures
-    texture = Texture2D::FromFile("Textures\\8-Ball.png");
+	tableFloor->GetTransform()->SetScale(vec3(100, 1, 50));
+	tableFloor->GetTransform()->SetPosition(vec3(0, 1, 0));
 
-    // Camera Manager
-    GameObject* cameraManagerObject = AddGameObject("CameraManager");
-    cameraManager = cameraManagerObject->AddComponent<CameraManager>();
+	tableFloorMaterial->SetTexture("MyTexture", Texture2D::FromFile("Textures\\Cue-Ball.png"));
 
-    // Default Camera
-    GameObject* cameraObject = AddGameObject("CameraObject");
-    Camera* camera = cameraObject->AddComponent<Camera>();
-    camera->SetPosition(vec3(5, 0, 0));
-    camera->LookAtPosition(vec3(0, 0, 0));
-    cameraManager->AddCamera(camera);
+	for (int i = 0; i < 6; i++)
+	{
+		GameObject* tableWall = AddGameObject("TableWall_" + std::to_string(i));
+		Material* tableWallMaterial = tableWall->AddComponent<SimpleMaterial>();
+		MeshRenderer* tableWallMeshRenderer = tableWall->AddComponent<MeshRenderer>();
+		BoxCollider* tableWallCollider = tableWall->AddComponent<BoxCollider>();
 
-    // Smooth Follow Camera
-    GameObject* cameraObjectSmoothFollower = AddGameObject("CameraObjectSmoothFollow");
-    Camera* cameraSmoothFollower = cameraObjectSmoothFollower->AddComponent<Camera>();
-    cameraSmoothFollower->SetPosition(vec3(-4, 4, -4));
-    SmoothFollow* smoothFollow = cameraObjectSmoothFollower->AddComponent<SmoothFollow>();
-    smoothFollow->SetTarget(cube->GetTransform());
-    cameraManager->AddCamera(cameraSmoothFollower);
+		tableWallMeshRenderer->SetMesh(MeshLoader::Load("Models\\Cube.obj"));
+		tableWallMeshRenderer->SetMaterial(tableFloorMaterial);
 
-    // Tracker Camera
-    GameObject* cameraObjectTracker = AddGameObject("CameraObjectTracker");
-    Camera* cameraTracker = cameraObjectTracker->AddComponent<Camera>();
-    cameraTracker->SetPosition(vec3(4, 2, -8));
-    Tracker* tracker = cameraObjectTracker->AddComponent<Tracker>();
-    tracker->SetTarget(sphere->GetTransform());
-    cameraManager->AddCamera(cameraTracker);
 
-    // FPS Camera
-    GameObject* cameraObjectFPS = AddGameObject("CameraObjectFPS");
-    Camera* cameraFPS = cameraObjectFPS->AddComponent<Camera>();
-    cameraFPS->SetPosition(vec3(0));
-    FPSController* fPSController = cameraObjectFPS->AddComponent<FPSController>();
-    cameraManager->AddCamera(cameraFPS);
+		switch (i)
+		{
+		case 0:
+			tableWall->GetTransform()->SetScale(vec3(7, 4, 42));
+			tableWall->GetTransform()->SetPosition(vec3(53.5f, 1, 0));
+			break;
+		case 1:
+			tableWall->GetTransform()->SetScale(vec3(7, 4, 42));
+			tableWall->GetTransform()->SetPosition(vec3(-53.5f, 1, 0));
+			break;
+		case 2:
+			tableWall->GetTransform()->SetScale(vec3(42, 4, 7));
+			tableWall->GetTransform()->SetPosition(vec3(-25.0f, 1, -28.5f));
+			break;
+		case 3:
+			tableWall->GetTransform()->SetScale(vec3(42, 4, 7));
+			tableWall->GetTransform()->SetPosition(vec3(25.0f, 1, -28.5f));
+			break;
+		case 4:
+			tableWall->GetTransform()->SetScale(vec3(42, 4, 7));
+			tableWall->GetTransform()->SetPosition(vec3(-25.0f, 1, 28.5f));
+			break;
+		case 5:
+			tableWall->GetTransform()->SetScale(vec3(42, 4, 7));
+			tableWall->GetTransform()->SetPosition(vec3(25.0f, 1, 28.5f));
+			break;
+		}
+
+		tableFloorMaterial->SetTexture("MyTexture", Texture2D::FromFile("Textures\\Cue-Ball.png"));
+	}
+	*/
+
+
+	GameObject* cueball = AddGameObject("CueBall");
+	Material* material = cueball->AddComponent<SimpleMaterial>();
+	MeshRenderer* meshRenderer = cueball->AddComponent<MeshRenderer>();
+	RigidBody* rigidBody = cueball->AddComponent<RigidBody>();
+	SphereCollider* collider = cueball->AddComponent<SphereCollider>();
+
+	collider->SetRadius(0.5f);
+
+	rigidBody->SetMass(1.0f);
+
+	meshRenderer->SetMesh(MeshLoader::Load("Models\\Sphere.obj"));
+	meshRenderer->SetMaterial(material);
+
+	material->SetTexture("MyTexture", Texture2D::FromFile("Textures\\Cue-Ball.png"));
+
+	cueball->GetTransform()->SetPosition(vec3(0.0f, 0.5f, -10));
+	rigidBody->AddForce(vec3(0, 0, 0.1f));
+
+	balls.push_back(cueball);
+
+	for (int row = 1; row <= 5; row++)
+	{
+		for (int i = 0; i < row; i++)
+		{
+			GameObject* ball = AddGameObject("Ball_" + std::to_string(row) + '_' + std::to_string(i));
+			Material* material = ball->AddComponent<SimpleMaterial>();
+			MeshRenderer* meshRenderer = ball->AddComponent<MeshRenderer>();
+			RigidBody* rigidBody = ball->AddComponent<RigidBody>();
+			SphereCollider* collider = ball->AddComponent<SphereCollider>();
+
+			collider->SetRadius(0.5f);
+
+			rigidBody->SetMass(1.0f);
+
+			meshRenderer->SetMesh(MeshLoader::Load("Models\\Sphere.obj"));
+			meshRenderer->SetMaterial(material);
+
+			material->SetTexture("MyTexture", texture);
+
+			float xPos = -(row - 1) * 0.7f + i * 1.4f;
+			float zPos = row * 0.8f;
+			ball->GetTransform()->SetPosition(vec3(xPos, 0.5f, zPos));
+
+			balls.push_back(ball);
+		}
+	}
+
+
+#pragma region Camera
+	// Camera Manager
+	GameObject* cameraManagerObject = AddGameObject("CameraManager");
+	cameraManager = cameraManagerObject->AddComponent<CameraManager>();
+
+	// Default Camera
+	GameObject* cameraObject = AddGameObject("CameraObject");
+	Camera* camera = cameraObject->AddComponent<Camera>();
+	camera->SetPosition(vec3(5, 0, 0));
+	camera->LookAtPosition(vec3(0, 0, 0));
+	cameraManager->AddCamera(camera);
+
+	// Smooth Follow Camera
+	GameObject* cameraObjectSmoothFollower = AddGameObject("CameraObjectSmoothFollow");
+	Camera* cameraSmoothFollower = cameraObjectSmoothFollower->AddComponent<Camera>();
+	cameraSmoothFollower->SetPosition(vec3(-4, 4, -4));
+	SmoothFollow* smoothFollow = cameraObjectSmoothFollower->AddComponent<SmoothFollow>();
+	smoothFollow->SetTarget(balls[0]->GetTransform());
+	cameraManager->AddCamera(cameraSmoothFollower);
+
+	// Tracker Camera
+	GameObject* cameraObjectTracker = AddGameObject("CameraObjectTracker");
+	Camera* cameraTracker = cameraObjectTracker->AddComponent<Camera>();
+	cameraTracker->SetPosition(vec3(4, 2, -8));
+	Tracker* tracker = cameraObjectTracker->AddComponent<Tracker>();
+	tracker->SetTarget(balls[1]->GetTransform());
+	cameraManager->AddCamera(cameraTracker);
+
+	// FPS Camera
+	GameObject* cameraObjectFPS = AddGameObject("CameraObjectFPS");
+	Camera* cameraFPS = cameraObjectFPS->AddComponent<Camera>();
+	cameraFPS->SetPosition(vec3(0));
+	FPSController* fPSController = cameraObjectFPS->AddComponent<FPSController>();
+	cameraManager->AddCamera(cameraFPS);
+#pragma endregion
 }
 
 // Destroys the game instance
@@ -176,8 +230,8 @@ void Game::Draw()
 {
     for (auto& object : _gameObjects)
     {
-        if (object->GetActive())
-            object->Draw();
+		if (object->GetActive())
+			object->Draw();
     }
 }
 
@@ -247,7 +301,7 @@ void Game::Update()
     tickCount += Time::GetElapsedTime();
     ++frameCount;
 
-    // counts Frames per second
+	// counts Frames per second
     if ( tickCount >= 1.0f )
     {
         std::string title = "Billy's 3D Billiards";
@@ -259,47 +313,61 @@ void Game::Update()
         tickCount -= 1.0f;
     }
 
-    // Sets materials on Objects
+	// Sets materials on Objects
     for (auto& object : _gameObjects)
     {
-        if (object->GetActive())
-        {
-            Material* material = object->GetComponentOfType<Material>();
-            if (material)
-            {
-                float aspectRatio = static_cast<float>(_window->GetWidth()) / _window->GetHeight();
-
-                material->SetTexture("MyTexture", texture);
-
-                material->ApplyCamera(cameraManager->GetActiveCamera());
-            }
-            object->Update();
-        }
+		if (object->GetActive())
+		{
+			Material* material = object->GetComponentOfType<Material>();
+			if (material)
+			{
+				material->ApplyCamera(cameraManager->GetActiveCamera());
+			}
+			object->Update();
+		}
     }
-    
-    // Sets positons
-    vec3 cubePosition(glm::sin(Time::GetTotalTime() / 4) * 4, 0, glm::cos(Time::GetTotalTime() / 4) * 4);
-    vec3 spherePosition = vec3(5.0f, abs(sin(Time::GetTotalTime())) , -5);
-    vec3 otherSpherePosition = vec3(5.0f, abs(cos(Time::GetTotalTime())), -5);
-    
-    // get transformations then set positons
-    cube->GetTransform()->SetPosition(cubePosition);
-    sphere->GetComponent<RigidBody>()->SetAcceleration(vec3(1.0f, 1.0f, 1.0f));
-    sphere->GetTransform()->SetPosition(vec3(1.0f,1.0f,1.0f));
-    otherSphere->GetTransform()->SetPosition(vec3(2.0f, 2.0f, 2.0f));
+	
+	// Sets positons
+	vec3 cubePosition(glm::sin(Time::GetTotalTime() / 4) * 4, 0, glm::cos(Time::GetTotalTime() / 4) * 4);
+	vec3 spherePosition = vec3(-5.0f, abs(sin(Time::GetTotalTime()) * 4) , -5);
+	vec3 otherSpherePosition = vec3(5.0f, abs(cos(Time::GetTotalTime()) * 4), -5);
 
-    // Test positions
-    testSphere->GetTransform()->SetPosition(vec3(5.0f, 0.0f, 0.0f));
-    otherTestSphere->GetTransform()->SetPosition(vec3(-5.0f, 0.0f, 0.0f));
-    testSphere->GetComponent<RigidBody>()->SetVelocity(vec3(-1.0f, 0.0f, 0.0f));
-    otherTestSphere->GetComponent<RigidBody>()->SetVelocity(vec3(1.0f, 0.0f, 0.0f));
-    testSphere->GetComponent<RigidBody>()->SetAcceleration(vec3(-.5f, .0f, .0f));
-    otherTestSphere->GetComponent<RigidBody>()->SetAcceleration(vec3(.5f, .0f, .0f));
+	//spheres[0]->GetTransform()->SetPosition(spherePosition);
+	//spheres[1]->GetTransform()->SetPosition(otherSpherePosition);
 
-    // Update the physics
-    Physics::Update();
+	
+	/*
+	// get transformations then set positons
+	cube->GetTransform()->SetPosition(cubePosition);
+	sphere->GetComponent<RigidBody>()->SetAcceleration(vec3(1.0f, 1.0f, 1.0f));
+	sphere->GetTransform()->SetPosition(vec3(1.0f,1.0f,1.0f));
+	otherSphere->GetTransform()->SetPosition(vec3(2.0f, 2.0f, 2.0f));
 
-    
+	// Test positions
+	testSphere->GetTransform()->SetPosition(vec3(5.0f, 0.0f, 0.0f));	
+	testSphere->GetComponent<RigidBody>()->SetPosition(testSphere->GetTransform()->GetPosition());
+	testSphere->GetComponent<RigidBody>()->SetVelocity(vec3(-1.0f, 0.0f, 0.0f));
+	testSphere->GetComponent<RigidBody>()->SetAcceleration(vec3(-.5f, .0f, .0f));
+
+
+	otherTestSphere->GetTransform()->SetPosition(vec3(-5.0f, 0.0f, 0.0f));
+	otherTestSphere->GetComponent<RigidBody>()->SetPosition(otherTestSphere->GetTransform()->GetPosition());
+	otherTestSphere->GetComponent<RigidBody>()->SetVelocity(vec3(1.0f, 0.0f, 0.0f));
+	otherTestSphere->GetComponent<RigidBody>()->SetAcceleration(vec3(.5f, .0f, .0f));
+
+	// Test for sphere on box
+	boxSphereTest->GetTransform()->SetPosition(vec3(-5.0f, 0.0f, 0.0f));
+	boxSphereTest->GetComponent<RigidBody>()->SetPosition(boxSphereTest->GetTransform()->GetPosition());
+	boxSphereTest->GetComponent<RigidBody>()->SetVelocity(vec3(1.0f, 0.0f, 0.0f));
+	boxSphereTest->GetComponent<RigidBody>()->SetAcceleration(vec3(.5f, .0f, .0f));
+	
+	box->GetTransform()->SetPosition(vec3(0.0f, 0.0f, 0.0f));
+	*/
+
+	// Update the physics
+	Physics::Update();
+
+	
     // If escape is being pressed, then we should close the window
     if ( glfwGetKey( glfwGetCurrentContext(), GLFW_KEY_ESCAPE ) )
     {

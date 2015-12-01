@@ -5,7 +5,7 @@
 
 RigidBody::RigidBody(GameObject* gameObject)
     : Component(gameObject)
-    , m_fBallFriction( 0.0f )
+    , m_fBallFriction( 0.000f )
     , m_fMass( 1.0f )
     , m_fMaxAcc( 9.8f )
     , m_v3Position( 0, 0, 0 )
@@ -13,6 +13,7 @@ RigidBody::RigidBody(GameObject* gameObject)
 {
     Physics::RegisterRigidbody(this);
 	transform = gameObject->GetTransform();
+	m_v3Position = transform->GetPosition();
 }
 
 RigidBody::~RigidBody()
@@ -23,6 +24,7 @@ RigidBody::~RigidBody()
 void RigidBody::SetPosition(glm::vec3 a_v3Position)
 {
     m_v3Position = a_v3Position;
+	transform->SetPosition(m_v3Position);
 }
 
 vec3 RigidBody::GetPosition(){ return m_v3Position; }
@@ -64,11 +66,14 @@ void RigidBody::AddForce(const glm::vec3& force)
 void RigidBody::Update(void)
 {
     // Apply Friction
-    AddForce(-m_v3Acceleration * m_fBallFriction);
+	AddForce(-m_v3Velocity * m_fBallFriction);
 
-    m_v3Velocity = m_v3Velocity + (m_v3Acceleration);
+	m_v3Velocity = m_v3Velocity + (m_v3Acceleration); 
+	m_v3Acceleration = glm::vec3(0);
 
     //m_v3Position = m_v3Position + m_v3Velocity;
 	m_v3Position = transform->GetPosition();
-	transform->SetPosition(m_v3Position + m_v3Velocity);    
+	m_v3Position += m_v3Velocity;
+    transform->SetPosition(m_v3Position);
+	
 }

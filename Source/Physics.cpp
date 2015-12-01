@@ -270,41 +270,42 @@ void Physics::Update()
 		RigidBody* otherRigidBody = otherCollider->GetGameObject()->GetComponent<RigidBody>();
 		SphereCollider* otherSphere = otherCollider->GetGameObject()->GetComponent<SphereCollider>();
 
-		/*
-		Collider* otherBoxCollider = collsion._rhs;
-		RigidBody* boxRigidBody = boxCollider->GetGameObject()->GetComponent<RigidBody>();
-		BoxCollider* boxCollider = otherBoxCollider->GetGameObject()->GetComponent<BoxCollider>();
-		*/
+		// Calculate Penetration
+		glm::vec3 betweenCenters = otherSphere->GetGlobalCenter() - thisSphere->GetGlobalCenter();
+		float sumOfRadii = otherSphere->GetRadius() + thisSphere->GetRadius();
+		float distanceCenters = glm::length(betweenCenters);
+		float penetrationDepth = sumOfRadii - distanceCenters;
 
-		// Do collision stuff
-		float centerDistance = glm::distance(thisSphere->GetGlobalCenter(), otherSphere->GetGlobalCenter());
+		// The vector between centers
+		betweenCenters = glm::normalize(betweenCenters);
 
-		float sumOfRadii = thisSphere->GetRadius() + otherSphere->GetRadius();
-		float magnitude = sumOfRadii - centerDistance;
-		glm::vec3 collisionNormal = glm::normalize(otherSphere->GetGlobalCenter() - thisSphere->GetGlobalCenter()) * magnitude;
-
-		float a1 = glm::dot(thisRigidBody->GetVelocity(), collisionNormal);
-		float a2 = glm::dot(otherRigidBody->GetVelocity(), collisionNormal);
-
-		float optimizedP = (2.0f * (a1 - a2)) / (thisRigidBody->GetMass() + otherRigidBody->GetMass());
-
-		glm::vec3 newThisVelocity = thisRigidBody->GetVelocity() - optimizedP * otherRigidBody->GetMass() * collisionNormal;
-
-		glm::vec3 newOtherVelocity = otherRigidBody->GetVelocity() - optimizedP * thisRigidBody->GetMass() * collisionNormal;
-
-		// Collision stuff for this entity
-		thisRigidBody->SetVelocity(newThisVelocity);
-		thisRigidBody->SetAcceleration(-thisRigidBody->GetAcceleration());
+		// Find projected velocities of this sphere
+		glm::vec3 v1 = thisRigidBody->GetVelocity();
+		float x1 = glm::dot(betweenCenters, v1);
+		glm::vec3 v1x = betweenCenters * x1;
+		glm::vec3 v1y = v1 - v1x;
 
 
-		// Pushes Other entity back
-		otherRigidBody->SetVelocity(newOtherVelocity);
-		otherRigidBody->SetAcceleration(-otherRigidBody->GetAcceleration());
+		// Find projected velocities of that sphere
+		glm::vec3 v2 = otherRigidBody->GetVelocity();
+		float x2 = glm::dot(betweenCenters, v2);
+		glm::vec3 v2x = betweenCenters * x2;
+		glm::vec3 v2y = v2 - v2x;
 
-		// cue physics 
-		/*
-		otherRigidBody->SetVelocity(thisRigidBody->GetVelocity);
-		otherRigidBody->SetAcceleration(-otherRigidBody->GetAcceleration());
-		*/
+		// Find masses
+		float m1 = thisRigidBody->GetMass();
+		float m2 = otherRigidBody->GetMass();
+
+		// Find new velocities
+		v1 = v1x * (m1 - m2) / (m1 + m2) + v2x * (2 * m2) / (m1 + m2) + v1y;
+		v2 = v1x * (2 * m1) / (m1 + m2) + v2x * (m1 - m2) / (m1 + m2) + v2y;
+
+		// Sets the new velocities
+		thisRigidBody->SetVelocity(v1);
+		otherRigidBody->SetVelocity(v2);
+
+		thisRigidBody->SetPosition(thisRigidBody->GetPosition() - betweenCenters * penetrationDepth / 2.0f);
+		otherRigidBody->SetPosition(otherRigidBody->GetPosition() + betweenCenters * penetrationDepth / 2.0f);
 	}
+	_collisions.clear();
 }
