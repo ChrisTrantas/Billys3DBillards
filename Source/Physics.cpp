@@ -270,8 +270,14 @@ void Physics::Update()
 		RigidBody* otherRigidBody = otherCollider->GetGameObject()->GetComponent<RigidBody>();
 		SphereCollider* otherSphere = otherCollider->GetGameObject()->GetComponent<SphereCollider>();
 
+		// Calculate Penetration
+		glm::vec3 betweenCenters = otherSphere->GetGlobalCenter() - thisSphere->GetGlobalCenter();
+		float sumOfRadii = otherSphere->GetRadius() + thisSphere->GetRadius();
+		float distanceCenters = glm::length(betweenCenters);
+		float penetrationDepth = sumOfRadii - distanceCenters;
+
 		// The vector between centers
-		glm::vec3 betweenCenters = glm::normalize( otherSphere->GetGlobalCenter() - thisSphere->GetGlobalCenter());
+		betweenCenters = glm::normalize(betweenCenters);
 
 		// Find projected velocities of this sphere
 		glm::vec3 v1 = thisRigidBody->GetVelocity();
@@ -297,5 +303,9 @@ void Physics::Update()
 		// Sets the new velocities
 		thisRigidBody->SetVelocity(v1);
 		otherRigidBody->SetVelocity(v2);
+
+		thisRigidBody->SetPosition(thisRigidBody->GetPosition() - betweenCenters * penetrationDepth / 2.0f);
+		otherRigidBody->SetPosition(otherRigidBody->GetPosition() + betweenCenters * penetrationDepth / 2.0f);
 	}
+	_collisions.clear();
 }

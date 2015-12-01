@@ -1,0 +1,15 @@
+Table: 114 x 64
+Play Area: 100 x 50
+
+The center is the center of the play area
+
+Cushion: 7
+
+Hole Radius: 4
+Hole Positions:
+  50, -25
+   0, -25
+ -50, -25
+  50,  25
+   0,  25
+ -50,  25
