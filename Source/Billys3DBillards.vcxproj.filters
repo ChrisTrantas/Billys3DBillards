@@ -19,12 +19,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>vert;frag;glsl</Extensions>
     </Filter>
+    <Filter Include="Header Files\Graphics">
+      <UniqueIdentifier>{7a33257c-aabf-475b-9b6b-973a0a5ae955}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics">
+      <UniqueIdentifier>{ecd6aea7-d33a-4423-ab5c-ab515a6aa52f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GLFW.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameWindow.cpp">
@@ -42,9 +45,6 @@
     <ClCompile Include="JSON.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
@@ -56,12 +56,6 @@
     </ClCompile>
     <ClCompile Include="Transform.cpp">
       <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshLoader.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Collider.cpp">
       <Filter>Source Files\Components</Filter>
@@ -84,17 +78,8 @@
     <ClCompile Include="SimpleMaterial.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Texture2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Image.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FPSController.cpp">
       <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="CameraManager.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RigidBody.cpp">
       <Filter>Source Files\Components</Filter>
@@ -105,12 +90,30 @@
     <ClCompile Include="Component.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="GLFW.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Image.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshLoader.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture2D.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraManager.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameWindow.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGL.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Time.hpp">
@@ -122,16 +125,7 @@
     <ClInclude Include="Math.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Colors.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameObject.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Component.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
@@ -145,15 +139,6 @@
     </ClInclude>
     <ClInclude Include="Transform.hpp">
       <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MeshLoader.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Vertex.hpp">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Collider.hpp">
       <Filter>Header Files\Components</Filter>
@@ -176,20 +161,8 @@
     <ClInclude Include="MeshRenderer.hpp">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Texture2D.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Image.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Components.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FPSController.h">
       <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="CameraManager.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RigidBody.h">
       <Filter>Header Files\Components</Filter>
@@ -199,6 +172,39 @@
     </ClInclude>
     <ClInclude Include="EventListener.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.hpp">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Components.hpp">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Image.hpp">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Colors.hpp">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.hpp">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshLoader.hpp">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGL.hpp">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture2D.hpp">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.hpp">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraManager.h">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

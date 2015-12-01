@@ -152,8 +152,16 @@ void Material::SetVec4( const std::string& name, const glm::vec4& value )
 // Set a Texture2D
 void Material::SetTexture( const std::string& name, const std::shared_ptr<Texture2D> value )
 {
+	// Get the texture handle
+	GLuint handle = 0;
+	if ( value )
+	{
+		handle = value->GetHandle();
+	}
+
+	// Set the texture
     glActiveTexture( GL_TEXTURE0 );
-    glBindTexture( GL_TEXTURE_2D, value->GetHandle() );
+    glBindTexture( GL_TEXTURE_2D, handle );
 
     GLint location = GetUniformLocation( name );
     if ( glProgramUniform1i )

@@ -42,5 +42,5 @@ public:
     /// Draws this mesh.
     /// </summary>
     /// <param name="material">The material to use to draw.</param>
-    void Draw( const Material* material );
+    void Draw( Material* const material );
 };

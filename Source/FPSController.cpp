@@ -34,12 +34,12 @@ FPSController::~FPSController()
 
 void FPSController::HandleCameraMove()
 {
-    std::cout << "I am moving: " << _gameObject->GetName() << endl;
+    //std::cout << "I am moving: " << _gameObject->GetName() << endl;
 }
 
 void FPSController::HandleCameraRotate()
 {
-    std::cout << "I am rotating the camera | Mouse Position: x: " << m_v2MousePosition.x << " y: " << m_v2MousePosition.y << endl;
+    //std::cout << "I am rotating the camera | Mouse Position: x: " << m_v2MousePosition.x << " y: " << m_v2MousePosition.y << endl;
 }
 
 void FPSController::Update()

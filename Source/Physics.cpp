@@ -233,7 +233,7 @@ void Physics::Update()
 
         if ( thisCollider == nullptr )
         {
-			std::cout << thisRigidBody->GetGameObject()->GetName() << " does not have a Collider!" << std::endl;
+			//std::cout << thisRigidBody->GetGameObject()->GetName() << " does not have a Collider!" << std::endl;
             continue;
         }
 
@@ -253,7 +253,7 @@ void Physics::Update()
             // Checks if collides
             if (thisCollider->CollidesWith(otherCollider))
             {
-				std::cout << thisCollider->GetGameObject()->GetName() << " collided with " << otherCollider->GetGameObject()->GetName() << std::endl;
+				//std::cout << thisCollider->GetGameObject()->GetName() << " collided with " << otherCollider->GetGameObject()->GetName() << std::endl;
             }
         }
 		thisRigidBody->Update();
