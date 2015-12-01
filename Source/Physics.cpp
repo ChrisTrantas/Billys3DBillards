@@ -268,44 +268,95 @@ void Physics::Update()
 
 		Collider* otherCollider = collision._rhs;
 		RigidBody* otherRigidBody = otherCollider->GetGameObject()->GetComponent<RigidBody>();
-		SphereCollider* otherSphere = otherCollider->GetGameObject()->GetComponent<SphereCollider>();
 
-		// Calculate Penetration
-		glm::vec3 betweenCenters = otherSphere->GetGlobalCenter() - thisSphere->GetGlobalCenter();
-		float sumOfRadii = otherSphere->GetRadius() + thisSphere->GetRadius();
-		float distanceCenters = glm::length(betweenCenters);
-		float penetrationDepth = sumOfRadii - distanceCenters;
+		if (otherCollider->GetColliderType() == ColliderType::Sphere)
+		{
+			SphereCollider* otherSphere = otherCollider->GetGameObject()->GetComponent<SphereCollider>();
 
-		// The vector between centers
-		betweenCenters = glm::normalize(betweenCenters);
+			// Calculate Penetration
+			glm::vec3 betweenCenters = otherSphere->GetGlobalCenter() - thisSphere->GetGlobalCenter();
+			float sumOfRadii = otherSphere->GetRadius() + thisSphere->GetRadius();
+			float distanceCenters = glm::length(betweenCenters);
+			float penetrationDepth = sumOfRadii - distanceCenters;
 
-		// Find projected velocities of this sphere
-		glm::vec3 v1 = thisRigidBody->GetVelocity();
-		float x1 = glm::dot(betweenCenters, v1);
-		glm::vec3 v1x = betweenCenters * x1;
-		glm::vec3 v1y = v1 - v1x;
+			// The vector between centers
+			betweenCenters = glm::normalize(betweenCenters);
+
+			// Find projected velocities of this sphere
+			glm::vec3 v1 = thisRigidBody->GetVelocity();
+			float x1 = glm::dot(betweenCenters, v1);
+			glm::vec3 v1x = betweenCenters * x1;
+			glm::vec3 v1y = v1 - v1x;
 
 
-		// Find projected velocities of that sphere
-		glm::vec3 v2 = otherRigidBody->GetVelocity();
-		float x2 = glm::dot(betweenCenters, v2);
-		glm::vec3 v2x = betweenCenters * x2;
-		glm::vec3 v2y = v2 - v2x;
+			// Find projected velocities of that sphere
+			glm::vec3 v2 = otherRigidBody->GetVelocity();
+			float x2 = glm::dot(betweenCenters, v2);
+			glm::vec3 v2x = betweenCenters * x2;
+			glm::vec3 v2y = v2 - v2x;
 
-		// Find masses
-		float m1 = thisRigidBody->GetMass();
-		float m2 = otherRigidBody->GetMass();
+			// Find masses
+			float m1 = thisRigidBody->GetMass();
+			float m2 = otherRigidBody->GetMass();
 
-		// Find new velocities
-		v1 = v1x * (m1 - m2) / (m1 + m2) + v2x * (2 * m2) / (m1 + m2) + v1y;
-		v2 = v1x * (2 * m1) / (m1 + m2) + v2x * (m1 - m2) / (m1 + m2) + v2y;
+			// Find new velocities
+			v1 = v1x * (m1 - m2) / (m1 + m2) + v2x * (2 * m2) / (m1 + m2) + v1y;
+			v2 = v1x * (2 * m1) / (m1 + m2) + v2x * (m1 - m2) / (m1 + m2) + v2y;
 
-		// Sets the new velocities
-		thisRigidBody->SetVelocity(v1);
-		otherRigidBody->SetVelocity(v2);
+			// Sets the new velocities
+			thisRigidBody->SetVelocity(v1);
+			otherRigidBody->SetVelocity(v2);
 
-		thisRigidBody->SetPosition(thisRigidBody->GetPosition() - betweenCenters * penetrationDepth / 2.0f);
-		otherRigidBody->SetPosition(otherRigidBody->GetPosition() + betweenCenters * penetrationDepth / 2.0f);
+			thisRigidBody->SetPosition(thisRigidBody->GetPosition() - betweenCenters * penetrationDepth / 2.0f);
+			otherRigidBody->SetPosition(otherRigidBody->GetPosition() + betweenCenters * penetrationDepth / 2.0f);
+		}
+		else
+		{
+
+			//BoxCollider* otherBox = otherCollider->GetGameObject()->GetComponent<BoxCollider>();
+
+			// Calculate Penetration
+		//	glm::vec3 betweenCenters = otherBox->GetGlobalCenter() - thisSphere->GetGlobalCenter();
+		//	float sumOfRadii = otherSphere->GetRadius() + thisSphere->GetRadius();
+		//	float distanceCenters = glm::length(betweenCenters);
+		//	float penetrationDepth = sumOfRadii - distanceCenters;
+
+			// The vector between centers
+		//	betweenCenters = glm::normalize(betweenCenters);
+
+			// Find projected velocities of this sphere
+			glm::vec3 v1 = thisRigidBody->GetVelocity();
+		//	float x1 = glm::dot(betweenCenters, v1);
+		//	glm::vec3 v1x = betweenCenters * x1;
+		//	glm::vec3 v1y = v1 - v1x;
+		//
+		//
+		//	// Find projected velocities of that sphere
+		//	glm::vec3 v2 = otherRigidBody->GetVelocity();
+		//	float x2 = glm::dot(betweenCenters, v2);
+		//	glm::vec3 v2x = betweenCenters * x2;
+		//	glm::vec3 v2y = v2 - v2x;
+		//
+		//	// Find masses
+		//	float m1 = thisRigidBody->GetMass();
+		//	float m2 = otherRigidBody->GetMass();
+
+			// Find new velocities
+		//	v1 = v1x * (m1 - m2) / (m1 + m2) + v2x * (2 * m2) / (m1 + m2) + v1y;
+			v1 = -v1;
+
+			//v2 = v1x * (2 * m1) / (m1 + m2) + v2x * (m1 - m2) / (m1 + m2) + v2y;
+
+			// Sets the new velocities
+			thisRigidBody->SetVelocity(v1);
+			//otherRigidBody->SetVelocity(v2);
+
+			//thisRigidBody->SetPosition(thisRigidBody->GetPosition() - betweenCenters * penetrationDepth / 2.0f);
+			//otherRigidBody->SetPosition(otherRigidBody->GetPosition() + betweenCenters * penetrationDepth / 2.0f);
+
+		}
+
+
 	}
 	_collisions.clear();
 }
