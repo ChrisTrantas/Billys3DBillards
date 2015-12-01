@@ -37,9 +37,10 @@ Mesh::~Mesh()
 }
 
 // Draw this mesh
-void Mesh::Draw( const Material* material )
+void Mesh::Draw( Material* const material )
 {
     glUseProgram(material->GetProgramID());
+	material->SendValuesToShader();
 
     // Get the attribute locations
     GLint attrVertex  = material->GetAttributeLocation( "vertPosition" );

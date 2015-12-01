@@ -73,6 +73,11 @@ public:
     /// <param name="name">The uniform name.</param>
     GLint Material::GetAttributeLocation( const std::string& name ) const;
 
+	/// <summary>
+	/// Sends this material's values to the shader.
+	/// </summary>
+	virtual void SendValuesToShader() = 0;
+
     /// <summary>
     /// Sets a vector in this material.
     /// </summary>
