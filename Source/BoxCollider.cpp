@@ -1,5 +1,6 @@
 #include "BoxCollider.hpp"
 #include "GameObject.hpp"
+#include "Transform.hpp"
 
 // Creates a new box collider
 BoxCollider::BoxCollider( GameObject* gameObject )
@@ -29,7 +30,8 @@ glm::vec3 BoxCollider::GetGlobalCenter() const
 // Gets this box collider's size
 glm::vec3 BoxCollider::GetSize() const
 {
-    return _size;
+	glm::vec3 scale = _gameObject->GetTransform()->GetScale();
+    return _size * scale;
 }
 
 // Queries this box collider's corners

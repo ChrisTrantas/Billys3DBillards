@@ -88,9 +88,9 @@ CoordinateSystem Transform::GetLocalCoordinateSystem() const
 
 	// Get the local coordinate axes (we need to normalize in case the matrix scales)
 	CoordinateSystem local;
-	local[0] = glm::normalize(TransformVector(rotation, glm::vec3(1, 0, 0)));	// Gives the X-axis
-	local[1] = glm::normalize(TransformVector(rotation, glm::vec3(0, 1, 0)));	// Gives the Y-axis
-	local[2] = glm::normalize(TransformVector(rotation, glm::vec3(0, 0, -1)));	// Gives the z-axis
+	local.XAxis = glm::normalize(TransformVector(rotation, glm::vec3(1, 0, 0)));	// Gives the X-axis
+	local.YAxis = glm::normalize(TransformVector(rotation, glm::vec3(0, 1, 0)));	// Gives the Y-axis
+	local.ZAxis = glm::normalize(TransformVector(rotation, glm::vec3(0, 0, -1)));	// Gives the z-axis
 	return local;
 }
 

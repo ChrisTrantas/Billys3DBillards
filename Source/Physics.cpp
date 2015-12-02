@@ -140,10 +140,11 @@ bool Physics::BoxSphereCollision( const BoxCollider* lhs, const SphereCollider* 
 	CoordinateSystem lhsCoordinateSystem = lhs->GetGameObject()->GetTransform()->GetLocalCoordinateSystem();
 	
 	// Finds the distances between the centers in the cubes local axis.
-	glm::vec3 distance = lhs->GetGlobalCenter() - rhs->GetGlobalCenter();
-	distance.x = glm::abs(glm::dot(distance, lhsCoordinateSystem[0]));
-	distance.y = glm::abs(glm::dot(distance, lhsCoordinateSystem[1]));
-	distance.z = glm::abs(glm::dot(distance, lhsCoordinateSystem[2]));
+	glm::vec3 vectorBetween = lhs->GetGlobalCenter() - rhs->GetGlobalCenter();
+	glm::vec3 distance;
+	distance.x = glm::abs(glm::dot(vectorBetween, lhsCoordinateSystem[0]));
+	distance.y = glm::abs(glm::dot(vectorBetween, lhsCoordinateSystem[1]));
+	distance.z = glm::abs(glm::dot(vectorBetween, lhsCoordinateSystem[2]));
 
 	glm::vec3 collisionNormal = glm::normalize(rhs->GetGlobalCenter() - lhs->GetGlobalCenter()) * distance;
 	Collision collision = Collision((Collider*)lhs, (Collider*)rhs, collisionNormal);
@@ -174,7 +175,13 @@ bool Physics::BoxSphereCollision( const BoxCollider* lhs, const SphereCollider* 
 
 	// Checks for corners
 	float distanceFromCornor = glm::length(distance - lhsHalfWidth);
-    return distanceFromCornor < sphereRadius;	
+
+	if (distanceFromCornor < sphereRadius)
+	{
+		_collisions.push_back(collision);
+		return true;
+	}
+	return false;
 }
 
 // Register a rigid body
@@ -253,7 +260,7 @@ void Physics::Update()
             // Checks if collides
             if (thisCollider->CollidesWith(otherCollider))
             {
-				//std::cout << thisCollider->GetGameObject()->GetName() << " collided with " << otherCollider->GetGameObject()->GetName() << std::endl;
+				std::cout << thisCollider->GetGameObject()->GetName() << " collided with " << otherCollider->GetGameObject()->GetName() << std::endl;
             }
         }
 		thisRigidBody->Update();
@@ -264,13 +271,13 @@ void Physics::Update()
 	{
 		Collider* thisCollider = collision._lhs;
 		RigidBody* thisRigidBody = thisCollider->GetGameObject()->GetComponent<RigidBody>();
-		SphereCollider* thisSphere = thisCollider->GetGameObject()->GetComponent<SphereCollider>();
 
 		Collider* otherCollider = collision._rhs;
 		RigidBody* otherRigidBody = otherCollider->GetGameObject()->GetComponent<RigidBody>();
 
-		if (otherCollider->GetColliderType() == ColliderType::Sphere)
+		if (collision.collisionType == CollisionType::Sphere_Sphere)
 		{
+			SphereCollider* thisSphere = thisCollider->GetGameObject()->GetComponent<SphereCollider>();
 			SphereCollider* otherSphere = otherCollider->GetGameObject()->GetComponent<SphereCollider>();
 
 			// Calculate Penetration
@@ -310,53 +317,60 @@ void Physics::Update()
 			thisRigidBody->SetPosition(thisRigidBody->GetPosition() - betweenCenters * penetrationDepth / 2.0f);
 			otherRigidBody->SetPosition(otherRigidBody->GetPosition() + betweenCenters * penetrationDepth / 2.0f);
 		}
-		else
+		else if (collision.collisionType == CollisionType::Cube_Sphere)
 		{
+			SphereCollider* sphereCollider;
+			BoxCollider* boxCollider;
 
-			//BoxCollider* otherBox = otherCollider->GetGameObject()->GetComponent<BoxCollider>();
+			if (thisCollider->GetColliderType() == ColliderType::Sphere)
+			{
+				sphereCollider = thisCollider->GetGameObject()->GetComponent<SphereCollider>();
+				boxCollider = otherCollider->GetGameObject()->GetComponent<BoxCollider>();
+			} 
+			else
+			{
+				sphereCollider = otherCollider->GetGameObject()->GetComponent<SphereCollider>();
+				boxCollider = thisCollider->GetGameObject()->GetComponent<BoxCollider>();
+			}
 
-			// Calculate Penetration
-		//	glm::vec3 betweenCenters = otherBox->GetGlobalCenter() - thisSphere->GetGlobalCenter();
-		//	float sumOfRadii = otherSphere->GetRadius() + thisSphere->GetRadius();
-		//	float distanceCenters = glm::length(betweenCenters);
-		//	float penetrationDepth = sumOfRadii - distanceCenters;
+			RigidBody* sphereRigidBody = sphereCollider->GetGameObject()->GetComponent<RigidBody>();
 
-			// The vector between centers
-		//	betweenCenters = glm::normalize(betweenCenters);
+			// knows who it is colliding with
 
-			// Find projected velocities of this sphere
-			glm::vec3 v1 = thisRigidBody->GetVelocity();
-		//	float x1 = glm::dot(betweenCenters, v1);
-		//	glm::vec3 v1x = betweenCenters * x1;
-		//	glm::vec3 v1y = v1 - v1x;
-		//
-		//
-		//	// Find projected velocities of that sphere
-		//	glm::vec3 v2 = otherRigidBody->GetVelocity();
-		//	float x2 = glm::dot(betweenCenters, v2);
-		//	glm::vec3 v2x = betweenCenters * x2;
-		//	glm::vec3 v2y = v2 - v2x;
-		//
-		//	// Find masses
-		//	float m1 = thisRigidBody->GetMass();
-		//	float m2 = otherRigidBody->GetMass();
+			// get normal
 
-			// Find new velocities
-		//	v1 = v1x * (m1 - m2) / (m1 + m2) + v2x * (2 * m2) / (m1 + m2) + v1y;
-			v1 = -v1;
+			// inverse components based on normal
 
-			//v2 = v1x * (2 * m1) / (m1 + m2) + v2x * (m1 - m2) / (m1 + m2) + v2y;
+			// determine which inverse to use
 
-			// Sets the new velocities
-			thisRigidBody->SetVelocity(v1);
-			//otherRigidBody->SetVelocity(v2);
+			//inverse it
 
-			//thisRigidBody->SetPosition(thisRigidBody->GetPosition() - betweenCenters * penetrationDepth / 2.0f);
-			//otherRigidBody->SetPosition(otherRigidBody->GetPosition() + betweenCenters * penetrationDepth / 2.0f);
+			//CoordinateSystem boxCoordSystem =  boxCollider->GetGameObject()->GetTransform()->GetLocalCoordinateSystem();
+			
+			glm::vec3 vectorBetween = boxCollider->GetGlobalCenter() - sphereRigidBody->GetPosition();
+			
+			glm::vec3 boxMin = boxCollider->GetGlobalCenter() - boxCollider->GetSize() * 0.5f;
+			glm::vec3 boxMax = boxCollider->GetGlobalCenter() + boxCollider->GetSize() * 0.5f;
 
+
+			glm::vec3 sphereCenter = sphereCollider->GetGlobalCenter();
+
+			glm::vec3 closestPoint = glm::clamp(sphereCenter, boxMin, boxMax);
+
+
+			glm::vec3 collisionDistance = closestPoint - sphereCenter;
+			float distance = glm::length(collisionDistance);
+			float penetration = sphereCollider->GetRadius() - distance;
+			glm::vec3 collisionNormal = glm::normalize(collisionDistance);
+
+			sphereRigidBody->SetPosition(sphereCenter - collisionNormal * penetration);
+
+			glm::vec3 newVelocity = glm::reflect(sphereRigidBody->GetVelocity(), collisionNormal);
+
+			sphereRigidBody->SetVelocity(newVelocity);
 		}
-
-
 	}
+
+
 	_collisions.clear();
 }

@@ -3,23 +3,48 @@
 #include "Math.hpp"
 #include <set>
 #include <vector>
+#include "Collider.hpp"
 
 class Collider;
 class BoxCollider;
 class SphereCollider;
 class RigidBody;
 
+enum CollisionType
+{
+	Sphere_Sphere,
+	Cube_Sphere,
+	Cube_Cube
+};
+
 struct Collision
 {
 	Collider* _lhs;
 	Collider* _rhs;
 	glm::vec3 _collisionNormal;
+	CollisionType collisionType;
 
 	Collision(Collider* lhs, Collider* rhs, glm::vec3 collisionNormal)
 	{
 		_lhs = lhs;
 		_rhs = rhs;
 		_collisionNormal = collisionNormal;
+
+		if (_lhs->GetColliderType() == _rhs->GetColliderType())
+		{
+			if (_lhs->GetColliderType() == ColliderType::Sphere)
+			{
+				collisionType = CollisionType::Sphere_Sphere;
+			}
+			else
+			{
+				collisionType = CollisionType::Cube_Cube;
+			}
+		}
+		else
+		{
+			collisionType = CollisionType::Cube_Sphere;
+		}
 	}
 };
 

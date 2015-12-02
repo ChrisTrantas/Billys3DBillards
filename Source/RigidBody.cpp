@@ -7,7 +7,7 @@ RigidBody::RigidBody(GameObject* gameObject)
     : Component(gameObject)
     , m_fBallFriction( 0.000f )
     , m_fMass( 1.0f )
-    , m_fMaxAcc( 9.8f )
+    , m_fMaxAcc( 100.0f )
     , m_v3Position( 0, 0, 0 )
     , m_v3Velocity( 0, 0, 0 )
 {
@@ -60,7 +60,7 @@ void RigidBody::AddForce(const glm::vec3& force)
     // Calculate acceleration based off of applied force and mass
     float invMass = (m_fMass == 0.0f) ? 0.0f : (1.0f / m_fMass);
     m_v3Acceleration += force * invMass;
-    m_v3Acceleration = glm::clamp(m_v3Acceleration, -m_fMaxAcc, m_fMaxAcc);
+   /// m_v3Acceleration = glm::clamp(m_v3Acceleration, -m_fMaxAcc, m_fMaxAcc);
 }
 
 void RigidBody::Update(void)
@@ -68,12 +68,12 @@ void RigidBody::Update(void)
     // Apply Friction
 	AddForce(-m_v3Velocity * m_fBallFriction);
 
-	m_v3Velocity = m_v3Velocity + (m_v3Acceleration); 
+	m_v3Velocity = m_v3Velocity + (m_v3Acceleration * Time::GetElapsedTime()); 
 	m_v3Acceleration = glm::vec3(0);
 
     //m_v3Position = m_v3Position + m_v3Velocity;
 	m_v3Position = transform->GetPosition();
-	m_v3Position += m_v3Velocity;
+	m_v3Position += m_v3Velocity * Time::GetElapsedTime();
     transform->SetPosition(m_v3Position);
 	
 }

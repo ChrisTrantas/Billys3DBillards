@@ -52,7 +52,7 @@ Game::Game()
 	}
 
 	// Create the table colliders
-	{
+	/*{
 		GameObject* tableFloor = table->AddChild("TableFloor");
 		//Material* tableFloorMaterial = tableFloor->AddComponent<SimpleMaterial>();
 		//MeshRenderer* tableFloorMeshRenderer = tableFloor->AddComponent<MeshRenderer>();
@@ -112,7 +112,7 @@ Game::Game()
 
 			//tableFloorMaterial->SetTexture("MyTexture", Texture2D::FromFile("Textures\\Cue-Ball.png"));
 		}
-	}
+	}*/
 
 	// Create the cue ball in its own scope to prevent accidental referencing of other things
 	{
@@ -131,8 +131,8 @@ Game::Game()
 
 		material->SetMyTexture(Texture2D::FromFile("Textures\\Cue-Ball.png"));
 
-		cueball->GetTransform()->SetPosition(vec3(0.0f, 0.5f, -10));
-		rigidBody->AddForce(vec3(0, 0, 0.1f));
+		cueball->GetTransform()->SetPosition(vec3(0.0f, 0.5f, -11));
+		rigidBody->AddForce(vec3(0, 0, 20.0f));
 
 		balls.push_back(cueball);
 	}
@@ -166,6 +166,47 @@ Game::Game()
 		}
 	}
 
+	if (0)
+	{
+		GameObject* testBox = AddGameObject("testBox");
+		SimpleMaterial* boxMaterial = testBox->AddComponent<SimpleMaterial>();
+		MeshRenderer* testBoxMeshRenderer = testBox->AddComponent<MeshRenderer>();
+		RigidBody* testBoxRigidBody = testBox->AddComponent<RigidBody>();
+		BoxCollider* testBoxCollider = testBox->AddComponent<BoxCollider>();
+
+		testBoxCollider->SetSize(vec3(1, 1, 1));
+
+		testBoxRigidBody->SetMass(100.0f);
+
+		testBoxMeshRenderer->SetMesh(MeshLoader::Load("Models\\Cube.obj"));
+		testBoxMeshRenderer->SetMaterial(boxMaterial);
+
+		//boxMaterial->SetMyTexture(Texture2D::FromFile("Textures\\Cue-Ball.png"));
+
+		testBox->GetTransform()->SetPosition(vec3(0.25f, 0.5f, -2.0f));
+	}
+
+	for (int i = 0; i < 10; i++)
+	{
+		GameObject* testBox = AddGameObject("testBox_" + std::to_string(i));
+		SimpleMaterial* boxMaterial = testBox->AddComponent<SimpleMaterial>();
+		MeshRenderer* testBoxMeshRenderer = testBox->AddComponent<MeshRenderer>();
+		RigidBody* testBoxRigidBody = testBox->AddComponent<RigidBody>();
+		BoxCollider* testBoxCollider = testBox->AddComponent<BoxCollider>();
+
+		testBoxCollider->SetSize(vec3(1, 1, 1));
+
+		testBoxRigidBody->SetMass(100.0f);
+
+		testBoxMeshRenderer->SetMesh(MeshLoader::Load("Models\\Cube.obj"));
+		testBoxMeshRenderer->SetMaterial(boxMaterial);
+
+		//boxMaterial->SetMyTexture(Texture2D::FromFile("Textures\\Cue-Ball.png"));
+
+		testBox->GetTransform()->SetPosition(vec3(-7.5f + i * 1.25f, 0.5f, 10.0f));
+	}
+	
+
 
 #pragma region Camera
 	// Camera Manager
@@ -175,7 +216,7 @@ Game::Game()
 	// Default Camera
 	GameObject* cameraObject = AddGameObject("CameraObject");
 	Camera* camera = cameraObject->AddComponent<Camera>();
-	camera->SetPosition(vec3(5, 10, 0));
+	camera->SetPosition(vec3(10, 20, 0));
 	camera->LookAtPosition(vec3(0, 0, 0));
 	cameraManager->AddCamera(camera);
 
@@ -302,6 +343,7 @@ void Game::Update()
 {
     static int frameCount = 0;
     static float tickCount = 0.0f;
+	static bool first = true;
 
     tickCount += Time::GetElapsedTime();
     ++frameCount;
@@ -332,10 +374,18 @@ void Game::Update()
 		}
     }
 	
+
+	if (first)
+	{
+		balls[0]->GetComponent<RigidBody>()->AddForce(vec3(0, 0, 3000.0f));
+		first = false;
+	}
+
+
 	// Sets positons
-	vec3 cubePosition(glm::sin(Time::GetTotalTime() / 4) * 4, 0, glm::cos(Time::GetTotalTime() / 4) * 4);
-	vec3 spherePosition = vec3(-5.0f, abs(sin(Time::GetTotalTime()) * 4) , -5);
-	vec3 otherSpherePosition = vec3(5.0f, abs(cos(Time::GetTotalTime()) * 4), -5);
+	//vec3 cubePosition(glm::sin(Time::GetTotalTime() / 4) * 4, 0, glm::cos(Time::GetTotalTime() / 4) * 4);
+	//vec3 spherePosition = vec3(-5.0f, abs(sin(Time::GetTotalTime()) * 4) , -5);
+	//vec3 otherSpherePosition = vec3(5.0f, abs(cos(Time::GetTotalTime()) * 4), -5);
 
 	//spheres[0]->GetTransform()->SetPosition(spherePosition);
 	//spheres[1]->GetTransform()->SetPosition(otherSpherePosition);
@@ -370,6 +420,7 @@ void Game::Update()
 	*/
 
 	// Update the physics
+	Time::Update();
 	Physics::Update();
 
 	
