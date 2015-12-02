@@ -1,10 +1,13 @@
 #include "Game.hpp"
+#include "Input.hpp"
 #include "Time.hpp"
 #include <GLFW/glfw3.h>
 #include "Texture2D.hpp"
 #include "MeshLoader.hpp"
 #include "RigidBody.h"
 #include "Physics.hpp"
+
+#define BALL_SIZE 2.0f
 
 std::shared_ptr<Game> Game::_instance = nullptr;
 
@@ -143,24 +146,35 @@ Game::Game()
 		for (int i = 0; i < row; i++)
 		{
 			GameObject* ball = AddGameObject("Ball_" + std::to_string(row) + '_' + std::to_string(i));
+			Transform* transform = ball->GetTransform();
 			SimpleMaterial* material = ball->AddComponent<SimpleMaterial>();
 			MeshRenderer* meshRenderer = ball->AddComponent<MeshRenderer>();
 			RigidBody* rigidBody = ball->AddComponent<RigidBody>();
 			SphereCollider* collider = ball->AddComponent<SphereCollider>();
-
-			collider->SetRadius(0.5f);
 
 			rigidBody->SetMass(1.0f);
 
 			meshRenderer->SetMesh(MeshLoader::Load("Models\\Sphere.obj"));
 			meshRenderer->SetMaterial(material);
 			
-			std::shared_ptr<Texture2D> texture = Texture2D::FromFile("Textures\\" + std::to_string( balls.size() ) + "-Ball.png");
-			material->SetMyTexture(texture);
+			std::string texName = "Textures\\" + std::to_string( balls.size() ) + "-Ball.png";
+			std::cout << "Loading " << texName << "... ";
 
-			float xPos = -(row - 1) * 0.7f + i * 1.4f;
-			float zPos = row * 0.8f;
-			ball->GetTransform()->SetPosition(vec3(xPos, 0.5f, zPos));
+			std::shared_ptr<Texture2D> texture = Texture2D::FromFile( texName );
+			if (texture)
+			{
+				material->SetMyTexture(texture);
+				std::cout << "Done." << std::endl;
+			}
+			else
+			{
+				std::cout << "Failed. ;_;" << std::endl;
+			}
+
+
+			float xPos = (-(row - 1) * 0.7f + i * 1.4f) * BALL_SIZE;
+			float zPos = (row * 0.8f) * BALL_SIZE;
+			transform->SetPosition(vec3(xPos, 0.5f, zPos));
 
 			balls.push_back(ball);
 		}
@@ -206,7 +220,15 @@ Game::Game()
 		testBox->GetTransform()->SetPosition(vec3(-7.5f + i * 1.25f, 0.5f, 10.0f));
 	}
 	
+	// Resize all of the balls
+	for (auto& ball : balls)
+	{
+		SphereCollider* collider = ball->GetComponent<SphereCollider>();
+		Transform* transform = ball->GetTransform();
 
+		collider->SetRadius(BALL_SIZE * 0.5f);
+		transform->SetScale(vec3(BALL_SIZE));
+	}
 
 #pragma region Camera
 	// Camera Manager
@@ -214,34 +236,34 @@ Game::Game()
 	cameraManager = cameraManagerObject->AddComponent<CameraManager>();
 
 	// Default Camera
-	GameObject* cameraObject = AddGameObject("CameraObject");
+	GameObject* cameraObject = cameraManagerObject->AddChild("CameraObject");
 	Camera* camera = cameraObject->AddComponent<Camera>();
-	camera->SetPosition(vec3(10, 20, 0));
+	camera->SetPosition(vec3(0, 50, 30));
 	camera->LookAtPosition(vec3(0, 0, 0));
 	cameraManager->AddCamera(camera);
 
 	// Smooth Follow Camera
-	GameObject* cameraObjectSmoothFollower = AddGameObject("CameraObjectSmoothFollow");
-	Camera* cameraSmoothFollower = cameraObjectSmoothFollower->AddComponent<Camera>();
-	cameraSmoothFollower->SetPosition(vec3(-4, 4, -4));
-	SmoothFollow* smoothFollow = cameraObjectSmoothFollower->AddComponent<SmoothFollow>();
-	smoothFollow->SetTarget(balls[0]->GetTransform());
-	cameraManager->AddCamera(cameraSmoothFollower);
+	//GameObject* cameraObjectSmoothFollower = AddGameObject("CameraObjectSmoothFollow");
+	//Camera* cameraSmoothFollower = cameraObjectSmoothFollower->AddComponent<Camera>();
+	//cameraSmoothFollower->SetPosition(vec3(-4, 4, -4));
+	//SmoothFollow* smoothFollow = cameraObjectSmoothFollower->AddComponent<SmoothFollow>();
+	//smoothFollow->SetTarget(balls[0]->GetTransform());
+	//cameraManager->AddCamera(cameraSmoothFollower);
 
-	// Tracker Camera
-	GameObject* cameraObjectTracker = AddGameObject("CameraObjectTracker");
-	Camera* cameraTracker = cameraObjectTracker->AddComponent<Camera>();
-	cameraTracker->SetPosition(vec3(4, 2, -8));
-	Tracker* tracker = cameraObjectTracker->AddComponent<Tracker>();
-	tracker->SetTarget(balls[1]->GetTransform());
-	cameraManager->AddCamera(cameraTracker);
+	//// Tracker Camera
+	//GameObject* cameraObjectTracker = AddGameObject("CameraObjectTracker");
+	//Camera* cameraTracker = cameraObjectTracker->AddComponent<Camera>();
+	//cameraTracker->SetPosition(vec3(4, 2, -8));
+	//Tracker* tracker = cameraObjectTracker->AddComponent<Tracker>();
+	//tracker->SetTarget(balls[1]->GetTransform());
+	//cameraManager->AddCamera(cameraTracker);
 
-	// FPS Camera
-	GameObject* cameraObjectFPS = AddGameObject("CameraObjectFPS");
-	Camera* cameraFPS = cameraObjectFPS->AddComponent<Camera>();
-	cameraFPS->SetPosition(vec3(5, 10, 0));
-	FPSController* fPSController = cameraObjectFPS->AddComponent<FPSController>();
-	cameraManager->AddCamera(cameraFPS);
+	//// FPS Camera
+	//GameObject* cameraObjectFPS = AddGameObject("CameraObjectFPS");
+	//Camera* cameraFPS = cameraObjectFPS->AddComponent<Camera>();
+	//cameraFPS->SetPosition(vec3(5, 10, 0));
+	//FPSController* fPSController = cameraObjectFPS->AddComponent<FPSController>();
+	//cameraManager->AddCamera(cameraFPS);
 #pragma endregion
 }
 
@@ -374,7 +396,6 @@ void Game::Update()
 		}
     }
 	
-
 	if (first)
 	{
 		balls[0]->GetComponent<RigidBody>()->AddForce(vec3(0, 0, 3000.0f));
@@ -386,10 +407,6 @@ void Game::Update()
 	//vec3 cubePosition(glm::sin(Time::GetTotalTime() / 4) * 4, 0, glm::cos(Time::GetTotalTime() / 4) * 4);
 	//vec3 spherePosition = vec3(-5.0f, abs(sin(Time::GetTotalTime()) * 4) , -5);
 	//vec3 otherSpherePosition = vec3(5.0f, abs(cos(Time::GetTotalTime()) * 4), -5);
-
-	//spheres[0]->GetTransform()->SetPosition(spherePosition);
-	//spheres[1]->GetTransform()->SetPosition(otherSpherePosition);
-
 	
 	/*
 	// get transformations then set positons
@@ -422,10 +439,10 @@ void Game::Update()
 	// Update the physics
 	Time::Update();
 	Physics::Update();
+	Input::Update(_window->_window);
 
-	
     // If escape is being pressed, then we should close the window
-    if ( glfwGetKey( glfwGetCurrentContext(), GLFW_KEY_ESCAPE ) )
+    if ( Input::WasKeyPressed( Key::Escape ) )
     {
         _window->Close();
     }
