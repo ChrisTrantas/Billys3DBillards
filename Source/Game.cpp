@@ -143,7 +143,7 @@ Game::Game()
 	}
 
 	// Create all of the balls
-	for (int row = 1; row <= 20; row++)
+	for (int row = 1; row <= 5; row++)
 	{
 		for (int i = 0; i < row; i++)
 		{
