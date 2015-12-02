@@ -260,7 +260,9 @@ void Physics::Update()
             // Checks if collides
             if (thisCollider->CollidesWith(otherCollider))
             {
+#if defined(_DEBUG)
 				std::cout << thisCollider->GetGameObject()->GetName() << " collided with " << otherCollider->GetGameObject()->GetName() << std::endl;
+#endif
             }
         }
 		thisRigidBody->Update();
@@ -314,8 +316,8 @@ void Physics::Update()
 			thisRigidBody->SetVelocity(v1);
 			otherRigidBody->SetVelocity(v2);
 
-			thisRigidBody->SetPosition(thisRigidBody->GetPosition() - betweenCenters * penetrationDepth / 2.0f);
-			otherRigidBody->SetPosition(otherRigidBody->GetPosition() + betweenCenters * penetrationDepth / 2.0f);
+			thisRigidBody->SetPosition(thisRigidBody->GetPosition() - betweenCenters * penetrationDepth * 0.5f);
+			otherRigidBody->SetPosition(otherRigidBody->GetPosition() + betweenCenters * penetrationDepth * 0.5f);
 		}
 		else if (collision.collisionType == CollisionType::Cube_Sphere)
 		{

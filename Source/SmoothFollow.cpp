@@ -8,8 +8,8 @@ SmoothFollow::SmoothFollow(GameObject* gameObject)
 	m_TargetTransform = nullptr;
 	m_pCamera = gameObject->GetComponent<Camera>();
 
-	m_fDistance = 8.0f;
-	m_fHeight = 4.0f;
+	m_fDistance = 20.0f;
+	m_fHeight = 25.0f;
 
 	m_fPositionDamping = 8.0f;
 	m_fRotationDamping = 8.0f;

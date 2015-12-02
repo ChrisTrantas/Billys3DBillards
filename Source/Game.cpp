@@ -55,35 +55,37 @@ Game::Game()
 	}
 
 	// Create the table colliders
-	/*{
+	{
 		GameObject* tableFloor = table->AddChild("TableFloor");
-		//Material* tableFloorMaterial = tableFloor->AddComponent<SimpleMaterial>();
-		//MeshRenderer* tableFloorMeshRenderer = tableFloor->AddComponent<MeshRenderer>();
+		SimpleMaterial* tableFloorMaterial = tableFloor->AddComponent<SimpleMaterial>();
+		MeshRenderer* tableFloorMeshRenderer = tableFloor->AddComponent<MeshRenderer>();
 		BoxCollider* tableFloorCollider = tableFloor->AddComponent<BoxCollider>();
 		RigidBody* tableFloorRigidbody = tableFloor->AddComponent<RigidBody>();
 
 		tableFloorRigidbody->SetMass(0.0f);
 
-		//tableFloorMeshRenderer->SetMesh(MeshLoader::Load("Models\\Cube.obj"));
-		//tableFloorMeshRenderer->SetMaterial(tableFloorMaterial);
+		tableFloorMeshRenderer->SetMesh(MeshLoader::Load("Models\\Cube.obj"));
+		tableFloorMeshRenderer->SetMaterial(tableFloorMaterial);
 
 		tableFloor->GetTransform()->SetScale(vec3(100, 1, 50));
-		tableFloor->GetTransform()->SetPosition(vec3(0, 1, 0));
+		tableFloor->GetTransform()->SetPosition(vec3(0, -1.25, 0));
 
-		//tableFloorMaterial->SetTexture("MyTexture", Texture2D::FromFile("Textures\\Cue-Ball.png"));
+		tableFloorMaterial->SetMyTexture(Texture2D::FromFile("Textures\\Cue-Ball.png"));
 
 		for (int i = 0; i < 6; i++)
 		{
 			GameObject* tableWall = table->AddChild("TableWall_" + std::to_string(i));
-			//SimpleMaterial* tableWallMaterial = tableWall->AddComponent<SimpleMaterial>();
-			//MeshRenderer* tableWallMeshRenderer = tableWall->AddComponent<MeshRenderer>();
+			SimpleMaterial* tableWallMaterial = tableWall->AddComponent<SimpleMaterial>();
+			MeshRenderer* tableWallMeshRenderer = tableWall->AddComponent<MeshRenderer>();
 			BoxCollider* tableWallCollider = tableWall->AddComponent<BoxCollider>();
 			RigidBody* tableWallRigidbody = tableWall->AddComponent<RigidBody>();
 
-			//tableWallMeshRenderer->SetMesh(MeshLoader::Load("Models\\Cube.obj"));
-			//tableWallMeshRenderer->SetMaterial(tableFloorMaterial);
+			tableWallMeshRenderer->SetMesh(MeshLoader::Load("Models\\Cube.obj"));
+			tableWallMeshRenderer->SetMaterial(tableWallMaterial);
+			tableWallMaterial->SetMyTexture(Texture2D::FromFile("Textures\\Cue-Ball.png"));
 
 			tableWallRigidbody->SetMass(0.0f);
+			tableWallCollider->SetSize(glm::vec3(1));
 
 			switch (i)
 			{
@@ -115,7 +117,7 @@ Game::Game()
 
 			//tableFloorMaterial->SetTexture("MyTexture", Texture2D::FromFile("Textures\\Cue-Ball.png"));
 		}
-	}*/
+	}
 
 	// Create the cue ball in its own scope to prevent accidental referencing of other things
 	{
@@ -134,14 +136,14 @@ Game::Game()
 
 		material->SetMyTexture(Texture2D::FromFile("Textures\\Cue-Ball.png"));
 
-		cueball->GetTransform()->SetPosition(vec3(0.0f, 0.5f, -11));
+		cueball->GetTransform()->SetPosition(vec3(0.0f, BALL_SIZE * 0.5f, -11));
 		rigidBody->AddForce(vec3(0, 0, 20.0f));
 
 		balls.push_back(cueball);
 	}
 
 	// Create all of the balls
-	for (int row = 1; row <= 5; row++)
+	for (int row = 1; row <= 20; row++)
 	{
 		for (int i = 0; i < row; i++)
 		{
@@ -157,7 +159,7 @@ Game::Game()
 			meshRenderer->SetMesh(MeshLoader::Load("Models\\Sphere.obj"));
 			meshRenderer->SetMaterial(material);
 			
-			std::string texName = "Textures\\" + std::to_string( balls.size() ) + "-Ball.png";
+			std::string texName = "Textures\\" + std::to_string( ( balls.size() - 1) % 15 + 1 ) + "-Ball.png";
 			std::cout << "Loading " << texName << "... ";
 
 			std::shared_ptr<Texture2D> texture = Texture2D::FromFile( texName );
@@ -174,14 +176,14 @@ Game::Game()
 
 			float xPos = (-(row - 1) * 0.7f + i * 1.4f) * BALL_SIZE;
 			float zPos = (row * 0.8f) * BALL_SIZE;
-			transform->SetPosition(vec3(xPos, 0.5f, zPos));
+			transform->SetPosition(vec3(xPos, BALL_SIZE * 0.5f, zPos));
 
 			balls.push_back(ball);
 		}
 	}
 
-	if (0)
-	{
+	
+	/*{
 		GameObject* testBox = AddGameObject("testBox");
 		SimpleMaterial* boxMaterial = testBox->AddComponent<SimpleMaterial>();
 		MeshRenderer* testBoxMeshRenderer = testBox->AddComponent<MeshRenderer>();
@@ -198,9 +200,9 @@ Game::Game()
 		//boxMaterial->SetMyTexture(Texture2D::FromFile("Textures\\Cue-Ball.png"));
 
 		testBox->GetTransform()->SetPosition(vec3(0.25f, 0.5f, -2.0f));
-	}
+	}*/
 
-	for (int i = 0; i < 10; i++)
+	/*for (int i = 0; i < 10; i++)
 	{
 		GameObject* testBox = AddGameObject("testBox_" + std::to_string(i));
 		SimpleMaterial* boxMaterial = testBox->AddComponent<SimpleMaterial>();
@@ -218,7 +220,7 @@ Game::Game()
 		//boxMaterial->SetMyTexture(Texture2D::FromFile("Textures\\Cue-Ball.png"));
 
 		testBox->GetTransform()->SetPosition(vec3(-7.5f + i * 1.25f, 0.5f, 10.0f));
-	}
+	}*/
 	
 	// Resize all of the balls
 	for (auto& ball : balls)
@@ -243,27 +245,27 @@ Game::Game()
 	cameraManager->AddCamera(camera);
 
 	// Smooth Follow Camera
-	//GameObject* cameraObjectSmoothFollower = AddGameObject("CameraObjectSmoothFollow");
-	//Camera* cameraSmoothFollower = cameraObjectSmoothFollower->AddComponent<Camera>();
-	//cameraSmoothFollower->SetPosition(vec3(-4, 4, -4));
-	//SmoothFollow* smoothFollow = cameraObjectSmoothFollower->AddComponent<SmoothFollow>();
-	//smoothFollow->SetTarget(balls[0]->GetTransform());
-	//cameraManager->AddCamera(cameraSmoothFollower);
+	GameObject* cameraObjectSmoothFollower = AddGameObject("CameraObjectSmoothFollow");
+	Camera* cameraSmoothFollower = cameraObjectSmoothFollower->AddComponent<Camera>();
+	cameraSmoothFollower->SetPosition(vec3(-4, 4, -4));
+	SmoothFollow* smoothFollow = cameraObjectSmoothFollower->AddComponent<SmoothFollow>();
+	smoothFollow->SetTarget(balls[0]->GetTransform());
+	cameraManager->AddCamera(cameraSmoothFollower);
 
-	//// Tracker Camera
-	//GameObject* cameraObjectTracker = AddGameObject("CameraObjectTracker");
-	//Camera* cameraTracker = cameraObjectTracker->AddComponent<Camera>();
-	//cameraTracker->SetPosition(vec3(4, 2, -8));
-	//Tracker* tracker = cameraObjectTracker->AddComponent<Tracker>();
-	//tracker->SetTarget(balls[1]->GetTransform());
-	//cameraManager->AddCamera(cameraTracker);
+	// Tracker Camera
+	GameObject* cameraObjectTracker = AddGameObject("CameraObjectTracker");
+	Camera* cameraTracker = cameraObjectTracker->AddComponent<Camera>();
+	cameraTracker->SetPosition(vec3(0, 50, 30));
+	Tracker* tracker = cameraObjectTracker->AddComponent<Tracker>();
+	tracker->SetTarget(balls[0]->GetTransform());
+	cameraManager->AddCamera(cameraTracker);
 
-	//// FPS Camera
-	//GameObject* cameraObjectFPS = AddGameObject("CameraObjectFPS");
-	//Camera* cameraFPS = cameraObjectFPS->AddComponent<Camera>();
-	//cameraFPS->SetPosition(vec3(5, 10, 0));
-	//FPSController* fPSController = cameraObjectFPS->AddComponent<FPSController>();
-	//cameraManager->AddCamera(cameraFPS);
+	// FPS Camera
+	GameObject* cameraObjectFPS = AddGameObject("CameraObjectFPS");
+	Camera* cameraFPS = cameraObjectFPS->AddComponent<Camera>();
+	cameraFPS->SetPosition(vec3(0, 50, 30));
+	FPSController* fPSController = cameraObjectFPS->AddComponent<FPSController>();
+	cameraManager->AddCamera(cameraFPS);
 #pragma endregion
 }
 
@@ -396,9 +398,14 @@ void Game::Update()
 		}
     }
 	
-	if (first)
+	if (Input::WasKeyPressed(Key::Space))
 	{
-		balls[0]->GetComponent<RigidBody>()->AddForce(vec3(0, 0, 3000.0f));
+		balls[0]->GetComponent<RigidBody>()->AddForce(vec3(0, 0, 4000.0f));
+		first = false;
+	}
+	else if (Input::WasKeyPressed(Key::Enter))
+	{
+		balls[0]->GetComponent<RigidBody>()->AddForce(vec3(0, 0, 10000.0f));
 		first = false;
 	}
 
