@@ -142,6 +142,7 @@ xcopy "$(SolutionDir)Bin\x86\$(Configuration)" "$(OutDir)" /y /d /q
     <ClInclude Include="Colors.hpp" />
     <ClInclude Include="Component.hpp" />
     <ClInclude Include="Components.hpp" />
+    <ClInclude Include="Config.hpp" />
     <ClInclude Include="EventListener.hpp" />
     <ClInclude Include="FPSController.h" />
     <ClInclude Include="Game.hpp" />

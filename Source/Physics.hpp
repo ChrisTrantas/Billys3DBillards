@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Config.hpp"
 #include "Math.hpp"
 #include <set>
 #include <vector>
@@ -10,61 +11,61 @@ class BoxCollider;
 class SphereCollider;
 class RigidBody;
 
-enum CollisionType
-{
-	Sphere_Sphere,
-	Cube_Sphere,
-	Cube_Cube
-};
-
-struct Collision
-{
-	Collider* _lhs;
-	Collider* _rhs;
-	glm::vec3 _collisionNormal;
-	CollisionType collisionType;
-
-	Collision(Collider* lhs, Collider* rhs, glm::vec3 collisionNormal)
-	{
-		_lhs = lhs;
-		_rhs = rhs;
-		_collisionNormal = collisionNormal;
-
-		if (_lhs->GetColliderType() == _rhs->GetColliderType())
-		{
-			if (_lhs->GetColliderType() == ColliderType::Sphere)
-			{
-				collisionType = CollisionType::Sphere_Sphere;
-			}
-			else
-			{
-				collisionType = CollisionType::Cube_Cube;
-			}
-		}
-		else
-		{
-			collisionType = CollisionType::Cube_Sphere;
-		}
-	}
-};
-
 /// <summary>
 /// Defines a static class used for physics constants and methods.
 /// </summary>
 class Physics
 {
+    ImplementStaticClass( Physics );
+
+    /// <summary>
+    /// An enumeration of possible collision types.
+    /// </summary>
+    enum CollisionType
+    {
+        Sphere_Sphere,
+        Box_Sphere,
+        Box_Box
+    };
+
+    /// <summary>
+    /// Defines a container for collision information.
+    /// </summary>
+    struct Collision
+    {
+        Collider* _lhs;
+        Collider* _rhs;
+        glm::vec3 _collisionNormal;
+        CollisionType collisionType;
+
+        Collision( Collider* lhs, Collider* rhs, glm::vec3 collisionNormal );
+    };
+
+private:
     static std::vector<glm::vec3> _lhsCorners;
     static std::vector<glm::vec3> _rhsCorners;
-	static std::vector<RigidBody*> _rigidbodies;
-	static std::vector<Collision> _collisions;
+    static std::vector<RigidBody*> _rigidbodies;
+    static std::vector<Collision> _collisions;
 
-    // Hide all instance methods
-    Physics() = delete;
-    Physics( const Physics& ) = delete;
-    Physics( Physics&& ) = delete;
-    ~Physics() = delete;
-    Physics& operator=( const Physics& ) = delete;
-    Physics& operator=( Physics&& ) = delete;
+    /// <summary>
+    /// Resolves box <--> sphere collision.
+    /// </summary>
+    /// <param name="box">The box collider.</param>
+    /// <param name="sphere">The sphere collider.</param>
+    static void ResolveBoxSphereCollision( BoxCollider* box, SphereCollider* sphere );
+
+    /// <summary>
+    /// Resolves sphere <--> sphere collision.
+    /// </summary>
+    /// <param name="sphere1">The first sphere.</param>
+    /// <param name="sphere2">The second sphere.</param>
+    static void ResolveSphereSphereCollision( SphereCollider* sphere1, SphereCollider* sphere2 );
+
+    /// <summary>
+    /// Resolves the given collision.
+    /// </summary>
+    /// <param name="collision">The collision to resolve.</param>
+    static void ResolveCollision( Collision& collision );
 
 public:
     /// <summary>
@@ -72,28 +73,36 @@ public:
     /// </summary>
     /// <param name="lhs">The first box.</param>
     /// <param name="rhs">The second box.</param>
-    static bool BoxBoxCollision( const BoxCollider* lhs, const BoxCollider* rhs );
+    static bool AreColliding( BoxCollider* lhs, BoxCollider* rhs );
 
     /// <summary>
     /// Checks for box <--> sphere collision.
     /// </summary>
     /// <param name="lhs">The box.</param>
     /// <param name="rhs">The sphere.</param>
-    static bool BoxSphereCollision( const BoxCollider* lhs, const SphereCollider* rhs );
-
-	// Registers a rigidbody with the physics system.
-	static void RegisterRigidbody(RigidBody* rigidBody);
+    static bool AreColliding( BoxCollider* lhs, SphereCollider* rhs );
 
     /// <summary>
     /// Checks for sphere <--> sphere collision.
     /// </summary>
     /// <param name="lhs">The first sphere.</param>
     /// <param name="rhs">The second sphere.</param>
-    static bool SphereSphereCollision( const SphereCollider* lhs, const SphereCollider* rhs );
+    static bool AreColliding( SphereCollider* lhs, SphereCollider* rhs );
 
-	// Unregisters a rigidbody with the physics system.
-	static void UnregisterRigidbody(RigidBody* rigidBody);
+    /// <summary>
+    /// Registers a rigid body to be managed by physics.
+    /// </summary>
+    /// <param name="rigidBody">The rigid body.</param>
+    static void RegisterRigidbody(RigidBody* rigidBody);
 
-	// Updates the physics system.
-	static void Update();
+    /// <summary>
+    /// Un-registers a rigid body to be managed by physics.
+    /// </summary>
+    /// <param name="rigidBody">The rigid body.</param>
+    static void UnregisterRigidbody(RigidBody* rigidBody);
+
+    /// <summary>
+    /// Updates the physics system.
+    /// </summary>
+    static void Update();
 };

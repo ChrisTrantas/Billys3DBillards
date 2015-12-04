@@ -41,7 +41,7 @@ public:
     /// Checks to see if this collider collides with the given collider.
     /// </summary>
     /// <param name="other">The other collider.</param>
-    bool CollidesWith( const Collider* other );
+    bool CollidesWith( Collider* const other );
 
     /// <summary>
     /// Updates this collider.

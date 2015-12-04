@@ -23,42 +23,42 @@ ColliderType Collider::GetColliderType() const
 }
 
 // Checks to see if this collider collides with another collider
-bool Collider::CollidesWith( const Collider* other )
+bool Collider::CollidesWith( Collider* const other )
 {
     if ( _colliderType == ColliderType::Box )
     {
         // Get ourselves as a box
-        const BoxCollider* thisBox = dynamic_cast<const BoxCollider*>( this );
+        BoxCollider* thisBox = dynamic_cast<BoxCollider*>( this );
 
         // If the other collider is a box, then do box-box collision
         if ( other->GetColliderType() == ColliderType::Box )
         {
-            const BoxCollider* thatBox = dynamic_cast<const BoxCollider*>( other );
-            return Physics::BoxBoxCollision( thisBox, thatBox );
+            BoxCollider* thatBox = dynamic_cast<BoxCollider*>( other );
+            return Physics::AreColliding( thisBox, thatBox );
         }
         // If the other collider is a sphere, then do box-sphere collision
         else if ( other->GetColliderType() == ColliderType::Sphere )
         {
-            const SphereCollider* thatSphere = dynamic_cast<const SphereCollider*>( other );
-            return Physics::BoxSphereCollision( thisBox, thatSphere );
+            SphereCollider* thatSphere = dynamic_cast<SphereCollider*>( other );
+            return Physics::AreColliding( thisBox, thatSphere );
         }
     }
     else if ( _colliderType == ColliderType::Sphere )
     {
         // Get ourselves as a sphere
-        const SphereCollider* thisSphere = dynamic_cast<const SphereCollider*>( this );
+        SphereCollider* thisSphere = dynamic_cast<SphereCollider*>( this );
 
         // If the other collider is a box, then do box-sphere collision
         if ( other->GetColliderType() == ColliderType::Box )
         {
-            const BoxCollider* thatBox = dynamic_cast<const BoxCollider*>( other );
-            return Physics::BoxSphereCollision( thatBox, thisSphere );
+            BoxCollider* thatBox = dynamic_cast<BoxCollider*>( other );
+            return Physics::AreColliding( thatBox, thisSphere );
         }
         // If the other collider is a sphere, then do sphere-sphere collision
         else if ( other->GetColliderType() == ColliderType::Sphere )
         {
-            const SphereCollider* thatSphere = dynamic_cast<const SphereCollider*>( other );
-            return Physics::SphereSphereCollision( thisSphere, thatSphere );
+            SphereCollider* thatSphere = dynamic_cast<SphereCollider*>( other );
+            return Physics::AreColliding( thisSphere, thatSphere );
         }
     }
 
