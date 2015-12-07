@@ -1,5 +1,6 @@
 #include "MeshRenderer.hpp"
 #include "GameObject.hpp"
+#include "SimpleMaterial.hpp"
 #include <assert.h>
 
 // Create a new mesh renderer
@@ -54,7 +55,13 @@ void MeshRenderer::Draw()
     // Draw the mesh
     if ( _mesh && _material )
     {
-		_material->SetMatrix("World", _gameObject->GetWorldMatrix());
+		//_material->SetMatrix("World", _gameObject->GetWorldMatrix());
+        SimpleMaterial* sm = dynamic_cast<SimpleMaterial*>( _material );
+        if ( sm )
+        {
+            sm->SetWorld( _gameObject->GetWorldMatrix() );
+        }
+
         _mesh->Draw( _material );
     }
 }

@@ -265,8 +265,26 @@ Game::Game()
     Camera* cameraFPS = cameraObjectFPS->AddComponent<Camera>();
     cameraFPS->SetPosition(vec3(0, 50, 30));
     FPSController* fPSController = cameraObjectFPS->AddComponent<FPSController>();
-    cameraManager->AddCamera(cameraFPS);
+    cameraManager->AddCamera( cameraFPS );
 #pragma endregion
+
+
+
+    // Add a test text renderer
+    {
+        auto go = AddGameObject( "TestTextRenderer" );
+        auto tm = go->AddComponent<TextMaterial>();
+        auto tr = go->AddComponent<TextRenderer>();
+
+        std::shared_ptr<Font> font = std::make_shared<Font>();
+        assert( font->LoadFromFile( "Fonts\\OpenSans-Regular.ttf" ) );
+        tr->SetFont( font );
+        tr->SetFontSize( 20U );
+        tr->SetText( "Hello, world!" );
+        tm->SetTextColor( vec4( 1, 0, 0, 1 ) );
+    }
+
+
 
     std::cout << "Press SPACE to apply a small force to the cue ball" << std::endl;
     std::cout << "Press ENTER to apply a large force to the cue ball" << std::endl;

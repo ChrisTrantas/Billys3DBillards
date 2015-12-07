@@ -7,6 +7,7 @@
 /// </summary>
 class SimpleMaterial : public Material
 {
+    glm::mat4 _world;
 	std::shared_ptr<Texture2D> _texture;
 
 public:
@@ -31,4 +32,10 @@ public:
 	/// </summary>
 	/// <param name="texture">The texture to use.</param>
 	void SetMyTexture( std::shared_ptr<Texture2D> texture );
+
+    /// <summary>
+    /// Sets the world matrix simple material uses.
+    /// </summary>
+    /// <param name="world">The world matrix.</param>
+    void SetWorld( const glm::mat4& world );
 };

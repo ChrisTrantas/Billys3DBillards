@@ -39,6 +39,41 @@ protected:
     /// <param name="fragShaderFName">The fragment shader name.</param>
     void LoadProgram( const std::string& vertShaderFName, const std::string& fragShaderFName );
 
+    /// <summary>
+    /// Sets a vector in this material.
+    /// </summary>
+    /// <param name="name">The vector name.</param>
+    /// <param name="value">The vector value.</param>
+    void SetVec2( const std::string& name, const glm::vec2& value );
+
+    /// <summary>
+    /// Sets a vector in this material.
+    /// </summary>
+    /// <param name="name">The vector name.</param>
+    /// <param name="value">The vector value.</param>
+    void SetVec3( const std::string& name, const glm::vec3& value );
+
+    /// <summary>
+    /// Sets a vector in this material.
+    /// </summary>
+    /// <param name="name">The vector name.</param>
+    /// <param name="value">The vector value.</param>
+    void SetVec4( const std::string& name, const glm::vec4& value );
+
+    /// <summary>
+    /// Sets a matrix in this material.
+    /// </summary>
+    /// <param name="name">The matrix name.</param>
+    /// <param name="value">The matrix value.</param>
+    void SetMatrix( const std::string& name, const glm::mat4& value );
+
+    /// <summary>
+    /// Sets a texture in this material.
+    /// </summary>
+    /// <param name="name">The texture name.</param>
+    /// <param name="value">The texture value.</param>
+    void SetTexture( const std::string& name, const std::shared_ptr<Texture2D> value );
+
 public:
     /// <summary>
     /// Creates a new, empty material component.
@@ -79,39 +114,7 @@ public:
 	virtual void SendValuesToShader() = 0;
 
     /// <summary>
-    /// Sets a vector in this material.
+    /// Updates this material.
     /// </summary>
-    /// <param name="name">The vector name.</param>
-    /// <param name="value">The vector value.</param>
-    void SetVec2( const std::string& name, const glm::vec2& value );
-
-    /// <summary>
-    /// Sets a vector in this material.
-    /// </summary>
-    /// <param name="name">The vector name.</param>
-    /// <param name="value">The vector value.</param>
-    void SetVec3( const std::string& name, const glm::vec3& value );
-
-    /// <summary>
-    /// Sets a vector in this material.
-    /// </summary>
-    /// <param name="name">The vector name.</param>
-    /// <param name="value">The vector value.</param>
-    void SetVec4( const std::string& name, const glm::vec4& value );
-
-    /// <summary>
-    /// Sets a matrix in this material.
-    /// </summary>
-    /// <param name="name">The matrix name.</param>
-    /// <param name="value">The matrix value.</param>
-    void SetMatrix( const std::string& name, const glm::mat4& value );
-
-    /// <summary>
-    /// Sets a texture in this material.
-    /// </summary>
-    /// <param name="name">The texture name.</param>
-    /// <param name="value">The texture value.</param>
-    void SetTexture( const std::string& name, const std::shared_ptr<Texture2D> value );
-
     void Update() override;
 };

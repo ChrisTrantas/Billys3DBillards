@@ -63,10 +63,12 @@
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PreBuildEvent>
-      <Command>mkdir "$(OutDir)Models"
+      <Command>mkdir "$(OutDir)Fonts"
+mkdir "$(OutDir)Models"
 mkdir "$(OutDir)Scenes"
 mkdir "$(OutDir)Shaders"
 mkdir "$(OutDir)Textures"
+xcopy "$(SolutionDir)Content\Fonts" "$(OutDir)Fonts\" /y /d /q
 xcopy "$(SolutionDir)Content\Models" "$(OutDir)Models\" /y /d /q
 xcopy "$(SolutionDir)Content\Scenes" "$(OutDir)Scenes\" /y /d /q
 xcopy "$(SolutionDir)Content\Shaders" "$(OutDir)Shaders\" /y /d /q
@@ -92,10 +94,12 @@ xcopy "$(SolutionDir)Bin\x86\$(Configuration)" "$(OutDir)" /y /d /q
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PreBuildEvent>
-      <Command>mkdir "$(OutDir)Models"
+      <Command>mkdir "$(OutDir)Fonts"
+mkdir "$(OutDir)Models"
 mkdir "$(OutDir)Scenes"
 mkdir "$(OutDir)Shaders"
 mkdir "$(OutDir)Textures"
+xcopy "$(SolutionDir)Content\Fonts" "$(OutDir)Fonts\" /y /d /q
 xcopy "$(SolutionDir)Content\Models" "$(OutDir)Models\" /y /d /q
 xcopy "$(SolutionDir)Content\Scenes" "$(OutDir)Scenes\" /y /d /q
 xcopy "$(SolutionDir)Content\Shaders" "$(OutDir)Shaders\" /y /d /q
@@ -110,6 +114,7 @@ xcopy "$(SolutionDir)Bin\x86\$(Configuration)" "$(OutDir)" /y /d /q
     <ClCompile Include="CameraManager.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="Font.cpp" />
     <ClCompile Include="FPSController.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -129,6 +134,8 @@ xcopy "$(SolutionDir)Bin\x86\$(Configuration)" "$(OutDir)" /y /d /q
     <ClCompile Include="SimpleMaterial.cpp" />
     <ClCompile Include="SmoothFollow.cpp" />
     <ClCompile Include="SphereCollider.cpp" />
+    <ClCompile Include="TextMaterial.cpp" />
+    <ClCompile Include="TextRenderer.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Tracker.cpp" />
@@ -144,6 +151,7 @@ xcopy "$(SolutionDir)Bin\x86\$(Configuration)" "$(OutDir)" /y /d /q
     <ClInclude Include="Components.hpp" />
     <ClInclude Include="Config.hpp" />
     <ClInclude Include="EventListener.hpp" />
+    <ClInclude Include="Font.hpp" />
     <ClInclude Include="FPSController.h" />
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameObject.hpp" />
@@ -157,11 +165,14 @@ xcopy "$(SolutionDir)Bin\x86\$(Configuration)" "$(OutDir)" /y /d /q
     <ClInclude Include="MeshRenderer.hpp" />
     <ClInclude Include="OpenGL.hpp" />
     <ClInclude Include="Physics.hpp" />
+    <ClInclude Include="Rect.hpp" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SimpleMaterial.hpp" />
     <ClInclude Include="SmoothFollow.h" />
     <ClInclude Include="SphereCollider.hpp" />
+    <ClInclude Include="TextMaterial.hpp" />
+    <ClInclude Include="TextRenderer.hpp" />
     <ClInclude Include="Texture2D.hpp" />
     <ClInclude Include="Time.hpp" />
     <ClInclude Include="Tracker.h" />
@@ -171,8 +182,12 @@ xcopy "$(SolutionDir)Bin\x86\$(Configuration)" "$(OutDir)" /y /d /q
   <ItemGroup>
     <None Include="..\Content\Shaders\SimpleMaterial.frag" />
     <None Include="..\Content\Shaders\SimpleMaterial.vert" />
+    <None Include="..\Content\Shaders\TextMaterial.frag" />
+    <None Include="..\Content\Shaders\TextMaterial.vert" />
     <None Include="EventListener.inl" />
     <None Include="GameObject.inl" />
+    <None Include="Mesh.inl" />
+    <None Include="Rect.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

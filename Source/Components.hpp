@@ -11,10 +11,12 @@
 
 // Rendering
 #include "MeshRenderer.hpp"
+#include "TextRenderer.hpp"
 
 // Materials
 #include "Material.hpp"
 #include "SimpleMaterial.hpp"
+#include "TextMaterial.hpp"
 
 // Collider
 #include "BoxCollider.hpp"

@@ -25,24 +25,18 @@
     <Filter Include="Source Files\Graphics">
       <UniqueIdentifier>{ecd6aea7-d33a-4423-ab5c-ab515a6aa52f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Misc">
+      <UniqueIdentifier>{52cc6d99-4302-458c-8d21-f8989b097c73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Misc">
+      <UniqueIdentifier>{2f7f186c-b727-4dd7-8145-68d9b45bc199}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Time.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="JSON.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
@@ -59,9 +53,6 @@
     </ClCompile>
     <ClCompile Include="Collider.cpp">
       <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Physics.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BoxCollider.cpp">
       <Filter>Source Files\Components</Filter>
@@ -83,9 +74,6 @@
     </ClCompile>
     <ClCompile Include="RigidBody.cpp">
       <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Input.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Component.cpp">
       <Filter>Source Files\Components</Filter>
@@ -111,18 +99,36 @@
     <ClCompile Include="CameraManager.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="Font.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="GameWindow.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="JSON.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Time.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="TextMaterial.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="TextRenderer.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GameWindow.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Time.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Game.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Math.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.hpp">
@@ -142,9 +148,6 @@
     </ClInclude>
     <ClInclude Include="Collider.hpp">
       <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Physics.hpp">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BoxCollider.hpp">
       <Filter>Header Files\Components</Filter>
@@ -166,12 +169,6 @@
     </ClInclude>
     <ClInclude Include="RigidBody.h">
       <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Input.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EventListener.hpp">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Component.hpp">
       <Filter>Header Files\Components</Filter>
@@ -206,8 +203,38 @@
     <ClInclude Include="CameraManager.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="Font.hpp">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Rect.hpp">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="GameWindow.hpp">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.hpp">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Math.hpp">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics.hpp">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Time.hpp">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
     <ClInclude Include="Config.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EventListener.hpp">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="TextMaterial.hpp">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="TextRenderer.hpp">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -220,8 +247,20 @@
     <None Include="..\Content\Shaders\SimpleMaterial.frag">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="Rect.inl">
+      <Filter>Header Files\Graphics</Filter>
+    </None>
     <None Include="EventListener.inl">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Misc</Filter>
+    </None>
+    <None Include="Mesh.inl">
+      <Filter>Header Files\Graphics</Filter>
+    </None>
+    <None Include="..\Content\Shaders\TextMaterial.vert">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\Content\Shaders\TextMaterial.frag">
+      <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>
 </Project>
