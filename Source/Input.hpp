@@ -1,6 +1,8 @@
 #pragma once
 
+#include "Config.hpp"
 #include "Math.hpp"
+#include <array>
 #include <vector>
 
 /// <summary>
@@ -112,23 +114,29 @@ enum class Key
 };
 
 /// <summary>
+/// An enumeration of mouse buttons.
+/// </summary>
+enum class MouseButton
+{
+    Left = 0,
+    Middle,
+    Right
+};
+
+/// <summary>
 /// Defines a static input class, similar to Unity's.
 /// </summary>
 class Input
 {
     friend class Game;
 
-    // Hide instance methods
-    Input() = delete;
-    ~Input() = delete;
-    Input( const Input& ) = delete;
-    Input& operator=( const Input& ) = delete;
-    Input( Input&& ) = delete;
-    Input& operator=( Input&& ) = delete;
+    ImplementStaticClass( Input );
 
 private:
-    static std::vector<bool> _lastFrame;
-    static std::vector<bool> _thisFrame;
+    static std::vector<bool> _lastFrameKeys;
+    static std::vector<bool> _thisFrameKeys;
+    static std::array<bool, 3> _lastFrameButtons;
+    static std::array<bool, 3> _thisFrameButtons;
     static glm::vec2 _thisFrameMouse;
     static glm::vec2 _lastFrameMouse;
 
@@ -138,6 +146,18 @@ private:
     static void Update( void* window );
 
 public:
+    /// <summary>
+    /// Checks to see if the given mouse button is down.
+    /// </summary>
+    /// <param name="mb">The mouse button.</param>
+    static bool IsButtonDown( MouseButton mb );
+
+    /// <summary>
+    /// Checks to see if the given mouse button is up.
+    /// </summary>
+    /// <param name="mb">The mouse button.</param>
+    static bool IsButtonUp( MouseButton mb );
+
     /// <summary>
     /// Checks to see if the given key is down.
     /// </summary>
@@ -159,6 +179,18 @@ public:
     /// Gets the mouse position.
     /// </summary>
     static glm::vec2 GetMousePosition();
+
+    /// <summary>
+    /// Checks to see if the given mouse button was pressed.
+    /// </summary>
+    /// <param name="mb">The mouse button.</param>
+    static bool WasButtonPressed( MouseButton mb );
+
+    /// <summary>
+    /// Checks to see if the given mouse button was released.
+    /// </summary>
+    /// <param name="mb">The mouse button.</param>
+    static bool WasButtonReleased( MouseButton mb );
 
     /// <summary>
     /// Checks to see if the given key was pressed.
