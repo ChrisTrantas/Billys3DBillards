@@ -5,6 +5,7 @@
 #include "Vertex.hpp"
 #include "Colors.hpp"
 #include "Game.hpp"
+#include "RenderManager.hpp"
 #include <algorithm>
 #include <DirectXColors.h>
 #include <vector>
@@ -18,11 +19,14 @@ TextRenderer::TextRenderer( GameObject* gameObject )
     , _isMeshDirty( false )
 {
     _isDrawable = true;
+
+    RenderManager::AddRenderer( this );
 }
 
 // Destroys this text renderer
 TextRenderer::~TextRenderer()
 {
+    RenderManager::RemoveRenderer( this );
 }
 
 // Get our font

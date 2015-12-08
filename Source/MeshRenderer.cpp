@@ -1,6 +1,7 @@
 #include "MeshRenderer.hpp"
 #include "GameObject.hpp"
 #include "SimpleMaterial.hpp"
+#include "RenderManager.hpp"
 #include <assert.h>
 
 // Create a new mesh renderer
@@ -8,16 +9,20 @@ MeshRenderer::MeshRenderer( GameObject* gameObj )
     : Component( gameObj )
 {
     _isDrawable = true;
-	_isEnabled = true;
+    _isEnabled = true;
 
     _mesh = nullptr;
     _material = nullptr;
+
+    RenderManager::AddRenderer( this );
 }
 
 // Destroy this mesh renderer
 MeshRenderer::~MeshRenderer()
 {
     _material = nullptr;
+
+    RenderManager::RemoveRenderer( this );
 }
 
 // Set our mesh
@@ -55,7 +60,7 @@ void MeshRenderer::Draw()
     // Draw the mesh
     if ( _mesh && _material )
     {
-		//_material->SetMatrix("World", _gameObject->GetWorldMatrix());
+        //_material->SetMatrix("World", _gameObject->GetWorldMatrix());
         SimpleMaterial* sm = dynamic_cast<SimpleMaterial*>( _material );
         if ( sm )
         {

@@ -126,6 +126,9 @@
     <ClCompile Include="TextRenderer.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="RenderManager.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -235,6 +238,9 @@
     </ClInclude>
     <ClInclude Include="TextRenderer.hpp">
       <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderManager.hpp">
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

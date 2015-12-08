@@ -6,6 +6,7 @@
 #include "MeshLoader.hpp"
 #include "RigidBody.h"
 #include "Physics.hpp"
+#include "RenderManager.hpp"
 
 #define BALL_SIZE 2.0f
 
@@ -42,6 +43,24 @@ Game::Game()
         glDebugMessageCallback( MyGLCallback, nullptr );
     }
 #endif
+
+
+    // Add a test text renderer
+    {
+        auto go = AddGameObject( "TestTextRenderer" );
+        auto tm = go->AddComponent<TextMaterial>();
+        auto tr = go->AddComponent<TextRenderer>();
+
+        std::shared_ptr<Font> font = std::make_shared<Font>();
+        assert( font->LoadFromFile( "Fonts\\OpenSans-Regular.ttf" ) );
+        tr->SetFont( font );
+        tr->SetFontSize( 32U );
+        tr->SetText( "Hello, world!" );
+        tm->SetTextColor( vec4( 1, 0, 0, 1 ) );
+
+        go->GetTransform()->SetPosition( glm::vec3( 100, 100, 0 ) );
+    }
+
 
     // Create the table
     {
@@ -268,26 +287,6 @@ Game::Game()
     cameraManager->AddCamera( cameraFPS );
 #pragma endregion
 
-
-
-    // Add a test text renderer
-    {
-        auto go = AddGameObject( "TestTextRenderer" );
-        auto tm = go->AddComponent<TextMaterial>();
-        auto tr = go->AddComponent<TextRenderer>();
-
-        std::shared_ptr<Font> font = std::make_shared<Font>();
-        assert( font->LoadFromFile( "Fonts\\OpenSans-Regular.ttf" ) );
-        tr->SetFont( font );
-        tr->SetFontSize( 32U );
-        tr->SetText( "Hello, world!" );
-        tm->SetTextColor( vec4( 1, 0, 0, 1 ) );
-
-        go->GetTransform()->SetPosition( glm::vec3( 100, 100, 0 ) );
-    }
-
-
-
     std::cout << "Press SPACE to apply a small force to the cue ball" << std::endl;
     std::cout << "Press ENTER to apply a large force to the cue ball" << std::endl;
 }
@@ -321,11 +320,12 @@ GameObject* Game::AddGameObject( const std::string& name )
 // Draws the game
 void Game::Draw()
 {
-    for (auto& object : _gameObjects)
+    /* for (auto& object : _gameObjects)
     {
         if (object->GetActive())
             object->Draw();
-    }
+    } */
+    RenderManager::Draw();
 }
 
 // Get the game instance
