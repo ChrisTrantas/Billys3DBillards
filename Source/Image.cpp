@@ -184,5 +184,20 @@ bool Image::LoadFromFile( const std::string& fname )
 // Attempt to load a texture
 bool Image::LoadFromTexture( const Texture2D& texture )
 {
-    return false;
+    _width = texture.GetWidth();
+    _height = texture.GetHeight();
+    _pixels.resize( _width * _height * 4 );
+
+    if ( glGetTextureImage )
+    {
+        glGetTextureImage( texture.GetHandle(), 0, GL_RGBA, GL_UNSIGNED_BYTE, _pixels.size(), &_pixels[ 0 ] );
+    }
+    else
+    {
+        glBindTexture( GL_TEXTURE_2D, texture.GetHandle() );
+        glGetTexImage( GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, &_pixels[ 0 ] );
+        glBindTexture( GL_TEXTURE_2D, 0 );
+    }
+
+    return true;
 }

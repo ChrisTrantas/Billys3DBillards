@@ -120,11 +120,11 @@ void TextRenderer::RebuildMesh()
         }
 
         // Get the glyph for the current character
-        Font::Glyph& glyph = _font->GetGlyph( chCurr, fontSize );
+        const Font::Glyph& glyph = _font->GetGlyph( chCurr, fontSize );
 
-        float left = glyph.Bounds.X;
-        float top = glyph.Bounds.Y;
-        float right = left + glyph.Bounds.Width;
+        float left   = glyph.Bounds.X;
+        float top    = glyph.Bounds.Y;
+        float right  = left + glyph.Bounds.Width;
         float bottom = top + glyph.Bounds.Height;
 
         float u1 = uScale * ( glyph.TextureBounds.X );
@@ -133,18 +133,18 @@ void TextRenderer::RebuildMesh()
         float v2 = vScale * ( glyph.TextureBounds.Y + glyph.TextureBounds.Height );
 
         // Now add the quad
-        vertices.push_back( TextVertex( x + left, y + top, u1, v1 ) );
-        vertices.push_back( TextVertex( x + right, y + top, u2, v1 ) );
-        vertices.push_back( TextVertex( x + left, y + bottom, u1, v2 ) );
-        vertices.push_back( TextVertex( x + left, y + bottom, u1, v2 ) );
-        vertices.push_back( TextVertex( x + right, y + top, u2, v1 ) );
-        vertices.push_back( TextVertex( x + right, y + bottom, u2, v2 ) );
+        vertices.push_back( TextVertex( x + left,  y + top,     u1, v1 ) );
+        vertices.push_back( TextVertex( x + right, y + top,     u2, v1 ) );
+        vertices.push_back( TextVertex( x + left,  y + bottom,  u1, v2 ) );
+        vertices.push_back( TextVertex( x + left,  y + bottom,  u1, v2 ) );
+        vertices.push_back( TextVertex( x + right, y + top,     u2, v1 ) );
+        vertices.push_back( TextVertex( x + right, y + bottom,  u2, v2 ) );
 
         // Advance to the next character
         x += glyph.Advance;
     }
 
-
+    
 
     // Create the mesh
     std::vector<unsigned int> indices;
@@ -194,19 +194,34 @@ void TextRenderer::Draw()
     // Draw the mesh
     if ( _mesh && _font )
     {
+        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+        glDepthFunc( GL_LEQUAL );
+
         TextMaterial* tm = _gameObject->GetComponent<TextMaterial>();
         if ( tm )
         {
             GameWindow* window = GameWindow::GetCurrentWindow();
-            glm::mat4 proj = glm::ortho( 0.0f, static_cast<float>( window->GetWidth() ), static_cast<float>( window->GetHeight() ), 0.0f, -0.1f, 0.1f );
+            glm::mat4 proj = glm::ortho(
+                0.0f,                                       // left
+                static_cast<float>( window->GetWidth() ),   // right
+                static_cast<float>( window->GetHeight() ),  // bottom
+                0.0f,                                       // top
+                -0.1f,                                      // near
+                0.1f                                        // far
+            );
 
             std::shared_ptr<Texture2D> texture = _font->GetTexture( _font->GetCurrentSize() );
-
-            tm->SetWorld( _gameObject->GetWorldMatrix() );
-            tm->SetProjection( proj );
-            tm->SetFontTexture( texture );
+            if ( texture )
+            {
+                tm->SetWorld( _gameObject->GetWorldMatrix() );
+                tm->SetProjection( proj );
+                tm->SetFontTexture( texture );
+            }
         }
 
         _mesh->Draw( tm );
+
+        glDepthFunc( GL_LESS );
+        glBlendFunc( GL_ONE, GL_ZERO );
     }
 }

@@ -85,12 +85,22 @@ unsigned int Texture2D::GetWidth() const
 // Updates the given area of the texture
 void Texture2D::UpdateArea( unsigned int x, unsigned int y, unsigned int width, unsigned int height, const void* data )
 {
-    glBindTexture( GL_TEXTURE_2D, _texture );
-    glTexSubImage2D( GL_TEXTURE_2D, 0,
-                     static_cast<GLint>( x ),
-                     static_cast<GLint>( y ),
-                     static_cast<GLint>( width ),
-                     static_cast<GLint>( height ),
-                     GL_RGBA, GL_UNSIGNED_BYTE, data );
-    glBindTexture( GL_TEXTURE_2D, 0 );
+    if ( data )
+    {
+        int xi = static_cast<int>( x );
+        int yi = static_cast<int>( y );
+        int wi = static_cast<int>( width );
+        int hi = static_cast<int>( height );
+
+        if ( glTextureSubImage2D )
+        {
+            glTextureSubImage2D( _texture, 0, xi, yi, wi, hi, GL_RGBA, GL_UNSIGNED_BYTE, data );
+        }
+        else
+        {
+            glBindTexture( GL_TEXTURE_2D, _texture );
+            glTexSubImage2D( GL_TEXTURE_2D, 0, xi, yi, wi, hi, GL_RGBA, GL_UNSIGNED_BYTE, data );
+            glBindTexture( GL_TEXTURE_2D, 0 );
+        }
+    }
 }

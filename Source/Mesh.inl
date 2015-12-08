@@ -103,12 +103,12 @@ template<> inline void Mesh::CreateDrawCallback<TextVertex>()
         if ( attrVertex >= 0 )
         {
             glEnableVertexAttribArray( attrVertex );
-            glVertexAttribPointer( attrVertex, 3, GL_FLOAT, GL_FALSE, data.VertexStride, glOffset( glm::vec3, 0 ) );
+            glVertexAttribPointer( attrVertex, 3, GL_FLOAT, GL_FALSE, data.VertexStride, glOffset( glm::vec2, 0 ) );
         }
         if ( attrUV >= 0 )
         {
             glEnableVertexAttribArray( attrUV );
-            glVertexAttribPointer( attrUV, 2, GL_FLOAT, GL_FALSE, data.VertexStride, glOffset( glm::vec3, 1 ) );
+            glVertexAttribPointer( attrUV, 2, GL_FLOAT, GL_FALSE, data.VertexStride, glOffset( glm::vec2, 1 ) );
         }
 
 

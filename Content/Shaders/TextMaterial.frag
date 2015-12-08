@@ -9,9 +9,6 @@ uniform vec4 TextColor;
 
 void main()
 {
-    vec2 uv = fragUV;
-	uv.y = 1.0 - uv.y;
-
-    vec4 textureColor = texture(FontTexture, uv);
-    fragColor = textureColor * TextColor;
+    vec4 textureColor = texture(FontTexture, fragUV);
+    fragColor = vec4(TextColor.rgb, textureColor.a);
 }

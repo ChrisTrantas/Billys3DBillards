@@ -33,10 +33,10 @@ Game::Game()
 {
     // Create the window
     _window = std::make_shared<GameWindow>( 1280, 720, "Billy's 3D Billiards" );
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_TEXTURE_2D);
+    glEnable( GL_DEPTH_TEST );
+    glEnable( GL_BLEND );
 #if defined( _DEBUG ) || defined( DEBUG )
-    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
     if ( glDebugMessageCallback )
     {
         glDebugMessageCallback( MyGLCallback, nullptr );
@@ -279,9 +279,11 @@ Game::Game()
         std::shared_ptr<Font> font = std::make_shared<Font>();
         assert( font->LoadFromFile( "Fonts\\OpenSans-Regular.ttf" ) );
         tr->SetFont( font );
-        tr->SetFontSize( 20U );
+        tr->SetFontSize( 32U );
         tr->SetText( "Hello, world!" );
         tm->SetTextColor( vec4( 1, 0, 0, 1 ) );
+
+        go->GetTransform()->SetPosition( glm::vec3( 100, 100, 0 ) );
     }
 
 
