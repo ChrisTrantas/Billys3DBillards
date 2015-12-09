@@ -184,6 +184,8 @@ xcopy "$(SolutionDir)Bin\x86\$(Configuration)" "$(OutDir)" /y /d /q
     <ClInclude Include="Vertex.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Content\Shaders\LineMaterial.frag" />
+    <None Include="..\Content\Shaders\LineMaterial.vert" />
     <None Include="..\Content\Shaders\SimpleMaterial.frag" />
     <None Include="..\Content\Shaders\SimpleMaterial.vert" />
     <None Include="..\Content\Shaders\TextMaterial.frag" />
