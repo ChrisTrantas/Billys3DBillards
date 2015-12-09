@@ -3,9 +3,11 @@
 #include "GameObject.hpp"
 #include "Transform.hpp"
 
+#define MIN_SPEED 0.1f
+
 RigidBody::RigidBody(GameObject* gameObject)
     : Component(gameObject)
-    , m_fBallFriction( 0.000f )
+    , m_fBallFriction( 0.625f )
     , m_fMass( 1.0f )
     , m_fMaxAcc( 100.0f )
     , m_v3Position( 0, 0, 0 )
@@ -76,4 +78,21 @@ void RigidBody::Update(void)
 	m_v3Position += m_v3Velocity * Time::GetElapsedTime();
     transform->SetPosition(m_v3Position);
 	
+
+	if (glm::abs(m_v3Velocity.x) < MIN_SPEED
+		&& glm::abs(m_v3Velocity.y) < MIN_SPEED
+		&& glm::abs(m_v3Velocity.z) < MIN_SPEED)
+	{
+		m_v3Velocity = glm::vec3(0);
+		_AtRest = true;
+	}
+	else
+	{
+		_AtRest = false;
+	}
+}
+
+bool RigidBody::IsAtRest()
+{
+	return _AtRest;
 }

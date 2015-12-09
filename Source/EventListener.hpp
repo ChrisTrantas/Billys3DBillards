@@ -8,6 +8,8 @@
 #include <typeindex>
 #include <vector>
 
+using namespace std::placeholders;
+
 // TODO - Add overload for AddEventListener that supports std::result_of from std::bind
 // NOTE - Adapted from http://stackoverflow.com/questions/16883817/collection-of-stdfunctions-with-different-arguments/16884259#16884259
 

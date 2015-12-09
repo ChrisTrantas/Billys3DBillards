@@ -24,7 +24,8 @@ std::shared_ptr<Texture2D> Texture2D::FromFile( const std::string& fname )
     Image image;
     if ( image.LoadFromFile( fname ) )
     {
-        return Texture2D::FromImage( image );
+        texture = Texture2D::FromImage( image );
+        _textureCache[ fname ] = texture;
     }
 
     return texture;

@@ -35,7 +35,7 @@ glm::vec3 Transform::GetRotation() const
 }
 
 // Gets the world matrix
-glm::mat4 Transform::GetWorldMatrix()
+const glm::mat4& Transform::GetWorldMatrix() const
 {
     if ( _isWorldDirty )
     {

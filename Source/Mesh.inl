@@ -90,6 +90,32 @@ template<> inline void Mesh::CreateDrawCallback<Vertex>()
 }
 
 // Specialized draw callback for text vertices
+template<> inline void Mesh::CreateDrawCallback<LineVertex>()
+{
+    _drawCallback = []( const MeshData& data, Material* const material )
+    {
+        // Get the attribute locations
+        GLint attrVertex = material->GetAttributeLocation( "vertPosition" );
+
+
+        // Enable the attributes
+        if ( attrVertex >= 0 )
+        {
+            glEnableVertexAttribArray( attrVertex );
+            glVertexAttribPointer( attrVertex, 3, GL_FLOAT, GL_FALSE, data.VertexStride, glOffset( glm::vec2, 0 ) );
+        }
+
+
+        // Draw the buffer!
+        glDrawArrays( GL_LINES, 0, data.VertexCount );
+
+
+        // Disable the attributes
+        if ( attrVertex >= 0 ) glDisableVertexAttribArray( attrVertex );
+    };
+}
+
+// Specialized draw callback for text vertices
 template<> inline void Mesh::CreateDrawCallback<TextVertex>()
 {
     _drawCallback = []( const MeshData& data, Material* const material )

@@ -7,6 +7,7 @@ GameObject::GameObject( const std::string& name )
     : _name( name )
     , _parent( nullptr )
     , _transform( nullptr )
+	, _isWorldMatrixDirty( true )
 {
     _transform = AddComponent<Transform>();
 }
@@ -52,19 +53,23 @@ Transform* GameObject::GetTransform()
 }
 
 // Get this game object's world matrix
-glm::mat4 GameObject::GetWorldMatrix() const
+const glm::mat4& GameObject::GetWorldMatrix() const
 {
-    glm::mat4 world = glm::mat4( 1.0f );
+	if (_isWorldMatrixDirty)
+	{
+		_worldMatrix = glm::mat4(1.0f);
 
-    // If we have a parent, we need to be based off of them
-    if ( _parent )
-    {
-        world *= _parent->GetWorldMatrix();
-    }
+		// If we have a parent, we need to be based off of them
+		if (_parent)
+		{
+			_worldMatrix *= _parent->GetWorldMatrix();
+		}
 
-    // Apply the transform's world matrix
-    world *= _transform->GetWorldMatrix();
-    return world;
+		_worldMatrix *= _transform->GetWorldMatrix();
+
+		_isWorldMatrixDirty = false;
+	}
+	return _worldMatrix;
 }
 
 // Update all components
@@ -93,6 +98,8 @@ void GameObject::Update()
     {
         iter->get()->Update();
     }
+
+	_isWorldMatrixDirty = true;
 }
 
 // Draw all components

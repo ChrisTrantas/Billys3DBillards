@@ -35,11 +35,11 @@ struct CoordinateSystem
 class Transform : public Component
 {
 protected:
-    glm::mat4 _world;
+    mutable glm::mat4 _world;
     glm::vec3 _position;
     glm::vec3 _scale;
     glm::vec3 _rotation;
-    bool _isWorldDirty;
+    mutable bool _isWorldDirty;
 
 public:
     /// <summary>
@@ -71,7 +71,7 @@ public:
     /// <summary>
     /// Gets the world matrix of this transform.
     /// </summary>
-    glm::mat4 GetWorldMatrix();
+    const glm::mat4& GetWorldMatrix() const;
 
     /// <summary>
     /// Sets this transform to the given position.

@@ -144,7 +144,7 @@ bool Physics::AreColliding( BoxCollider* lhs, BoxCollider* rhs )
 bool Physics::AreColliding( BoxCollider* lhs, SphereCollider* rhs )
 {
     float sphereRadius = rhs->GetRadius();
-    glm::vec3 lhsHalfWidth = lhs->GetSize() / 2.0f;
+    glm::vec3 lhsHalfWidth = lhs->GetSize() * 0.5f;
 
     CoordinateSystem lhsCoordinateSystem = lhs->GetGameObject()->GetTransform()->GetLocalCoordinateSystem();
     
@@ -152,7 +152,10 @@ bool Physics::AreColliding( BoxCollider* lhs, SphereCollider* rhs )
     glm::vec3 vectorBetween = lhs->GetGlobalCenter() - rhs->GetGlobalCenter();
 
     // Does the sphere collision pre-test
-    if (glm::length(vectorBetween) > sphereRadius + glm::length(lhsHalfWidth))
+	float distBetween2 = glm::dot(vectorBetween, vectorBetween);
+	float rad2 = sphereRadius * sphereRadius;
+	float halfWidth2 = glm::dot(lhsHalfWidth, lhsHalfWidth);
+    if (distBetween2 > rad2 + halfWidth2)
         return false;
 
     // Finds the distances between the centers in the cubes local axis.
@@ -168,6 +171,7 @@ bool Physics::AreColliding( BoxCollider* lhs, SphereCollider* rhs )
         return false;
     if (distance.z >= lhsHalfWidth.z + sphereRadius)
         return false;
+
 
     // Adds collision to the list of collisions to resolve
     _collisions.push_back(Collision(lhs, rhs, CollisionType::Box_Sphere));
@@ -203,11 +207,12 @@ void Physics::ResolveBoxSphereCollision( BoxCollider* box, SphereCollider* spher
 
     // Find the sphere global center
     glm::vec3 sphereCenter = sphere->GetGlobalCenter();
+	glm::vec3 boxCenter = box->GetGlobalCenter();
     glm::vec3 betweenCenters = box->GetGlobalCenter() - sphereCenter;
 
     // Find the range of values inside the box.
-    glm::vec3 boxMin = box->GetGlobalCenter() - box->GetSize() * 0.5f;
-    glm::vec3 boxMax = box->GetGlobalCenter() + box->GetSize() * 0.5f;
+	glm::vec3 boxMin = boxCenter - box->GetSize() * 0.5f;
+	glm::vec3 boxMax = boxCenter + box->GetSize() * 0.5f;
 
     // Finds the closest point on the box to the sphere.
     glm::vec3 closestPoint = glm::clamp( sphereCenter, boxMin, boxMax );
@@ -320,13 +325,12 @@ void Physics::UnregisterRigidbody(RigidBody* rigidBody)
 {
     if ( _rigidbodies.size() > 0 )
     {
-
-        for (unsigned int i = 0; i < _rigidbodies.size(); i++)
+        for ( auto iter = _rigidbodies.begin(); iter != _rigidbodies.end(); ++iter )
         {
-            if (_rigidbodies[i] = rigidBody)
+            if ( *iter == rigidBody )
             {
-                _rigidbodies.erase(_rigidbodies.begin() + i);
-                return;
+                _rigidbodies.erase( iter );
+                break;
             }
         }
     }
@@ -370,9 +374,10 @@ void Physics::Update()
             // Checks if collides
             if (thisCollider->CollidesWith(otherCollider))
             {
-#if defined(_DEBUG)
-                //std::cout << thisCollider->GetGameObject()->GetName() << " collided with " << otherCollider->GetGameObject()->GetName() << std::endl;
-#endif
+                ResolveCollision( _collisions.back() );
+
+				thisCollider->GetGameObject()->GetEventListener()->FireEvent("OnCollide", otherCollider->GetGameObject());
+				otherCollider->GetGameObject()->GetEventListener()->FireEvent("OnCollide", thisCollider->GetGameObject());
             }
         }
 
@@ -380,11 +385,9 @@ void Physics::Update()
     }
 
     // Resolve all of the collisions
-    for (auto& collision : _collisions)
-    {
-        ResolveCollision( collision );
-    }
-
-
+    //for (auto& collision : _collisions)
+    //{
+    //    ResolveCollision( collision );
+    //}
     _collisions.clear();
 }

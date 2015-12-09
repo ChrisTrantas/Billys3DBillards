@@ -2,6 +2,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <iostream>
 
 std::unordered_map<std::string, std::shared_ptr<Mesh>> MeshLoader::_meshCache;
 
@@ -74,6 +75,7 @@ std::shared_ptr<Mesh> MeshLoader::Load( const std::string& fname )
         return search->second;
     }
 
+    std::cout << "Loading " << fname << "... ";
 
     // Load the mesh's information
     Assimp::Importer importer;
@@ -87,6 +89,7 @@ std::shared_ptr<Mesh> MeshLoader::Load( const std::string& fname )
     std::shared_ptr<Mesh> mesh;
     if ( !scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode )
     {
+        std::cout << "Failed ;_;" << std::endl;
         return mesh;
     }
 
@@ -98,5 +101,6 @@ std::shared_ptr<Mesh> MeshLoader::Load( const std::string& fname )
     // Now create the mesh
     mesh = std::make_shared<Mesh>( vertices, indices );
     _meshCache[ fname ] = mesh;
+    std::cout << "Done." << std::endl;
     return mesh;
 }

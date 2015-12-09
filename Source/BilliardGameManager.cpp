@@ -122,11 +122,32 @@ void BilliardGameManager::CreateTable()
 			tableColliders.push_back(tableWall);
 		}
 	}
+
+	GameObject* pocket = _game->AddGameObject("Pocket");
+	SimpleMaterial* pocketMaterial = pocket->AddComponent<SimpleMaterial>();
+	MeshRenderer* pocketMeshRenderer = pocket->AddComponent<MeshRenderer>();
+	SphereCollider* pocketCollider = pocket->AddComponent<SphereCollider>();
+	RigidBody* pocketRigidbody = pocket->AddComponent<RigidBody>();
+
+	pocketCollider->SetRadius(BALL_SIZE* 0.5f);
+	pocketRigidbody->SetMass(0.0f);
+
+	pocketMeshRenderer->SetMesh(MeshLoader::Load("Models\\Sphere.obj"));
+	pocketMeshRenderer->SetMaterial(pocketMaterial);
+
+	pocket->GetTransform()->SetScale(vec3(5, 2, 5));
+	pocket->GetTransform()->SetPosition(vec3(0, 0, 0));
+
+	pocketMaterial->SetMyTexture(Texture2D::FromFile("Textures\\Cue-Ball.png"));
+
+	pocketColliders.push_back(pocket);
 }
 
 // Places the pool balls into starting position
 void BilliardGameManager::PreparePoolBalls(int rows)
 {
+	score = 0;
+
 	if (cueball == nullptr)
 	{
 		cueball = _game->AddGameObject("CueBall");
@@ -143,19 +164,23 @@ void BilliardGameManager::PreparePoolBalls(int rows)
 		meshRenderer->SetMaterial(material);
 
 		material->SetMyTexture(Texture2D::FromFile("Textures\\Cue-Ball.png"));
+
+		std::function<void(GameObject*)> func = std::bind(&BilliardGameManager::AddToScore, this, _1);
+		cueball->GetEventListener()->AddEventListener("OnCollide", func);
 	}
 
 
-	cueball->GetTransform()->SetPosition(vec3(0.0f, BALL_SIZE * 0.5f, -11));
-	cueball->GetTransform()->SetScale(vec3(BALL_SIZE));
-	cueball->GetComponent<RigidBody>()->SetVelocity(vec3(0));
+	cueball->GetTransform()->SetPosition(vec3(-11, BALL_SIZE * 0.5f, 0));
+    cueball->GetTransform()->SetScale( vec3( BALL_SIZE ) );
+    cueball->GetComponent<RigidBody>()->SetVelocity( vec3( 0 ) );
+    cueball->GetComponent<RigidBody>()->SetAcceleration( vec3( 0 ) );
 
 
 	for (GameObject* ball : balls)
 	{
 		_game->Destroy(ball);
 	}
-	balls.clear();
+    balls.clear();
 
 	// Create the numbered balls
 	for (int row = 1; row <= rows; row++)
@@ -176,22 +201,26 @@ void BilliardGameManager::PreparePoolBalls(int rows)
 			meshRenderer->SetMaterial(material);
 
 			std::string texName = "Textures\\" + std::to_string((balls.size()) % 15 + 1) + "-Ball.png";
-			std::cout << "Loading " << texName << "... ";
+            std::cout << "Loading " << texName << "... ";
 
 			std::shared_ptr<Texture2D> texture = Texture2D::FromFile(texName);
 			if (texture)
 			{
 				material->SetMyTexture(texture);
-				std::cout << "Done." << std::endl;
+                std::cout << "Done." << std::endl;
 			}
 			else
 			{
-				std::cout << "Failed. ;_;" << std::endl;
+                std::cout << "Failed. ;_;" << std::endl;
 			}
 
 
-			float xPos = (-(row - 1) * 0.7f + i * 1.4f) * BALL_SIZE;
-			float zPos = (row * 0.8f) * BALL_SIZE;
+			//float xPos = (-(row - 1) * 0.7f + i * 1.4f) * BALL_SIZE;
+			//float zPos = (row * 0.8f) * BALL_SIZE;
+
+			float xPos = (row * 0.8f) * BALL_SIZE;
+			float zPos = (-(row - 1) * 0.7f + i * 1.4f) * BALL_SIZE;
+
 			transform->SetPosition(vec3(xPos, BALL_SIZE * 0.5f, zPos));
 			transform->SetScale(vec3(BALL_SIZE));
 
@@ -200,65 +229,131 @@ void BilliardGameManager::PreparePoolBalls(int rows)
 	}
 
 	activeCamera = _camTopDown->GetComponent<Camera>();
+
+
 	_camFollower->GetComponent<SmoothFollow>()->SetTarget(cueball->GetTransform());
+	_camFollower->GetTransform()->SetPosition(vec3(0.0f, 50.0f, 10.0f));
 	_camTracker->GetComponent<Tracker>()->SetTarget(cueball->GetTransform());
 }
 
 void BilliardGameManager::Update()
 {
-		if (Input::WasKeyPressed(Key::Space))
+	if (cueball->GetComponent<RigidBody>()->IsAtRest())
+	{
+		_Ready = true;
+		for (auto ball : balls)
 		{
-			cueball->GetComponent<RigidBody>()->AddForce(vec3(0, 0, 4000.0f));
+			if (!ball->GetComponent<RigidBody>()->IsAtRest())
+			{
+				_Ready = false;
+				break;
+			}
 		}
-		else if (Input::WasKeyPressed(Key::Enter))
-		{
-			cueball->GetComponent<RigidBody>()->AddForce(vec3(0, 0, 10000.0f));
-		}
-		else if (Input::WasKeyPressed(Key::F1))
-		{
-			PreparePoolBalls(5);
-		}
-		else if (Input::WasKeyPressed(Key::F2))
-		{
-			PreparePoolBalls(10);
-		}
+	}
+	else
+	{
+		_Ready = false;
+	}
 
-		// Change camera mode
-		if (Input::WasKeyPressed(Key::Num1))
+	for (auto i = 0; i < balls.size(); i++)
+	{
+		vec3 position = balls[i]->GetTransform()->GetPosition();
+		if (glm::abs(position.x) > 70.0f
+			|| glm::abs(position.z) > 25.0f)
 		{
-			activeCamera = _camTopDown->GetComponent < Camera>();
+			_game->Destroy(balls[i]);
+			balls.erase(balls.begin() + i);
+			i--;
 		}
-		else if (Input::WasKeyPressed(Key::Num2))
-		{
-			activeCamera = _camFollower->GetComponent < Camera>();
-		}
-		else if (Input::WasKeyPressed(Key::Num3))
-		{
-			activeCamera = _camTracker->GetComponent < Camera>();
-		}
-		else if (Input::WasKeyPressed(Key::Num4))
-		{
-			activeCamera = _camFPS->GetComponent < Camera>();
-		}
+	}
 
-		if (Input::WasKeyReleased(Key::Up))
-		{
-			_TargetBallIndex = (_TargetBallIndex + 1 + balls.size()) % balls.size();
 
-			_camFollower->GetComponent<SmoothFollow>()->SetTarget(balls[_TargetBallIndex]->GetTransform());
-			_camTracker->GetComponent<Tracker>()->SetTarget(balls[_TargetBallIndex]->GetTransform());
-		}
-		if (Input::WasKeyReleased(Key::Down))
-		{
-			_TargetBallIndex = (_TargetBallIndex - 1 + balls.size()) % balls.size();
+	if (_Ready && Input::WasKeyReleased(Key::Space))
+	{
+		cueball->GetComponent<RigidBody>()->AddForce(vec3(4000.0f, 0, 0));
+	}
+	else if (_Ready && Input::WasKeyReleased(Key::Enter))
+	{
+		cueball->GetComponent<RigidBody>()->AddForce(vec3(10000.0f, 0, 0));
+	}
 
-			_camFollower->GetComponent<SmoothFollow>()->SetTarget(balls[_TargetBallIndex]->GetTransform());
-			_camTracker->GetComponent<Tracker>()->SetTarget(balls[_TargetBallIndex]->GetTransform());
-		}
-		if (Input::WasKeyReleased(Key::Space))
-		{
-			_camFollower->GetComponent<SmoothFollow>()->SetTarget(cueball->GetTransform());
-			_camTracker->GetComponent<Tracker>()->SetTarget(cueball->GetTransform());
-		}
+	// Reset table
+	if (Input::WasKeyPressed(Key::F1))
+	{
+		PreparePoolBalls(5);
+	}
+	else if (Input::WasKeyPressed(Key::F2))
+	{
+		PreparePoolBalls(10);
+	}
+	else if (Input::WasKeyPressed(Key::F3))
+	{
+		PreparePoolBalls(15);
+	}
+	else if (Input::WasKeyPressed(Key::F4))
+	{
+		PreparePoolBalls(20);
+	}
+	else if (Input::WasKeyPressed(Key::F5))
+	{
+		PreparePoolBalls(25);
+	}
+	else if (Input::WasKeyPressed(Key::F6))
+	{
+		PreparePoolBalls(30);
+	}
+	else if (Input::WasKeyPressed(Key::F7))
+	{
+		PreparePoolBalls(35);
+	}
 
+
+
+	// Change camera mode
+	if (Input::WasKeyPressed(Key::Num1))
+	{
+		activeCamera = _camTopDown->GetComponent < Camera>();
+	}
+	else if (Input::WasKeyPressed(Key::Num2))
+	{
+		activeCamera = _camFollower->GetComponent < Camera>();
+	}
+	else if (Input::WasKeyPressed(Key::Num3))
+	{
+		activeCamera = _camTracker->GetComponent < Camera>();
+	}
+	else if (Input::WasKeyPressed(Key::Num4))
+	{
+		activeCamera = _camFPS->GetComponent < Camera>();
+	}
+
+	if (Input::WasKeyReleased(Key::Up))
+	{
+		_TargetBallIndex = (_TargetBallIndex + 1 + balls.size()) % balls.size();
+
+		_camFollower->GetComponent<SmoothFollow>()->SetTarget(balls[_TargetBallIndex]->GetTransform());
+		_camTracker->GetComponent<Tracker>()->SetTarget(balls[_TargetBallIndex]->GetTransform());
+	}
+	if (Input::WasKeyReleased(Key::Down))
+	{
+		_TargetBallIndex = (_TargetBallIndex - 1 + balls.size()) % balls.size();
+
+		_camFollower->GetComponent<SmoothFollow>()->SetTarget(balls[_TargetBallIndex]->GetTransform());
+		_camTracker->GetComponent<Tracker>()->SetTarget(balls[_TargetBallIndex]->GetTransform());
+	}
+	if (Input::WasKeyReleased(Key::Tilde))
+	{
+		_camFollower->GetComponent<SmoothFollow>()->SetTarget(cueball->GetTransform());
+		_camTracker->GetComponent<Tracker>()->SetTarget(cueball->GetTransform());
+	}
 }
+
+void BilliardGameManager::AddToScore(GameObject* gameObject)
+{
+	if (gameObject->GetName() == "Pocket")
+	{
+		score++;
+		std::cout << score << endl;
+	}
+}
+

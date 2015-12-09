@@ -23,6 +23,7 @@ class RigidBody : public Component
 	const float m_fBallFriction = 0.1f;
 	//const float m_CushionFriction = 0.2f;
 
+	bool _AtRest; // Is true when the object has no velocity
 
 public:
 
@@ -43,5 +44,7 @@ public:
 	vec3 GetAcceleration();
 	void AddForce(const glm::vec3& force);
 	vec3 GetForce();
+
+	bool IsAtRest();
 };
 

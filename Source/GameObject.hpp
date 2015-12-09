@@ -28,6 +28,8 @@ class GameObject
     GameObject* _parent;
     Transform* _transform;
     EventListener _eventListener;
+	mutable glm::mat4 _worldMatrix;
+	mutable bool _isWorldMatrixDirty;
 
     // Prevent the use of the copy constructor and copy assignment operator
     GameObject( const GameObject& ) = delete;
@@ -114,7 +116,7 @@ public:
     /// <summary>
     /// Gets this game object's world matrix.
     /// </summary>
-    glm::mat4 GetWorldMatrix() const;
+    const glm::mat4& GetWorldMatrix() const;
 
     /// <summary>
     /// Gets this game object's world matrix.
