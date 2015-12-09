@@ -122,16 +122,17 @@ void BilliardGameManager::PreparePoolBalls(int rows)
 	}
 
 
-	cueball->GetTransform()->SetPosition(vec3(0.0f, BALL_SIZE * 0.5f, -11));
-	cueball->GetTransform()->SetScale(vec3(BALL_SIZE));
-	cueball->GetComponent<RigidBody>()->SetVelocity(vec3(0));
+    cueball->GetTransform()->SetPosition( vec3( 0.0f, BALL_SIZE * 0.5f, -11 ) );
+    cueball->GetTransform()->SetScale( vec3( BALL_SIZE ) );
+    cueball->GetComponent<RigidBody>()->SetVelocity( vec3( 0 ) );
+    cueball->GetComponent<RigidBody>()->SetAcceleration( vec3( 0 ) );
 
 
 	for (GameObject* ball : balls)
 	{
-		ball->GetComponent<RigidBody>()->SetVelocity(vec3(0));
+        Game::GetInstance()->Destroy( ball );
 	}
-
+    balls.clear();
 
 	// Create the numbered balls
 	for (int row = 1; row <= rows; row++)
@@ -152,17 +153,17 @@ void BilliardGameManager::PreparePoolBalls(int rows)
 			meshRenderer->SetMaterial(material);
 
 			std::string texName = "Textures\\" + std::to_string((balls.size()) % 15 + 1) + "-Ball.png";
-			std::cout << "Loading " << texName << "... ";
+            std::cout << "Loading " << texName << "... ";
 
 			std::shared_ptr<Texture2D> texture = Texture2D::FromFile(texName);
 			if (texture)
 			{
 				material->SetMyTexture(texture);
-				std::cout << "Done." << std::endl;
+                std::cout << "Done." << std::endl;
 			}
 			else
 			{
-				std::cout << "Failed. ;_;" << std::endl;
+                std::cout << "Failed. ;_;" << std::endl;
 			}
 
 

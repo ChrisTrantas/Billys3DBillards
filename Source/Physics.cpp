@@ -320,13 +320,12 @@ void Physics::UnregisterRigidbody(RigidBody* rigidBody)
 {
     if ( _rigidbodies.size() > 0 )
     {
-
-        for (unsigned int i = 0; i < _rigidbodies.size(); i++)
+        for ( auto iter = _rigidbodies.begin(); iter != _rigidbodies.end(); ++iter )
         {
-            if (_rigidbodies[i] = rigidBody)
+            if ( *iter == rigidBody )
             {
-                _rigidbodies.erase(_rigidbodies.begin() + i);
-                return;
+                _rigidbodies.erase( iter );
+                break;
             }
         }
     }
@@ -370,9 +369,7 @@ void Physics::Update()
             // Checks if collides
             if (thisCollider->CollidesWith(otherCollider))
             {
-#if defined(_DEBUG)
-                //std::cout << thisCollider->GetGameObject()->GetName() << " collided with " << otherCollider->GetGameObject()->GetName() << std::endl;
-#endif
+                ResolveCollision( _collisions.back() );
             }
         }
 
@@ -380,11 +377,9 @@ void Physics::Update()
     }
 
     // Resolve all of the collisions
-    for (auto& collision : _collisions)
-    {
-        ResolveCollision( collision );
-    }
-
-
+    //for (auto& collision : _collisions)
+    //{
+    //    ResolveCollision( collision );
+    //}
     _collisions.clear();
 }

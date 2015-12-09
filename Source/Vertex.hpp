@@ -32,3 +32,8 @@ struct TextVertex
     {
     }
 };
+
+struct LineVertex
+{
+    glm::vec2 Position;
+};
