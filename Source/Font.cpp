@@ -145,9 +145,9 @@ UintRect Font::FindGlyphRect( GlyphPage& page, unsigned int width, unsigned int 
     // If we didn't find a good row, then we need to create a new one that is 10% taller than the glyph
     if ( !bestRow )
     {
-        int maxTextureSize = 0;
-        glGetIntegerv( GL_MAX_TEXTURE_SIZE, &maxTextureSize );
-
+        unsigned int maxTextureSize = 0;
+        glGetIntegerv( GL_MAX_TEXTURE_SIZE, reinterpret_cast<GLint*>( &maxTextureSize ) );
+        
         unsigned int rowHeight = height + height / 10;
         while ( ( page.NextRowY + rowHeight >= page.Texture->GetHeight() ) || ( width >= page.Texture->GetWidth() ) )
         {

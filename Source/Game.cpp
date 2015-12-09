@@ -9,14 +9,13 @@
 #include "RenderManager.hpp"
 
 #define BALL_SIZE 2.0f
+//#define USE_OPENGL_DEBUG
 
 std::shared_ptr<Game> Game::_instance = nullptr;
 
 CameraManager* cameraManager;
 
-std::vector<GameObject*> balls = std::vector<GameObject*>();
-
-GameObject* table;
+TextRenderer* tr;
 
 
 
@@ -37,7 +36,7 @@ Game::Game()
     _window = std::make_shared<GameWindow>( 1280, 720, "Billy's 3D Billiards" );
     glEnable( GL_DEPTH_TEST );
     glEnable( GL_BLEND );
-#if defined( _DEBUG ) || defined( DEBUG )
+#if defined( _DEBUG ) && defined( USE_OPENGL_DEBUG )
     glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
     if ( glDebugMessageCallback )
     {
@@ -45,12 +44,11 @@ Game::Game()
     }
 #endif
 
-
     // Add a test text renderer
     {
         auto go = AddGameObject( "TestTextRenderer" );
         auto tm = go->AddComponent<TextMaterial>();
-        auto tr = go->AddComponent<TextRenderer>();
+        tr = go->AddComponent<TextRenderer>();
 
         std::shared_ptr<Font> font = std::make_shared<Font>();
         assert( font->LoadFromFile( "Fonts\\OpenSans-Regular.ttf" ) );
@@ -59,12 +57,12 @@ Game::Game()
         tr->SetText( "Hello, world!" );
         tm->SetTextColor( vec4( 1, 0, 0, 1 ) );
 
-        go->GetTransform()->SetPosition( glm::vec3( 100, 100, 0 ) );
+        go->GetTransform()->SetPosition( glm::vec3( 10, 10, 0 ) );
     }
 
-	gameManager = new BilliardGameManager(this);
-	gameManager->CreateTable();
-	gameManager->PreparePoolBalls();
+    gameManager = std::make_shared<BilliardGameManager>(this);
+    gameManager->CreateTable();
+    gameManager->PreparePoolBalls();
   
 
    
@@ -86,7 +84,7 @@ Game::Game()
     Camera* cameraSmoothFollower = cameraObjectSmoothFollower->AddComponent<Camera>();
     cameraSmoothFollower->SetPosition(vec3(-4, 4, -4));
     SmoothFollow* smoothFollow = cameraObjectSmoothFollower->AddComponent<SmoothFollow>();
-	smoothFollow->SetTarget(gameManager->GetCueball()->GetTransform());
+    smoothFollow->SetTarget(gameManager->GetCueball()->GetTransform());
     cameraManager->AddCamera(cameraSmoothFollower);
 
     // Tracker Camera
@@ -94,7 +92,7 @@ Game::Game()
     Camera* cameraTracker = cameraObjectTracker->AddComponent<Camera>();
     cameraTracker->SetPosition(vec3(0, 50, 30));
     Tracker* tracker = cameraObjectTracker->AddComponent<Tracker>();
-	tracker->SetTarget(gameManager->GetCueball()->GetTransform());
+    tracker->SetTarget(gameManager->GetCueball()->GetTransform());
     cameraManager->AddCamera(cameraTracker);
 
     // FPS Camera
@@ -133,6 +131,38 @@ GameObject* Game::AddGameObject( const std::string& name )
     _gameObjectCache[ name ] = go;
 
     return go.get();
+}
+
+// Destroys the given game object
+bool Game::Destroy( GameObject* gameObject )
+{
+    if ( !gameObject )
+    {
+        return false;
+    }
+
+    // Find the game object in the cache
+    auto search = _gameObjectCache.find( gameObject->GetName() );
+    if ( search != _gameObjectCache.end() )
+    {
+        _gameObjectCache.erase( gameObject->GetName() );
+    }
+    else
+    {
+        return false;
+    }
+
+    // Now remove the game object from the list
+    for ( auto iter = _gameObjects.begin(); iter != _gameObjects.end(); ++iter )
+    {
+        if ( iter->get() == gameObject )
+        {
+            _gameObjects.erase( iter );
+            break;
+        }
+    }
+
+    return true;
 }
 
 // Draws the game
@@ -180,6 +210,8 @@ void Game::Run()
 
         // Update the time values
         Time::Update();
+        Physics::Update();
+        Input::Update( _window->_window );
 
         // Poll for events and swap the buffers
         _window->SwapBuffers();
@@ -210,8 +242,14 @@ void Game::Update()
     static float tickCount = 0.0f;
     static bool first = true;
 
-    tickCount += Time::GetElapsedTime();
+    float elapsedTime = Time::GetElapsedTime();
+    tickCount += elapsedTime;
     ++frameCount;
+
+    if ( tr )
+    {
+        tr->SetText( std::to_string( elapsedTime ) + "ms\t" + std::to_string( tickCount ) + "ms\t" + std::to_string( frameCount ) );
+    }
 
     // counts Frames per second
     if ( tickCount >= 1.0f )
@@ -273,17 +311,19 @@ void Game::Update()
     box->GetTransform()->SetPosition(vec3(0.0f, 0.0f, 0.0f));
     */
 
-    // Update the physics
-    Time::Update();
-    Physics::Update();
-    Input::Update(_window->_window);
-
-	gameManager->Update();
+    gameManager->Update();
 
 
     // If escape is being pressed, then we should close the window
     if ( Input::WasKeyPressed( Key::Escape ) )
     {
         _window->Close();
+    }
+
+
+    if ( Input::WasKeyPressed( Key::T ) )
+    {
+        Destroy( tr->GetGameObject() );
+        tr = nullptr;
     }
 }

@@ -24,7 +24,7 @@ class Game
     std::shared_ptr<GameWindow> _window;
     glm::vec4 _clearColor;
 
-	BilliardGameManager* gameManager;
+    std::shared_ptr<BilliardGameManager> gameManager;
 
     /// <summary>
     /// Creates a new game.
@@ -70,6 +70,12 @@ public:
     /// </summary>
     /// <param name="name">The name of the game object.</param>
     GameObject* AddGameObject( const std::string& name );
+
+    /// <summary>
+    /// Destroys the given game object.
+    /// </summary>
+    /// <param name="gameObject">The game object.</param>
+    bool Destroy( GameObject* gameObject );
 
     /// <summary>
     /// Runs the game.

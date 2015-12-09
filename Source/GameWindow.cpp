@@ -35,6 +35,7 @@ GameWindow::GameWindow( int width, int height, const std::string& title )
     glfwDefaultWindowHints();
     glfwWindowHint( GLFW_RESIZABLE, false );
     glfwWindowHint( GLFW_VISIBLE,   false );
+    glfwWindowHint( GLFW_REFRESH_RATE, 60 );
 #if defined( _DEBUG ) || defined( DEBUG )
     glfwWindowHint( GLFW_OPENGL_DEBUG_CONTEXT, true );
 #endif
@@ -57,6 +58,7 @@ GameWindow::GameWindow( int width, int height, const std::string& title )
 
         // Make the window the current context
         glfwMakeContextCurrent( window );
+        glfwSwapInterval( 1 );
 
         // Initialize GLEW
         glewExperimental = GL_TRUE;

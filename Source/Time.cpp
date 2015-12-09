@@ -1,9 +1,9 @@
 #include "Time.hpp"
 #include <GLFW/glfw3.h>
 
-double Time::_startTime = 0.0;
-double Time::_currFrame = 0.0;
-double Time::_lastFrame = 0.0;
+double Time::_startTime;
+double Time::_currFrame;
+double Time::_lastFrame;
 
 // Start keeping track of time
 void Time::Start()
