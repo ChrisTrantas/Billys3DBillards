@@ -35,10 +35,9 @@ class Physics
     {
         Collider* _lhs;
         Collider* _rhs;
-        glm::vec3 _collisionNormal;
-        CollisionType collisionType;
+        CollisionType _collisionType;
 
-        Collision( Collider* lhs, Collider* rhs, glm::vec3 collisionNormal );
+        Collision( Collider* lhs, Collider* rhs, CollisionType collisionType);
     };
 
 private:

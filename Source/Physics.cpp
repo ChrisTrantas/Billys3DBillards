@@ -11,37 +11,21 @@ std::vector<RigidBody*>         Physics::_rigidbodies;
 std::vector<Physics::Collision> Physics::_collisions;
 
 // Creates new collision information
-Physics::Collision::Collision( Collider* lhs, Collider* rhs, glm::vec3 collisionNormal )
+Physics::Collision::Collision(Collider* lhs, Collider* rhs, CollisionType collisionType)
     : _lhs( lhs )
     , _rhs( rhs )
-    , _collisionNormal( collisionNormal )
+	, _collisionType( collisionType)
 {
-    if ( _lhs->GetColliderType() == _rhs->GetColliderType() )
-    {
-        if ( _lhs->GetColliderType() == ColliderType::Sphere )
-        {
-            collisionType = CollisionType::Sphere_Sphere;
-        }
-        else
-        {
-            collisionType = CollisionType::Box_Box;
-        }
-    }
-    else
-    {
-        collisionType = CollisionType::Box_Sphere;
-    }
 }
 
 // Perform box <--> box collision
 bool Physics::AreColliding( BoxCollider* lhs, BoxCollider* rhs )
 {
-    lhs->QueryCorners( _lhsCorners );
-    rhs->QueryCorners( _rhsCorners );
-
+	// Gets the half widths of the box colliders.
     glm::vec3 lhsHalfWidth = lhs->GetSize() / 2.0f;
     glm::vec3 rhsHalfWidth = lhs->GetSize() / 2.0f;
 
+	// Gets the local coordinate systems of both the boxes
     CoordinateSystem lhsCoordinateSystem = lhs->GetGameObject()->GetTransform()->GetLocalCoordinateSystem();
     CoordinateSystem rhsCoordinateSystem = rhs->GetGameObject()->GetTransform()->GetLocalCoordinateSystem();
 
@@ -61,6 +45,8 @@ bool Physics::AreColliding( BoxCollider* lhs, BoxCollider* rhs )
 
     // Compute the translation vector
     glm::vec3 translation = lhs->GetGlobalCenter() - rhs->GetGlobalCenter();
+
+	// Project the translation vector onto the local coordinate systems.
     translation.x = glm::dot(translation, rhsCoordinateSystem[0]);
     translation.y = glm::dot(translation, rhsCoordinateSystem[1]);
     translation.z = glm::dot(translation, rhsCoordinateSystem[2]);
@@ -68,36 +54,36 @@ bool Physics::AreColliding( BoxCollider* lhs, BoxCollider* rhs )
     float rhsProjectedRadius; // Length of the projection of rhs OBB
     float lhsProjectedRadius; // Length of the projection of lhs OBB
 
-    // Test local axes of this OBB
-    for (int i = 0; i < 3; i++)	// Iterates through each dimension of this OBB
+    // Test for collisions on the rhs local axis
+    for (uint i = 0; i < 3; i++)	// Iterates through each dimension of this OBB
     {
-        // Sets the projection length of this OBB to the half the length of the box in this OBBs ith dimension
+        // Projects rhs on to its local axis
         rhsProjectedRadius = rhsHalfWidth[i];
 
-        // Sets the projection length of that OBB to be its half projection onto this OBBs ith dimension
+        // Projects lhs on to rhs's local axis
         lhsProjectedRadius =
             lhsHalfWidth[0] * absRotation[i][0]
             + lhsHalfWidth[1] * absRotation[i][1]
             + lhsHalfWidth[2] * absRotation[i][2];
 
-        // Sees if the distance between the the OBB exceed the the combine lengths of the projected Radii
+        // Sees if the distance between the OBB exceed the the combine lengths of the projected Radii
         if (abs(translation[i]) > rhsProjectedRadius + lhsProjectedRadius)
             return false;
     }
 
-    // Test local axes of that OBB
-    for (int i = 0; i < 3; i++)	// Iterates through each dimension of this OBB
+    // Test for collisions on the lhs local axis
+    for (uint i = 0; i < 3; i++)	// Iterates through each dimension of this OBB
     {
-        // Sets the projection length of this OBB to the half the length of the box in that OBBs ith dimension
+		// Projects lhs on to its local axis
+		lhsProjectedRadius = lhsHalfWidth[i];
+
+		// Projects rhs on to lhs's local axis
         rhsProjectedRadius =
             rhsHalfWidth[0] * absRotation[i][0]
             + rhsHalfWidth[1] * absRotation[i][1]
-            + rhsHalfWidth[2] * absRotation[i][2];
+            + rhsHalfWidth[2] * absRotation[i][2];    
 
-        // Sets the projection length of that OBB to be its half projection onto that OBBs ith dimension
-        lhsProjectedRadius = lhsHalfWidth[i];
-
-        // Sees if the distance between the the OBB exceed the the combine lengths of the projected Radii
+        // Sees if the distance between the OBB exceed the the combine lengths of the projected Radii
         if (abs(translation[i]) > rhsProjectedRadius + lhsProjectedRadius)
             return false;
     }
@@ -148,30 +134,34 @@ bool Physics::AreColliding( BoxCollider* lhs, BoxCollider* rhs )
     if (abs(translation[1] * rotation[0][2] - translation[0] * rotation[1][2]) > rhsProjectedRadius + lhsProjectedRadius) return false;
 
 
+	// Add to list of collisions.
+	_collisions.push_back(Collision(lhs, rhs, CollisionType::Box_Box));
+
     return true;
 }
 
 // Perform box <--> sphere collision
 bool Physics::AreColliding( BoxCollider* lhs, SphereCollider* rhs )
 {
-    lhs->QueryCorners( _lhsCorners );
-
     float sphereRadius = rhs->GetRadius();
-
     glm::vec3 lhsHalfWidth = lhs->GetSize() / 2.0f;
 
     CoordinateSystem lhsCoordinateSystem = lhs->GetGameObject()->GetTransform()->GetLocalCoordinateSystem();
     
-    // Finds the distances between the centers in the cubes local axis.
+	// The vector from the center of the sphere to the center of the box
     glm::vec3 vectorBetween = lhs->GetGlobalCenter() - rhs->GetGlobalCenter();
+
+	// Does the sphere collision pre-test
+	if (glm::length(vectorBetween) > sphereRadius + glm::length(lhsHalfWidth))
+		return false;
+
+	// Finds the distances between the centers in the cubes local axis.
     glm::vec3 distance;
     distance.x = glm::abs(glm::dot(vectorBetween, lhsCoordinateSystem[0]));
     distance.y = glm::abs(glm::dot(vectorBetween, lhsCoordinateSystem[1]));
     distance.z = glm::abs(glm::dot(vectorBetween, lhsCoordinateSystem[2]));
 
-    glm::vec3 collisionNormal = glm::normalize(rhs->GetGlobalCenter() - lhs->GetGlobalCenter()) * distance;
-    Collision collision = Collision(lhs, rhs, collisionNormal);
-    // Checks if the distance is greater than the sum of radii
+    // Checks if the distance is greater than the sum of radii for each axis of the box
     if (distance.x >= lhsHalfWidth.x + sphereRadius)
         return false;
     if (distance.y >= lhsHalfWidth.y + sphereRadius)
@@ -179,48 +169,21 @@ bool Physics::AreColliding( BoxCollider* lhs, SphereCollider* rhs )
     if (distance.z >= lhsHalfWidth.z + sphereRadius)
         return false;
 
-    // Check if the distance is less the boxes radii
-    if (distance.x < lhsHalfWidth.x)
-    {			
-        _collisions.push_back(collision);
-        return true;
-    }
-    if (distance.y < lhsHalfWidth.y)
-    {
-        _collisions.push_back(collision);
-        return true;
-    }
-    if (distance.z < lhsHalfWidth.z)
-    {
-        _collisions.push_back(collision);
-        return true;
-    }
-
-    // Checks for corners
-    float distanceFromCornor = glm::length(distance - lhsHalfWidth);
-
-    if (distanceFromCornor < sphereRadius)
-    {
-        _collisions.push_back(collision);
-        return true;
-    }
-    return false;
+	// Adds collision to the list of collisions to resolve
+	_collisions.push_back(Collision(lhs, rhs, CollisionType::Box_Sphere));
+	return true;
 }
 
 // Perform sphere <--> sphere collision
 bool Physics::AreColliding( SphereCollider* lhs, SphereCollider* rhs )
 {
     float centerDistance = glm::distance( lhs->GetGlobalCenter(), rhs->GetGlobalCenter() );
-
-
     float sumOfRadii = lhs->GetRadius() + rhs->GetRadius();
+
     if ( centerDistance <= sumOfRadii )
     {
-        float magnitude = sumOfRadii - centerDistance;
-        glm::vec3 collisionNormal = glm::normalize( rhs->GetGlobalCenter() - lhs->GetGlobalCenter() ) * magnitude;
-
-        Collision collision = Collision( lhs, rhs, collisionNormal );
-        _collisions.push_back( collision );
+		// Adds collision to the list of collisions to resolve
+		_collisions.push_back(Collision(lhs, rhs, CollisionType::Sphere_Sphere));
         return true;
     }
     return false;
@@ -235,40 +198,36 @@ void Physics::RegisterRigidbody(RigidBody* rigidBody)
 // Resolves box <--> sphere collision
 void Physics::ResolveBoxSphereCollision( BoxCollider* box, SphereCollider* sphere )
 {
+	//Get The rigid body
     RigidBody* sphereRigidBody = sphere->GetGameObject()->GetComponent<RigidBody>();
 
-    // knows who it is colliding with
+	// Find the sphere global center
+	glm::vec3 sphereCenter = sphere->GetGlobalCenter();
+	glm::vec3 betweenCenters = box->GetGlobalCenter() - sphereCenter;
 
-    // get normal
-
-    // inverse components based on normal
-
-    // determine which inverse to use
-
-    //inverse it
-
-    //CoordinateSystem boxCoordSystem =  boxCollider->GetGameObject()->GetTransform()->GetLocalCoordinateSystem();
-
-    glm::vec3 vectorBetween = box->GetGlobalCenter() - sphereRigidBody->GetPosition();
-
+	// Find the range of values inside the box.
     glm::vec3 boxMin = box->GetGlobalCenter() - box->GetSize() * 0.5f;
     glm::vec3 boxMax = box->GetGlobalCenter() + box->GetSize() * 0.5f;
 
-
-    glm::vec3 sphereCenter = sphere->GetGlobalCenter();
-
+	// Finds the closest point on the box to the sphere.
     glm::vec3 closestPoint = glm::clamp( sphereCenter, boxMin, boxMax );
 
-
+	// Finds the vector between the closest point and the sphere's center
     glm::vec3 collisionDistance = closestPoint - sphereCenter;
-    float distance = glm::length( collisionDistance );
-    float penetration = sphere->GetRadius() - distance;
+
+	// Finds the magnitude of penetration based off the length of the collision and the sphere's radius.
+	float penetration = sphere->GetRadius() - glm::length(collisionDistance);	
+
+	// Finds the normal vector of the collision.
     glm::vec3 collisionNormal = glm::normalize( collisionDistance );
 
+	// Moves the sphere back until it is no longer penetrating.
     sphereRigidBody->SetPosition( sphereCenter - collisionNormal * penetration );
 
+	// Reflects the sphere's velocity by the collision normal
     glm::vec3 newVelocity = glm::reflect( sphereRigidBody->GetVelocity(), collisionNormal );
 
+	// Sets the new velocity
     sphereRigidBody->SetVelocity( newVelocity );
 }
 
@@ -288,31 +247,37 @@ void Physics::ResolveSphereSphereCollision( SphereCollider* sphere1, SphereColli
     // The vector between centers
     betweenCenters = glm::normalize( betweenCenters );
 
-    // Find projected velocities of this sphere
-    glm::vec3 v1 = sphere1RigidBody->GetVelocity();
-    float x1 = glm::dot( betweenCenters, v1 );
-    glm::vec3 v1x = betweenCenters * x1;
-    glm::vec3 v1y = v1 - v1x;
+	// To handle collisions, we are finding the momentum of each sphere on the line between centers.
+	// We switch the projected momentums between spheres while maintaining the momentum perpendicular to that line.
 
+    // Find projected velocity of sphere one
+    glm::vec3 velocity1 = sphere1RigidBody->GetVelocity();
+	float x1 = glm::dot(betweenCenters, velocity1);	// The magnitude of the projected velocity.
+    glm::vec3 v1proj = betweenCenters * x1;	// The projected velocity
+	glm::vec3 v1perp = velocity1 - v1proj;	// The velocity perpendicular to the projected velocity. (It does not matter where it points to)
 
-    // Find projected velocities of that sphere
-    glm::vec3 v2 = sphere2RigidBody->GetVelocity();
-    float x2 = glm::dot( betweenCenters, v2 );
-    glm::vec3 v2x = betweenCenters * x2;
-    glm::vec3 v2y = v2 - v2x;
+    // Find projected velocity of sphere two
+    glm::vec3 velocity2 = sphere2RigidBody->GetVelocity();
+	float x2 = glm::dot(betweenCenters, velocity2);	// The magnitude of the projected velocity.
+    glm::vec3 v2proj = betweenCenters * x2; // The projected velocity
+	glm::vec3 v2perp = velocity2 - v2proj; // The velocity perpendicular to the projected velocity. (It does not matter where it points to)
 
     // Find masses
-    float m1 = sphere1RigidBody->GetMass();
-    float m2 = sphere2RigidBody->GetMass();
+    float mass1 = sphere1RigidBody->GetMass();
+    float mass2 = sphere2RigidBody->GetMass();
+
+	float massSum = mass1 + mass2;
+	float massDiff = mass1 - mass2;
 
     // Find new velocities
-    v1 = v1x * ( m1 - m2 ) / ( m1 + m2 ) + v2x * ( 2 * m2 ) / ( m1 + m2 ) + v1y;
-    v2 = v1x * ( 2 * m1 ) / ( m1 + m2 ) + v2x * ( m1 - m2 ) / ( m1 + m2 ) + v2y;
+	velocity1 = v1proj * massDiff / massSum + v2proj * (2 * mass2) / massSum + v1perp;
+	velocity2 = v1proj * (2 * mass1) / massSum + v2proj * massDiff / massSum + v2perp;
 
     // Sets the new velocities
-    sphere1RigidBody->SetVelocity( v1 );
-    sphere2RigidBody->SetVelocity( v2 );
+	sphere1RigidBody->SetVelocity(velocity1);
+	sphere2RigidBody->SetVelocity(velocity2);
 
+	// Moves the spheres so they are no longer colliding
     sphere1RigidBody->SetPosition( sphere1RigidBody->GetPosition() - betweenCenters * penetrationDepth * 0.5f );
     sphere2RigidBody->SetPosition( sphere2RigidBody->GetPosition() + betweenCenters * penetrationDepth * 0.5f );
 }
@@ -320,7 +285,7 @@ void Physics::ResolveSphereSphereCollision( SphereCollider* sphere1, SphereColli
 // Resolves the given collision
 void Physics::ResolveCollision( Collision& collision )
 {
-    if ( collision.collisionType == Physics::Sphere_Sphere )
+    if ( collision._collisionType == Physics::Sphere_Sphere )
     {
         // Get the two colliders
         SphereCollider* sphere1 = static_cast<SphereCollider*>( collision._lhs );
@@ -328,7 +293,7 @@ void Physics::ResolveCollision( Collision& collision )
 
         ResolveSphereSphereCollision( sphere1, sphere2 );
     }
-    else if ( collision.collisionType == Physics::Box_Sphere )
+	else if (collision._collisionType == Physics::Box_Sphere)
     {
         SphereCollider* sphere = nullptr;
         BoxCollider*    box = nullptr;
