@@ -290,33 +290,45 @@ void Physics::ResolveSphereSphereCollision( SphereCollider* sphere1, SphereColli
 // Resolves the given collision
 void Physics::ResolveCollision( Collision& collision )
 {
-    if ( collision._collisionType == Physics::Sphere_Sphere )
+    switch ( collision._collisionType )
     {
-        // Get the two colliders
-        SphereCollider* sphere1 = static_cast<SphereCollider*>( collision._lhs );
-        SphereCollider* sphere2 = static_cast<SphereCollider*>( collision._rhs );
-
-        ResolveSphereSphereCollision( sphere1, sphere2 );
-    }
-    else if (collision._collisionType == Physics::Box_Sphere)
-    {
-        SphereCollider* sphere = nullptr;
-        BoxCollider*    box = nullptr;
-
-        // Get the sphere and box colliders
-        if ( collision._lhs->GetColliderType() == ColliderType::Sphere )
+        case CollisionType::Sphere_Sphere:
         {
-            sphere = static_cast<SphereCollider*>( collision._lhs );
-            box    = static_cast<BoxCollider*>   ( collision._rhs );
-        }
-        else
-        {
-            sphere = static_cast<SphereCollider*>( collision._rhs );
-            box    = static_cast<BoxCollider*>   ( collision._lhs );
-        }
+            // Get the two colliders
+            SphereCollider* sphere1 = static_cast<SphereCollider*>( collision._lhs );
+            SphereCollider* sphere2 = static_cast<SphereCollider*>( collision._rhs );
 
-        // Resolve the collision
-        ResolveBoxSphereCollision( box, sphere );
+            ResolveSphereSphereCollision( sphere1, sphere2 );
+        }
+        break;
+
+        case CollisionType::Box_Sphere:
+        {
+            SphereCollider* sphere = nullptr;
+            BoxCollider*    box = nullptr;
+
+            // Get the sphere and box colliders
+            switch ( collision._lhs->GetColliderType() )
+            {
+                case ColliderType::Sphere:
+                {
+                    sphere = static_cast<SphereCollider*>( collision._lhs );
+                    box = static_cast<BoxCollider*>( collision._rhs );
+                }
+                break;
+
+                case ColliderType::Box:
+                {
+                    sphere = static_cast<SphereCollider*>( collision._rhs );
+                    box = static_cast<BoxCollider*>( collision._lhs );
+                }
+                break;
+            }
+
+            // Resolve the collision
+            ResolveBoxSphereCollision( box, sphere );
+        }
+        break;
     }
 }
 
