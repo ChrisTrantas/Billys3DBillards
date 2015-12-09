@@ -1,17 +1,41 @@
 #include "BilliardGameManager.h"
 #include "Time.hpp"
 #include "Input.hpp"
+#include "Physics.hpp"
 
 #define BALL_SIZE 2.0f
 
 
 BilliardGameManager::BilliardGameManager()
 {
-}
+	_game = Game::GetInstance();
 
-BilliardGameManager::BilliardGameManager(Game* game)
-{
-	_game = game;
+	
+	// Default Camera
+	_camTopDown = _game->AddGameObject("CameraObject");
+	Camera* camera = _camTopDown->AddComponent<Camera>();
+	camera->SetPosition(vec3(0, 50, 30));
+	camera->LookAtPosition(vec3(0, 0, 0));
+
+	// Following Camera
+	_camFollower = _game->AddGameObject("CameraObjectSmoothFollow");
+	Camera* cameraSmoothFollower = _camFollower->AddComponent<Camera>();
+	cameraSmoothFollower->SetPosition(vec3(-4, 4, -4));
+	SmoothFollow* smoothFollow = _camFollower->AddComponent<SmoothFollow>();
+
+
+	// Tracker Camera
+	_camTracker = _game->AddGameObject("CameraObjectTracker");
+	Camera* cameraTracker = _camTracker->AddComponent<Camera>();
+	cameraTracker->SetPosition(vec3(0, 50, 30));
+	Tracker* tracker = _camTracker->AddComponent<Tracker>();
+
+
+	// FPS Camera
+	_camFPS = _game->AddGameObject("CameraObjectFPS");
+	Camera* cameraFPS = _camFPS->AddComponent<Camera>();
+	cameraFPS->SetPosition(vec3(0, 50, 30));
+	FPSController* fPSController = _camFPS->AddComponent<FPSController>();
 }
 
 BilliardGameManager::~BilliardGameManager()
@@ -129,9 +153,9 @@ void BilliardGameManager::PreparePoolBalls(int rows)
 
 	for (GameObject* ball : balls)
 	{
-		ball->GetComponent<RigidBody>()->SetVelocity(vec3(0));
+		_game->Destroy(ball);
 	}
-
+	balls.clear();
 
 	// Create the numbered balls
 	for (int row = 1; row <= rows; row++)
@@ -174,6 +198,10 @@ void BilliardGameManager::PreparePoolBalls(int rows)
 			balls.push_back(ball);
 		}
 	}
+
+	activeCamera = _camTopDown->GetComponent<Camera>();
+	_camFollower->GetComponent<SmoothFollow>()->SetTarget(cueball->GetTransform());
+	_camTracker->GetComponent<Tracker>()->SetTarget(cueball->GetTransform());
 }
 
 void BilliardGameManager::Update()
@@ -194,4 +222,43 @@ void BilliardGameManager::Update()
 		{
 			PreparePoolBalls(10);
 		}
+
+		// Change camera mode
+		if (Input::WasKeyPressed(Key::Num1))
+		{
+			activeCamera = _camTopDown->GetComponent < Camera>();
+		}
+		else if (Input::WasKeyPressed(Key::Num2))
+		{
+			activeCamera = _camFollower->GetComponent < Camera>();
+		}
+		else if (Input::WasKeyPressed(Key::Num3))
+		{
+			activeCamera = _camTracker->GetComponent < Camera>();
+		}
+		else if (Input::WasKeyPressed(Key::Num4))
+		{
+			activeCamera = _camFPS->GetComponent < Camera>();
+		}
+
+		if (Input::WasKeyReleased(Key::Up))
+		{
+			_TargetBallIndex = (_TargetBallIndex + 1 + balls.size()) % balls.size();
+
+			_camFollower->GetComponent<SmoothFollow>()->SetTarget(balls[_TargetBallIndex]->GetTransform());
+			_camTracker->GetComponent<Tracker>()->SetTarget(balls[_TargetBallIndex]->GetTransform());
+		}
+		if (Input::WasKeyReleased(Key::Down))
+		{
+			_TargetBallIndex = (_TargetBallIndex - 1 + balls.size()) % balls.size();
+
+			_camFollower->GetComponent<SmoothFollow>()->SetTarget(balls[_TargetBallIndex]->GetTransform());
+			_camTracker->GetComponent<Tracker>()->SetTarget(balls[_TargetBallIndex]->GetTransform());
+		}
+		if (Input::WasKeyReleased(Key::Space))
+		{
+			_camFollower->GetComponent<SmoothFollow>()->SetTarget(cueball->GetTransform());
+			_camTracker->GetComponent<Tracker>()->SetTarget(cueball->GetTransform());
+		}
+
 }

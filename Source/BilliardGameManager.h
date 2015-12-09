@@ -13,8 +13,15 @@ class BilliardGameManager
 	vector<GameObject* > tableColliders = vector<GameObject* >();
 
 	GameObject* cueball = nullptr;
-	vector<GameObject* > balls;
+	vector<GameObject*> balls = vector<GameObject*>();
 
+	// Cameras
+	GameObject* _camTopDown;	// Static camera. Looks upon the table
+	GameObject* _camFollower;	// Smooth following camera.
+	GameObject* _camTracker;	// Stationary tracking camera.
+	GameObject* _camFPS;		// FPS camera
+	int _TargetBallIndex;	// The index of the currently target ball.
+	Camera* activeCamera;
 
 public:
 	BilliardGameManager();
@@ -30,6 +37,12 @@ public:
 	{
 		return cueball;
 	}
+
 	GameObject* GetNumberedPoolBalls();
+
+	Camera* GetActiveCamera()
+	{
+		return activeCamera;
+	}
 };
 

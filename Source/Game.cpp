@@ -44,65 +44,6 @@ Game::Game()
     }
 #endif
 
-    // Add a test text renderer
-    {
-        auto go = AddGameObject( "TestTextRenderer" );
-        auto tm = go->AddComponent<TextMaterial>();
-        tr = go->AddComponent<TextRenderer>();
-
-        std::shared_ptr<Font> font = std::make_shared<Font>();
-        assert( font->LoadFromFile( "Fonts\\OpenSans-Regular.ttf" ) );
-        tr->SetFont( font );
-        tr->SetFontSize( 32U );
-        tr->SetText( "Hello, world!" );
-        tm->SetTextColor( vec4( 1, 0, 0, 1 ) );
-
-        go->GetTransform()->SetPosition( glm::vec3( 10, 10, 0 ) );
-    }
-
-    gameManager = std::make_shared<BilliardGameManager>(this);
-    gameManager->CreateTable();
-    gameManager->PreparePoolBalls();
-  
-
-   
-
-#pragma region Camera
-    // Camera Manager
-    GameObject* cameraManagerObject = AddGameObject("CameraManager");
-    cameraManager = cameraManagerObject->AddComponent<CameraManager>();
-
-    // Default Camera
-    GameObject* cameraObject = cameraManagerObject->AddChild("CameraObject");
-    Camera* camera = cameraObject->AddComponent<Camera>();
-    camera->SetPosition(vec3(0, 50, 30));
-    camera->LookAtPosition(vec3(0, 0, 0));
-    cameraManager->AddCamera(camera);
-
-    // Smooth Follow Camera
-    GameObject* cameraObjectSmoothFollower = AddGameObject("CameraObjectSmoothFollow");
-    Camera* cameraSmoothFollower = cameraObjectSmoothFollower->AddComponent<Camera>();
-    cameraSmoothFollower->SetPosition(vec3(-4, 4, -4));
-    SmoothFollow* smoothFollow = cameraObjectSmoothFollower->AddComponent<SmoothFollow>();
-    smoothFollow->SetTarget(gameManager->GetCueball()->GetTransform());
-    cameraManager->AddCamera(cameraSmoothFollower);
-
-    // Tracker Camera
-    GameObject* cameraObjectTracker = AddGameObject("CameraObjectTracker");
-    Camera* cameraTracker = cameraObjectTracker->AddComponent<Camera>();
-    cameraTracker->SetPosition(vec3(0, 50, 30));
-    Tracker* tracker = cameraObjectTracker->AddComponent<Tracker>();
-    tracker->SetTarget(gameManager->GetCueball()->GetTransform());
-    cameraManager->AddCamera(cameraTracker);
-
-    // FPS Camera
-    GameObject* cameraObjectFPS = AddGameObject("CameraObjectFPS");
-    Camera* cameraFPS = cameraObjectFPS->AddComponent<Camera>();
-    cameraFPS->SetPosition(vec3(0, 50, 30));
-    FPSController* fPSController = cameraObjectFPS->AddComponent<FPSController>();
-    cameraManager->AddCamera( cameraFPS );
-#pragma endregion
-
     std::cout << "Press SPACE to apply a small force to the cue ball" << std::endl;
     std::cout << "Press ENTER to apply a large force to the cue ball" << std::endl;
 }
@@ -195,6 +136,27 @@ glm::vec4 Game::GetClearColor() const
 // Runs the game
 void Game::Run()
 {
+	// Add a test text renderer
+	{
+		auto go = AddGameObject("TestTextRenderer");
+		auto tm = go->AddComponent<TextMaterial>();
+		tr = go->AddComponent<TextRenderer>();
+
+		std::shared_ptr<Font> font = std::make_shared<Font>();
+		assert(font->LoadFromFile("Fonts\\OpenSans-Regular.ttf"));
+		tr->SetFont(font);
+		tr->SetFontSize(32U);
+		tr->SetText("Hello, world!");
+		tm->SetTextColor(vec4(1, 0, 0, 1));
+
+		go->GetTransform()->SetPosition(glm::vec3(10, 10, 0));
+	}
+
+	gameManager = std::make_shared<BilliardGameManager>();
+	gameManager->CreateTable();
+	gameManager->PreparePoolBalls();
+
+
     Time::Start();
 
     // Set the window to visible then begin the game loop
@@ -271,7 +233,7 @@ void Game::Update()
             Material* material = object->GetComponentOfType<Material>();
             if (material)
             {
-                material->ApplyCamera(cameraManager->GetActiveCamera());
+                material->ApplyCamera(gameManager->GetActiveCamera());
             }
             object->Update();
         }
