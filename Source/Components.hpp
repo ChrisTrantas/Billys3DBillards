@@ -18,6 +18,9 @@
 #include "SimpleMaterial.hpp"
 #include "TextMaterial.hpp"
 
+// RigidBody
+#include "RigidBody.h"
+
 // Collider
 #include "BoxCollider.hpp"
 #include "SphereCollider.hpp"

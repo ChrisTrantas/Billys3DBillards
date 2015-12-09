@@ -7,6 +7,10 @@
 #include <map>
 #include <vector>
 #include "Components.hpp"
+#include "BilliardGameManager.h"
+
+
+class BilliardGameManager;
 
 /// <summary>
 /// Defines the game handler.
@@ -19,6 +23,8 @@ class Game
     std::vector<std::shared_ptr<GameObject>> _gameObjects;
     std::shared_ptr<GameWindow> _window;
     glm::vec4 _clearColor;
+
+	BilliardGameManager* gameManager;
 
     /// <summary>
     /// Creates a new game.

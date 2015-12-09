@@ -19,6 +19,7 @@ std::vector<GameObject*> balls = std::vector<GameObject*>();
 GameObject* table;
 
 
+
 static void APIENTRY MyGLCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam)
 {
     if (source == GL_DEBUG_SOURCE_API)
@@ -61,195 +62,12 @@ Game::Game()
         go->GetTransform()->SetPosition( glm::vec3( 100, 100, 0 ) );
     }
 
+	gameManager = new BilliardGameManager(this);
+	gameManager->CreateTable();
+	gameManager->PreparePoolBalls();
+  
 
-    // Create the table
-    {
-        table = AddGameObject("Table");
-        SimpleMaterial* tableMaterial = table->AddComponent<SimpleMaterial>();
-        MeshRenderer* tableMeshRenderer = table->AddComponent<MeshRenderer>();
-
-        tableMeshRenderer->SetMesh(MeshLoader::Load("Models\\Pool_Table.fbx"));
-        tableMeshRenderer->SetMaterial(tableMaterial);
-        tableMaterial->SetMyTexture(Texture2D::FromFile("Textures\\Rocks.jpg"));
-    }
-
-    // Create the table colliders
-    {
-        GameObject* tableFloor = table->AddChild("TableFloor");
-        SimpleMaterial* tableFloorMaterial = tableFloor->AddComponent<SimpleMaterial>();
-        MeshRenderer* tableFloorMeshRenderer = tableFloor->AddComponent<MeshRenderer>();
-        BoxCollider* tableFloorCollider = tableFloor->AddComponent<BoxCollider>();
-        RigidBody* tableFloorRigidbody = tableFloor->AddComponent<RigidBody>();
-
-        tableFloorRigidbody->SetMass(0.0f);
-
-        tableFloorMeshRenderer->SetMesh(MeshLoader::Load("Models\\Cube.obj"));
-        tableFloorMeshRenderer->SetMaterial(tableFloorMaterial);
-
-        tableFloor->GetTransform()->SetScale(vec3(100, 1, 50));
-        tableFloor->GetTransform()->SetPosition(vec3(0, -1.25, 0));
-
-        tableFloorMaterial->SetMyTexture(Texture2D::FromFile("Textures\\Cue-Ball.png"));
-
-        for (int i = 0; i < 6; i++)
-        {
-            GameObject* tableWall = table->AddChild("TableWall_" + std::to_string(i));
-            SimpleMaterial* tableWallMaterial = tableWall->AddComponent<SimpleMaterial>();
-            MeshRenderer* tableWallMeshRenderer = tableWall->AddComponent<MeshRenderer>();
-            BoxCollider* tableWallCollider = tableWall->AddComponent<BoxCollider>();
-            RigidBody* tableWallRigidbody = tableWall->AddComponent<RigidBody>();
-
-            tableWallMeshRenderer->SetMesh(MeshLoader::Load("Models\\Cube.obj"));
-            tableWallMeshRenderer->SetMaterial(tableWallMaterial);
-            tableWallMaterial->SetMyTexture(Texture2D::FromFile("Textures\\Cue-Ball.png"));
-
-            tableWallRigidbody->SetMass(0.0f);
-            tableWallCollider->SetSize(glm::vec3(1));
-
-            switch (i)
-            {
-            case 0:
-                tableWall->GetTransform()->SetScale(vec3(7, 4, 42));
-                tableWall->GetTransform()->SetPosition(vec3(53.5f, 1, 0));
-                break;
-            case 1:
-                tableWall->GetTransform()->SetScale(vec3(7, 4, 42));
-                tableWall->GetTransform()->SetPosition(vec3(-53.5f, 1, 0));
-                break;
-            case 2:
-                tableWall->GetTransform()->SetScale(vec3(42, 4, 7));
-                tableWall->GetTransform()->SetPosition(vec3(-25.0f, 1, -28.5f));
-                break;
-            case 3:
-                tableWall->GetTransform()->SetScale(vec3(42, 4, 7));
-                tableWall->GetTransform()->SetPosition(vec3(25.0f, 1, -28.5f));
-                break;
-            case 4:
-                tableWall->GetTransform()->SetScale(vec3(42, 4, 7));
-                tableWall->GetTransform()->SetPosition(vec3(-25.0f, 1, 28.5f));
-                break;
-            case 5:
-                tableWall->GetTransform()->SetScale(vec3(42, 4, 7));
-                tableWall->GetTransform()->SetPosition(vec3(25.0f, 1, 28.5f));
-                break;
-            }
-
-            //tableFloorMaterial->SetTexture("MyTexture", Texture2D::FromFile("Textures\\Cue-Ball.png"));
-        }
-    }
-
-    // Create the cue ball in its own scope to prevent accidental referencing of other things
-    {
-        GameObject* cueball = AddGameObject("CueBall");
-        SimpleMaterial* material = cueball->AddComponent<SimpleMaterial>();
-        MeshRenderer* meshRenderer = cueball->AddComponent<MeshRenderer>();
-        RigidBody* rigidBody = cueball->AddComponent<RigidBody>();
-        SphereCollider* collider = cueball->AddComponent<SphereCollider>();
-
-        collider->SetRadius(0.5f);
-
-        rigidBody->SetMass(1.0f);
-
-        meshRenderer->SetMesh(MeshLoader::Load("Models\\Sphere.obj"));
-        meshRenderer->SetMaterial(material);
-
-        material->SetMyTexture(Texture2D::FromFile("Textures\\Cue-Ball.png"));
-
-        cueball->GetTransform()->SetPosition(vec3(0.0f, BALL_SIZE * 0.5f, -11));
-        rigidBody->AddForce(vec3(0, 0, 20.0f));
-
-        balls.push_back(cueball);
-    }
-
-    // Create all of the balls
-    for (int row = 1; row <= 5; row++)
-    {
-        for (int i = 0; i < row; i++)
-        {
-            GameObject* ball = AddGameObject("Ball_" + std::to_string(row) + '_' + std::to_string(i));
-            Transform* transform = ball->GetTransform();
-            SimpleMaterial* material = ball->AddComponent<SimpleMaterial>();
-            MeshRenderer* meshRenderer = ball->AddComponent<MeshRenderer>();
-            RigidBody* rigidBody = ball->AddComponent<RigidBody>();
-            SphereCollider* collider = ball->AddComponent<SphereCollider>();
-
-            rigidBody->SetMass(1.0f);
-
-            meshRenderer->SetMesh(MeshLoader::Load("Models\\Sphere.obj"));
-            meshRenderer->SetMaterial(material);
-            
-            std::string texName = "Textures\\" + std::to_string( ( balls.size() - 1) % 15 + 1 ) + "-Ball.png";
-            std::cout << "Loading " << texName << "... ";
-
-            std::shared_ptr<Texture2D> texture = Texture2D::FromFile( texName );
-            if (texture)
-            {
-                material->SetMyTexture(texture);
-                std::cout << "Done." << std::endl;
-            }
-            else
-            {
-                std::cout << "Failed. ;_;" << std::endl;
-            }
-
-
-            float xPos = (-(row - 1) * 0.7f + i * 1.4f) * BALL_SIZE;
-            float zPos = (row * 0.8f) * BALL_SIZE;
-            transform->SetPosition(vec3(xPos, BALL_SIZE * 0.5f, zPos));
-
-            balls.push_back(ball);
-        }
-    }
-
-    
-    /*{
-        GameObject* testBox = AddGameObject("testBox");
-        SimpleMaterial* boxMaterial = testBox->AddComponent<SimpleMaterial>();
-        MeshRenderer* testBoxMeshRenderer = testBox->AddComponent<MeshRenderer>();
-        RigidBody* testBoxRigidBody = testBox->AddComponent<RigidBody>();
-        BoxCollider* testBoxCollider = testBox->AddComponent<BoxCollider>();
-
-        testBoxCollider->SetSize(vec3(1, 1, 1));
-
-        testBoxRigidBody->SetMass(100.0f);
-
-        testBoxMeshRenderer->SetMesh(MeshLoader::Load("Models\\Cube.obj"));
-        testBoxMeshRenderer->SetMaterial(boxMaterial);
-
-        //boxMaterial->SetMyTexture(Texture2D::FromFile("Textures\\Cue-Ball.png"));
-
-        testBox->GetTransform()->SetPosition(vec3(0.25f, 0.5f, -2.0f));
-    }*/
-
-    /*for (int i = 0; i < 10; i++)
-    {
-        GameObject* testBox = AddGameObject("testBox_" + std::to_string(i));
-        SimpleMaterial* boxMaterial = testBox->AddComponent<SimpleMaterial>();
-        MeshRenderer* testBoxMeshRenderer = testBox->AddComponent<MeshRenderer>();
-        RigidBody* testBoxRigidBody = testBox->AddComponent<RigidBody>();
-        BoxCollider* testBoxCollider = testBox->AddComponent<BoxCollider>();
-
-        testBoxCollider->SetSize(vec3(1, 1, 1));
-
-        testBoxRigidBody->SetMass(100.0f);
-
-        testBoxMeshRenderer->SetMesh(MeshLoader::Load("Models\\Cube.obj"));
-        testBoxMeshRenderer->SetMaterial(boxMaterial);
-
-        //boxMaterial->SetMyTexture(Texture2D::FromFile("Textures\\Cue-Ball.png"));
-
-        testBox->GetTransform()->SetPosition(vec3(-7.5f + i * 1.25f, 0.5f, 10.0f));
-    }*/
-    
-    // Resize all of the balls
-    for (auto& ball : balls)
-    {
-        SphereCollider* collider = ball->GetComponent<SphereCollider>();
-        Transform* transform = ball->GetTransform();
-
-        collider->SetRadius(BALL_SIZE * 0.5f);
-        transform->SetScale(vec3(BALL_SIZE));
-    }
+   
 
 #pragma region Camera
     // Camera Manager
@@ -268,7 +86,7 @@ Game::Game()
     Camera* cameraSmoothFollower = cameraObjectSmoothFollower->AddComponent<Camera>();
     cameraSmoothFollower->SetPosition(vec3(-4, 4, -4));
     SmoothFollow* smoothFollow = cameraObjectSmoothFollower->AddComponent<SmoothFollow>();
-    smoothFollow->SetTarget(balls[0]->GetTransform());
+	smoothFollow->SetTarget(gameManager->GetCueball()->GetTransform());
     cameraManager->AddCamera(cameraSmoothFollower);
 
     // Tracker Camera
@@ -276,7 +94,7 @@ Game::Game()
     Camera* cameraTracker = cameraObjectTracker->AddComponent<Camera>();
     cameraTracker->SetPosition(vec3(0, 50, 30));
     Tracker* tracker = cameraObjectTracker->AddComponent<Tracker>();
-    tracker->SetTarget(balls[0]->GetTransform());
+	tracker->SetTarget(gameManager->GetCueball()->GetTransform());
     cameraManager->AddCamera(cameraTracker);
 
     // FPS Camera
@@ -421,17 +239,6 @@ void Game::Update()
         }
     }
     
-    if (Input::WasKeyPressed(Key::Space))
-    {
-        balls[0]->GetComponent<RigidBody>()->AddForce(vec3(0, 0, 4000.0f));
-        first = false;
-    }
-    else if (Input::WasKeyPressed(Key::Enter))
-    {
-        balls[0]->GetComponent<RigidBody>()->AddForce(vec3(0, 0, 10000.0f));
-        first = false;
-    }
-
 
     // Sets positons
     //vec3 cubePosition(glm::sin(Time::GetTotalTime() / 4) * 4, 0, glm::cos(Time::GetTotalTime() / 4) * 4);
@@ -470,6 +277,9 @@ void Game::Update()
     Time::Update();
     Physics::Update();
     Input::Update(_window->_window);
+
+	gameManager->Update();
+
 
     // If escape is being pressed, then we should close the window
     if ( Input::WasKeyPressed( Key::Escape ) )
