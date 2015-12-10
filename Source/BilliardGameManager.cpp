@@ -5,6 +5,8 @@
 
 #define BALL_SIZE 2.0f
 
+Input* inputController;
+vec2 mouseClickPos = inputController->GetMousePosition();
 
 BilliardGameManager::BilliardGameManager()
 {
@@ -345,6 +347,21 @@ void BilliardGameManager::Update()
 	{
 		_camFollower->GetComponent<SmoothFollow>()->SetTarget(cueball->GetTransform());
 		_camTracker->GetComponent<Tracker>()->SetTarget(cueball->GetTransform());
+	}
+
+	// Mouse stuff
+	if (Input::WasButtonPressed(MouseButton::Left))
+	{
+		mouseClickPos = inputController->GetMousePosition();
+	}
+
+	if (Input::WasButtonReleased(MouseButton::Left))
+	{
+		std::cout << "mouseX" << mouseClickPos.x << std::endl;
+		std::cout << "mouseY" << mouseClickPos.y << std::endl;
+		vec2 mouseReleasePos = inputController->GetMousePosition();
+		vec2 mousePosDifference = mouseClickPos - mouseReleasePos;
+		cueball->GetComponent<RigidBody>()->AddForce(vec3(mousePosDifference.x, 0, mousePosDifference.y));
 	}
 }
 
