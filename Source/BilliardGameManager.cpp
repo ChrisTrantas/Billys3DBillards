@@ -230,6 +230,15 @@ void BilliardGameManager::PreparePoolBalls(int rows)
 		}
 	}
 
+
+	GameObject* line = _game->AddGameObject("Line");
+	LineMaterial* lineMaterial = line->AddComponent<LineMaterial>();
+	MeshRenderer* lineMeshRenderer = line->AddComponent<MeshRenderer>();
+
+	lineMeshRenderer->SetMaterial(lineMaterial);
+
+
+
 	activeCamera = _camTopDown->GetComponent<Camera>();
 
 
