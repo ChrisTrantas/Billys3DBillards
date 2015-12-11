@@ -40,7 +40,7 @@ private:
 public:
 	Camera(GameObject* gameObject);
 	~Camera();
-
+	
 	glm::mat4 GetView() const;
 	glm::mat4 GetProjection() const;
 

@@ -219,12 +219,15 @@ void Physics::RegisterRigidbody(RigidBody* rigidBody)
 // Resolves box <--> sphere collision
 void Physics::ResolveBoxSphereCollision( BoxCollider* box, SphereCollider* sphere )
 {
+	// In our game, the boxes are not moved in collisions and are assumed to be oriented.
+
     //Get The rigid body
     RigidBody* sphereRigidBody = sphere->GetGameObject()->GetComponent<RigidBody>();
 
-    // Find the sphere global center
-    glm::vec3 sphereCenter = sphere->GetGlobalCenter() - sphereRigidBody->GetVelocity() * Time::GetElapsedTime();
-    glm::vec3 boxCenter = box->GetGlobalCenter();
+    // Find the global centers
+	glm::vec3 boxCenter = box->GetGlobalCenter();
+	// Finds the center of the sphere in the previous frame
+	glm::vec3 sphereCenter = sphere->GetGlobalCenter() - sphereRigidBody->GetVelocity() * Time::GetElapsedTime();
     glm::vec3 betweenCenters = box->GetGlobalCenter() - sphereCenter;
 
     // Find the range of values inside the box.
@@ -233,15 +236,16 @@ void Physics::ResolveBoxSphereCollision( BoxCollider* box, SphereCollider* spher
 
     // Finds the closest point on the box to the sphere.
     glm::vec3 closestPoint = glm::clamp( sphereCenter, boxMin, boxMax );
-
-    // Finds the vector between the closest point and the sphere's center
-    glm::vec3 collisionDistance = closestPoint - sphereCenter;
 	
-	if (collisionDistance == vec3(0))
+	// If the sphere's center inside the box, reverse the velocity
+	if (closestPoint == sphereCenter)
 	{
 		sphereRigidBody->SetVelocity(-sphereRigidBody->GetVelocity());
 		return;
 	}
+
+	// Finds the vector between the closest point and the sphere's center
+	glm::vec3 collisionDistance = closestPoint - sphereCenter;
 
     // Finds the magnitude of penetration based off the length of the collision and the sphere's radius.
     float penetration = sphere->GetRadius() - glm::length(collisionDistance);	
@@ -302,8 +306,8 @@ void Physics::ResolveSphereSphereCollision( SphereCollider* sphere1, SphereColli
     velocity2 = v1proj * (2 * mass1) / massSum + v2proj * massDiff / massSum + v2perp;
 
     // Sets the new velocities
-    sphere1RigidBody->SetVelocity(velocity1);
-    sphere2RigidBody->SetVelocity(velocity2);
+    sphere1RigidBody->SetVelocity(velocity1 * 0.9f);
+	sphere2RigidBody->SetVelocity(velocity2 * 0.9f);
 
     // Moves the spheres so they are no longer colliding
     sphere1RigidBody->SetPosition( sphere1RigidBody->GetPosition() - betweenCenters * penetrationDepth * 0.5f );

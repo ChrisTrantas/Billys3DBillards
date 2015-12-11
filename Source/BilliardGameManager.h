@@ -7,14 +7,14 @@ class Game;
 
 class BilliardGameManager
 {
-	Game* _game = nullptr;
+	Game* _Game = nullptr;
 
-	GameObject* table = nullptr;
-	vector<GameObject*> tableColliders = vector<GameObject*>();
-	vector<GameObject*> pocketColliders = vector<GameObject*>();
+	GameObject* _Table = nullptr;
+	vector<GameObject*> _TableColliders = vector<GameObject*>();
+	vector<GameObject*> _PocketColliders = vector<GameObject*>();
 
-	GameObject* cueball = nullptr;
-	vector<GameObject*> balls = vector<GameObject*>();
+	GameObject* _Cueball = nullptr;
+	vector<GameObject*> _Balls = vector<GameObject*>();	// List of numbered balls. DOES NOT INCLUDE Cueball.
 
 	// Cameras
 	GameObject* _camTopDown;	// Static camera. Looks upon the table
@@ -22,38 +22,27 @@ class BilliardGameManager
 	GameObject* _camTracker;	// Stationary tracking camera.
 	GameObject* _camFPS;		// FPS camera
 	int _TargetBallIndex;	// The index of the currently target ball.
-	Camera* activeCamera;
+	Camera* _ActiveCamera;	// The camera currently being drawn for
 
-	bool _Ready = false;
+	bool _IsTableSettled = false;
 
-	int score = 0;
+	int _Score = 0;
 
 	// Text
 	TextRenderer* _TextRenderer;
 
 public:
 	BilliardGameManager();
-	BilliardGameManager(Game* _game);
 	~BilliardGameManager();
 
-	void CreateTable();
-	void PreparePoolBalls(int rows = 5);
+	void CreateTable();	// Creates the table with model and colliders
+	void PreparePoolBalls(int rows = 5);	// Places the balls into their starting positions
+	void HandlePocketCollision(GameObject*);	// Determines what happens when a ball collides with a pocket collider.
 
 	void Update();
 
-	GameObject* GetCueball()
-	{
-		return cueball;
-	}
-
-	GameObject* GetNumberedPoolBalls();
-
-	Camera* GetActiveCamera()
-	{
-		return activeCamera;
-	}
-
-
-	void HandlePocketCollision(GameObject*);
+	GameObject* GetCueball();
+	vector<GameObject*> GetNumberedPoolBalls();
+	Camera* GetActiveCamera();
 };
 

@@ -4,56 +4,56 @@
 #include "Physics.hpp"
 
 #define BALL_SIZE 2.0f
-
-#define CUEBALL_NAME "Cueball"
+#define TABLE_TEXTURE "Textures\\Rocks.jpg"
+#define MAX_FORCE 10000.0f
 
 Input* inputController;
 vec2 mouseClickPos = inputController->GetMousePosition();
 
 BilliardGameManager::BilliardGameManager()
 {
-    _game = Game::GetInstance();
+	_Game = Game::GetInstance();
 
-	// Add a test text renderer
-	{
-		auto go = _game->AddGameObject("TableTextRenderer");
-		auto tm = go->AddComponent<TextMaterial>();
-		_TextRenderer = go->AddComponent<TextRenderer>();
+	// Add a text renderer
+	GameObject* textObject = _Game->AddGameObject("TableTextRenderer");
+	TextMaterial* textMaterial = textObject->AddComponent<TextMaterial>();
+	_TextRenderer = textObject->AddComponent<TextRenderer>();
 
-		std::shared_ptr<Font> font = std::make_shared<Font>();
-		assert(font->LoadFromFile("Fonts\\OpenSans-Regular.ttf"));
-		_TextRenderer->SetFont(font);
-		_TextRenderer->SetFontSize(16U);
-		tm->SetTextColor(vec4(0, 0, 0, 1));
+	std::shared_ptr<Font> font = std::make_shared<Font>();
+	assert(font->LoadFromFile("Fonts\\OpenSans-Regular.ttf"));
+	_TextRenderer->SetFont(font);
+	_TextRenderer->SetFontSize(16U);
+	textMaterial->SetTextColor(vec4(0, 0, 0, 1));
 
-		go->GetTransform()->SetPosition(glm::vec3(500, 10, 0));
-	}
-    
-    // Default Camera
-    _camTopDown = _game->AddGameObject("CameraObject");
-    Camera* camera = _camTopDown->AddComponent<Camera>();
-    camera->SetPosition(vec3(0, 50, 30));
-    camera->LookAtPosition(vec3(0, 0, 0));
-
-    // Following Camera
-    _camFollower = _game->AddGameObject("CameraObjectSmoothFollow");
-    Camera* cameraSmoothFollower = _camFollower->AddComponent<Camera>();
-    cameraSmoothFollower->SetPosition(vec3(-4, 4, -4));
-    SmoothFollow* smoothFollow = _camFollower->AddComponent<SmoothFollow>();
+	textObject->GetTransform()->SetPosition(glm::vec3(500, 10, 0));
 
 
-    // Tracker Camera
-    _camTracker = _game->AddGameObject("CameraObjectTracker");
-    Camera* cameraTracker = _camTracker->AddComponent<Camera>();
-    cameraTracker->SetPosition(vec3(0, 50, 30));
-    Tracker* tracker = _camTracker->AddComponent<Tracker>();
+	// Default Camera
+	_camTopDown = _Game->AddGameObject("Top Down Camera");
+	Camera* camera = _camTopDown->AddComponent<Camera>();
+	camera->SetPosition(vec3(0, 50, 40));
+	camera->LookAtPosition(vec3(0, 0, 0));
+
+	// Following Camera
+	_camFollower = _Game->AddGameObject("Smooth Following Camera");
+	Camera* cameraSmoothFollower = _camFollower->AddComponent<Camera>();
+	cameraSmoothFollower->SetPosition(vec3(-4, 4, -4));
+	SmoothFollow* smoothFollow = _camFollower->AddComponent<SmoothFollow>();
 
 
-    // FPS Camera
-    _camFPS = _game->AddGameObject("CameraObjectFPS");
-    Camera* cameraFPS = _camFPS->AddComponent<Camera>();
-    cameraFPS->SetPosition(vec3(0, 50, 30));
-    FPSController* fPSController = _camFPS->AddComponent<FPSController>();
+	// Tracker Camera
+	_camTracker = _Game->AddGameObject("Stationary Tracking Camera");
+	Camera* cameraTracker = _camTracker->AddComponent<Camera>();
+	cameraTracker->SetPosition(vec3(0, 50, 30));
+	Tracker* tracker = _camTracker->AddComponent<Tracker>();
+
+
+	// FPS Camera
+	_camFPS = _Game->AddGameObject("FPS Camera");
+	Camera* cameraFPS = _camFPS->AddComponent<Camera>();
+	cameraFPS->SetPosition(vec3(0, 1, 0));
+	cameraFPS->LookAtPosition(vec3(0, 0, -11));
+	FPSController* fPSController = _camFPS->AddComponent<FPSController>();
 }
 
 BilliardGameManager::~BilliardGameManager()
@@ -62,94 +62,86 @@ BilliardGameManager::~BilliardGameManager()
 
 void BilliardGameManager::CreateTable()
 {
-    // Create the table
-    {
-        table = _game->AddGameObject("Table");
-        SimpleMaterial* tableMaterial = table->AddComponent<SimpleMaterial>();
-        MeshRenderer* tableMeshRenderer = table->AddComponent<MeshRenderer>();
+	// Create the table
 
-        tableMeshRenderer->SetMesh(MeshLoader::Load("Models\\Pool_Table.fbx"));
-        tableMeshRenderer->SetMaterial(tableMaterial);
-        tableMaterial->SetMyTexture(Texture2D::FromFile("Textures\\Rocks.jpg"));
-    }
+	_Table = _Game->AddGameObject("Table");
+	SimpleMaterial* tableMaterial = _Table->AddComponent<SimpleMaterial>();
+	MeshRenderer* tableMeshRenderer = _Table->AddComponent<MeshRenderer>();
 
-    // Create the table colliders
-    {
-        // The table floor
-        GameObject* tableFloor = table->AddChild("TableFloor");
-        SimpleMaterial* tableFloorMaterial = tableFloor->AddComponent<SimpleMaterial>();
-        BoxCollider* tableFloorCollider = tableFloor->AddComponent<BoxCollider>();
-        MeshRenderer* tableFloorMeshRenderer = tableFloor->AddComponent<MeshRenderer>();
-        RigidBody* tableFloorRigidbody = tableFloor->AddComponent<RigidBody>();
-
-        tableFloorRigidbody->SetMass(0.0f);
-
-        tableFloorMeshRenderer->SetMesh(MeshLoader::Load("Models\\Cube.obj"));
-        tableFloorMeshRenderer->SetMaterial(tableFloorMaterial);
-
-        tableFloor->GetTransform()->SetScale(vec3(100, 1, 50));
-        tableFloor->GetTransform()->SetPosition(vec3(0, -1.25, 0));
-
-        tableFloorMaterial->SetMyTexture(Texture2D::FromFile("Textures\\Cue-Ball.png"));
-
-        tableColliders.push_back(tableFloor);
-
-        // The table walls
-        for (int i = 0; i < 6; i++)
-        {
-            GameObject* tableWall = table->AddChild("TableWall_" + std::to_string(i));
-            SimpleMaterial* tableWallMaterial = tableWall->AddComponent<SimpleMaterial>();
-            BoxCollider* tableWallCollider = tableWall->AddComponent<BoxCollider>();
-            MeshRenderer* tableWallMeshRenderer = tableWall->AddComponent<MeshRenderer>();
-            RigidBody* tableWallRigidbody = tableWall->AddComponent<RigidBody>();
-
-            tableWallMeshRenderer->SetMesh(MeshLoader::Load("Models\\Cube.obj"));
-            tableWallMeshRenderer->SetMaterial(tableWallMaterial);
-            tableWallMaterial->SetMyTexture(Texture2D::FromFile("Textures\\Cue-Ball.png"));
-
-            tableWallRigidbody->SetMass(0.0f);
-            tableWallCollider->SetSize(glm::vec3(1));
-
-            switch (i)
-            {
-            case 0:
-                tableWall->GetTransform()->SetScale(vec3(7, 4, 42));
-                tableWall->GetTransform()->SetPosition(vec3(53.5f, 1, 0));
-                break;
-            case 1:
-                tableWall->GetTransform()->SetScale(vec3(7, 4, 42));
-                tableWall->GetTransform()->SetPosition(vec3(-53.5f, 1, 0));
-                break;
-            case 2:
-                tableWall->GetTransform()->SetScale(vec3(42, 4, 7));
-                tableWall->GetTransform()->SetPosition(vec3(-25.0f, 1, -28.5f));
-                break;
-            case 3:
-                tableWall->GetTransform()->SetScale(vec3(42, 4, 7));
-                tableWall->GetTransform()->SetPosition(vec3(25.0f, 1, -28.5f));
-                break;
-            case 4:
-                tableWall->GetTransform()->SetScale(vec3(42, 4, 7));
-                tableWall->GetTransform()->SetPosition(vec3(-25.0f, 1, 28.5f));
-                break;
-            case 5:
-                tableWall->GetTransform()->SetScale(vec3(42, 4, 7));
-                tableWall->GetTransform()->SetPosition(vec3(25.0f, 1, 28.5f));
-                break;
-            }
-            tableColliders.push_back(tableWall);
-        }
-    }
+	tableMeshRenderer->SetMesh(MeshLoader::Load("Models\\Pool_Table.fbx"));
+	tableMeshRenderer->SetMaterial(tableMaterial);
+	tableMaterial->SetMyTexture(Texture2D::FromFile(TABLE_TEXTURE));
 
 
-	std::function<void(GameObject*)> func = std::bind(&BilliardGameManager::HandlePocketCollision, this, _1);
+	// Create the table colliders
 
-    // Create the test pocket
+	// The table floor
+	GameObject* tableFloor = _Table->AddChild("TableFloor");
+	BoxCollider* tableFloorCollider = tableFloor->AddComponent<BoxCollider>();
+	RigidBody* tableFloorRigidbody = tableFloor->AddComponent<RigidBody>();
+
+	tableFloorRigidbody->SetMass(0.0f);
+
+
+	tableFloor->GetTransform()->SetScale(vec3(100, 1, 50));
+	tableFloor->GetTransform()->SetPosition(vec3(0, -1.25, 0));
+
+	_TableColliders.push_back(tableFloor);
+
+	// The table walls
 	for (int i = 0; i < 6; i++)
 	{
-		GameObject* pocket = _game->AddGameObject("Pocket_" + std::to_string(i));
-		
-		
+		GameObject* tableWall = _Table->AddChild("TableWall_" + std::to_string(i));
+		BoxCollider* tableWallCollider = tableWall->AddComponent<BoxCollider>();
+		RigidBody* tableWallRigidbody = tableWall->AddComponent<RigidBody>();
+
+
+		tableWallRigidbody->SetMass(0.0f);
+		tableWallCollider->SetSize(glm::vec3(1));
+
+		// Place the wall colliders into position
+		switch (i)
+		{
+		case 0:
+			tableWall->GetTransform()->SetScale(vec3(7, 4, 42));
+			tableWall->GetTransform()->SetPosition(vec3(53.5f, 1, 0));
+			break;
+		case 1:
+			tableWall->GetTransform()->SetScale(vec3(7, 4, 42));
+			tableWall->GetTransform()->SetPosition(vec3(-53.5f, 1, 0));
+			break;
+		case 2:
+			tableWall->GetTransform()->SetScale(vec3(42, 4, 7));
+			tableWall->GetTransform()->SetPosition(vec3(-25.0f, 1, -28.5f));
+			break;
+		case 3:
+			tableWall->GetTransform()->SetScale(vec3(42, 4, 7));
+			tableWall->GetTransform()->SetPosition(vec3(25.0f, 1, -28.5f));
+			break;
+		case 4:
+			tableWall->GetTransform()->SetScale(vec3(42, 4, 7));
+			tableWall->GetTransform()->SetPosition(vec3(-25.0f, 1, 28.5f));
+			break;
+		case 5:
+			tableWall->GetTransform()->SetScale(vec3(42, 4, 7));
+			tableWall->GetTransform()->SetPosition(vec3(25.0f, 1, 28.5f));
+			break;
+		}
+		_TableColliders.push_back(tableWall);
+	}
+
+
+	// Pocket Colliders
+
+	// Creates a function pointer to be subscribed to the event listeners of the pocket colliders
+	std::function<void(GameObject*)> func = std::bind(&BilliardGameManager::HandlePocketCollision, this, _1);
+
+	// Create the pockets
+	for (int i = 0; i < 6; i++)
+	{
+		GameObject* pocket = _Game->AddGameObject("Pocket_" + std::to_string(i));
+
+
 		SphereCollider* pocketCollider = pocket->AddComponent<SphereCollider>();
 		RigidBody* pocketRigidbody = pocket->AddComponent<RigidBody>();
 
@@ -157,8 +149,8 @@ void BilliardGameManager::CreateTable()
 		pocketRigidbody->SetMass(0.0f);
 		pocketRigidbody->SetIsMovable(false);
 
-
-		/*SimpleMaterial* pocketMaterial = pocket->AddComponent<SimpleMaterial>();
+		/*
+		SimpleMaterial* pocketMaterial = pocket->AddComponent<SimpleMaterial>();
 		MeshRenderer* pocketMeshRenderer = pocket->AddComponent<MeshRenderer>();
 		pocketMeshRenderer->SetMesh(MeshLoader::Load("Models\\Sphere.obj"));
 		pocketMeshRenderer->SetMaterial(pocketMaterial);
@@ -167,6 +159,7 @@ void BilliardGameManager::CreateTable()
 
 		pocket->GetTransform()->SetScale(vec3(4, 4, 4));
 
+		// Add the HandlePocketCollision function pointer to the event listener of the pocket.
 		pocket->GetEventListener()->AddEventListener("OnCollide", func);
 
 
@@ -192,22 +185,24 @@ void BilliardGameManager::CreateTable()
 			break;
 		}
 
-		pocketColliders.push_back(pocket);
+		_PocketColliders.push_back(pocket);
 	}
 }
 
 // Places the pool balls into starting position
 void BilliardGameManager::PreparePoolBalls(int rows)
 {
-    score = 0;
+	// Resets the score
+    _Score = 0;
 
-	if (cueball == nullptr)
-	{
-		cueball = _game->AddGameObject(CUEBALL_NAME);
-		SimpleMaterial* material = cueball->AddComponent<SimpleMaterial>();
-		MeshRenderer* meshRenderer = cueball->AddComponent<MeshRenderer>();
-		RigidBody* rigidBody = cueball->AddComponent<RigidBody>();
-		SphereCollider* collider = cueball->AddComponent<SphereCollider>();
+	// Creates the Cueball object if it does not exist.
+    if (_Cueball == nullptr)
+    {
+		_Cueball = _Game->AddGameObject("Cueball");
+		SimpleMaterial* material = _Cueball->AddComponent<SimpleMaterial>();
+		MeshRenderer* meshRenderer = _Cueball->AddComponent<MeshRenderer>();
+		SphereCollider* collider = _Cueball->AddComponent<SphereCollider>();
+		RigidBody* rigidBody = _Cueball->AddComponent<RigidBody>();
 
         collider->SetRadius(BALL_SIZE* 0.5f);
 
@@ -217,28 +212,28 @@ void BilliardGameManager::PreparePoolBalls(int rows)
         meshRenderer->SetMaterial(material);
 
 		material->SetMyTexture(Texture2D::FromFile("Textures\\Cue-Ball.png"));
-	}
-
-	cueball->SetActive(true);
-	cueball->GetTransform()->SetPosition(vec3(-11, BALL_SIZE * 0.5f, 0));
-    cueball->GetTransform()->SetScale( vec3( BALL_SIZE ) );
-	RigidBody* cueballRigidBody = cueball->GetComponent<RigidBody>();
-	cueballRigidBody->SetVelocity(vec3(0));
-	cueballRigidBody->SetAcceleration(vec3(0));
-
-
-    for (GameObject* ball : balls)
-    {
-        _game->Destroy(ball);
     }
-    balls.clear();
 
-    // Create the numbered balls
+	// Puts the Cueball in the proper position and makes sure it is at rest
+	_Cueball->GetTransform()->SetPosition(vec3(-11, BALL_SIZE * 0.5f, 0));
+	_Cueball->GetTransform()->SetScale(vec3(BALL_SIZE));
+	_Cueball->GetComponent<RigidBody>()->SetVelocity(vec3(0));
+	_Cueball->GetComponent<RigidBody>()->SetAcceleration(vec3(0));
+	_Cueball->SetActive(true);
+
+	// Remove existing numbered balls to create them a new
+    for (GameObject* ball : _Balls)
+    {
+        _Game->Destroy(ball);
+    }
+    _Balls.clear();
+
+    // Creates and place the numbered balls
     for (int row = 1; row <= rows; row++)
     {
         for (int i = 0; i < row; i++)
         {
-            GameObject* ball = _game->AddGameObject("Ball_" + std::to_string(row) + '_' + std::to_string(i));
+            GameObject* ball = _Game->AddGameObject("Ball_" + std::to_string(row) + '_' + std::to_string(i));
             Transform* transform = ball->GetTransform();
             SimpleMaterial* material = ball->AddComponent<SimpleMaterial>();
             MeshRenderer* meshRenderer = ball->AddComponent<MeshRenderer>();
@@ -251,7 +246,8 @@ void BilliardGameManager::PreparePoolBalls(int rows)
             meshRenderer->SetMesh(MeshLoader::Load("Models\\Sphere.obj"));
             meshRenderer->SetMaterial(material);
 
-            std::string texName = "Textures\\" + std::to_string((balls.size()) % 15 + 1) + "-Ball.png";
+			// Finds the texture of the ball based on the current one selected
+            std::string texName = "Textures\\" + std::to_string((_Balls.size()) % 15 + 1) + "-Ball.png";
             std::cout << "Loading " << texName << "... ";
 
             std::shared_ptr<Texture2D> texture = Texture2D::FromFile(texName);
@@ -275,67 +271,48 @@ void BilliardGameManager::PreparePoolBalls(int rows)
             transform->SetPosition(vec3(xPos, BALL_SIZE * 0.5f, zPos));
             transform->SetScale(vec3(BALL_SIZE));
 
-            balls.push_back(ball);
+            _Balls.push_back(ball);
         }
     }
 
-    activeCamera = _camTopDown->GetComponent<Camera>();
+	// Resets the cameras
+    _ActiveCamera = _camTopDown->GetComponent<Camera>();
+	_TargetBallIndex = 0;
+
+	_camFollower->GetComponent<SmoothFollow>()->SetTarget(_Cueball->GetTransform());
+	_camTracker->GetComponent<Tracker>()->SetTarget(_Cueball->GetTransform());
 
 
-
-    GameObject* line = _game->AddGameObject("Line");
+	// Line rendering
+    GameObject* line = _Game->AddGameObject("Line");
     LineMaterial* lineMaterial = line->AddComponent<LineMaterial>();
     MeshRenderer* lineMeshRenderer = line->AddComponent<MeshRenderer>();
+
     lineMeshRenderer->SetMaterial(lineMaterial);
-
-
-
-
-    _camFollower->GetComponent<SmoothFollow>()->SetTarget(cueball->GetTransform());
-    _camFollower->GetTransform()->SetPosition(vec3(0.0f, 50.0f, 10.0f));
-    _camTracker->GetComponent<Tracker>()->SetTarget(cueball->GetTransform());
 }
 
 void BilliardGameManager::Update()
 {
-    if (cueball->GetComponent<RigidBody>()->IsAtRest())
+	_IsTableSettled = true;
+    for (unsigned int i = 0; i < _Balls.size(); i++)
     {
-        _Ready = true;
-        for (auto ball : balls)
-        {
-            if (!ball->GetComponent<RigidBody>()->IsAtRest())
-            {
-                _Ready = false;
-                break;
-            }
-        }
-    }
-    else
-    {
-        _Ready = false;
-    }
+		// Checks if the table is settled
+		if (!_Balls[i]->GetComponent<RigidBody>()->IsAtRest())
+		{
+			_IsTableSettled = false;
+		}
 
-    for (auto i = 0; i < balls.size(); i++)
-    {
-        vec3 position = balls[i]->GetTransform()->GetPosition();
+		// Checks if any of the balls exceeded bounds
+		vec3 position = _Balls[i]->GetTransform()->GetPosition();
         if (glm::abs(position.x) > 50.0f
             || glm::abs(position.z) > 25.0f)
         {
-            _game->Destroy(balls[i]);
-            balls.erase(balls.begin() + i);
+			_Game->Destroy(_Balls[i]);
+			_Balls.erase(_Balls.begin() + i);
             i--;
         }
     }
-
-
-    if (Input::WasKeyReleased(Key::Space))
-    {
-        cueball->GetComponent<RigidBody>()->AddForce(vec3(4000.0f, 0, 0));
-    }
-    else if (Input::WasKeyReleased(Key::Enter))
-    {
-        cueball->GetComponent<RigidBody>()->AddForce(vec3(10000.0f, 0, 0));
-    }
+	_IsTableSettled = _IsTableSettled && _Cueball->GetComponent<RigidBody>()->IsAtRest();
 
     // Reset table
     if (Input::WasKeyPressed(Key::F1))
@@ -368,71 +345,83 @@ void BilliardGameManager::Update()
     }
 
 
-
     // Change camera mode
     if (Input::WasKeyPressed(Key::Num1))
     {
-        activeCamera = _camTopDown->GetComponent < Camera>();
+        _ActiveCamera = _camTopDown->GetComponent < Camera>();
     }
     else if (Input::WasKeyPressed(Key::Num2))
     {
-        activeCamera = _camFollower->GetComponent < Camera>();
+		_ActiveCamera = _camFollower->GetComponent < Camera>();
     }
     else if (Input::WasKeyPressed(Key::Num3))
     {
-        activeCamera = _camTracker->GetComponent < Camera>();
+		_ActiveCamera = _camTracker->GetComponent < Camera>();
     }
     else if (Input::WasKeyPressed(Key::Num4))
     {
-        activeCamera = _camFPS->GetComponent < Camera>();
+		_ActiveCamera = _camFPS->GetComponent < Camera>();
     }
 
+	// Change camera target
     if (Input::WasKeyReleased(Key::Up))
     {
-        _TargetBallIndex = (_TargetBallIndex + 1 + balls.size()) % balls.size();
+		_TargetBallIndex = (_TargetBallIndex + 1 + _Balls.size()) % _Balls.size();
 
-        _camFollower->GetComponent<SmoothFollow>()->SetTarget(balls[_TargetBallIndex]->GetTransform());
-        _camTracker->GetComponent<Tracker>()->SetTarget(balls[_TargetBallIndex]->GetTransform());
+		_camFollower->GetComponent<SmoothFollow>()->SetTarget(_Balls[_TargetBallIndex]->GetTransform());
+        _camTracker->GetComponent<Tracker>()->SetTarget(_Balls[_TargetBallIndex]->GetTransform());
     }
-    if (Input::WasKeyReleased(Key::Down))
+    else if (Input::WasKeyReleased(Key::Down))
     {
-        _TargetBallIndex = (_TargetBallIndex - 1 + balls.size()) % balls.size();
+		_TargetBallIndex = (_TargetBallIndex - 1 + _Balls.size()) % _Balls.size();
 
-        _camFollower->GetComponent<SmoothFollow>()->SetTarget(balls[_TargetBallIndex]->GetTransform());
-        _camTracker->GetComponent<Tracker>()->SetTarget(balls[_TargetBallIndex]->GetTransform());
+		_camFollower->GetComponent<SmoothFollow>()->SetTarget(_Balls[_TargetBallIndex]->GetTransform());
+		_camTracker->GetComponent<Tracker>()->SetTarget(_Balls[_TargetBallIndex]->GetTransform());
     }
-    if (Input::WasKeyReleased(Key::Tilde))
+    else if (Input::WasKeyReleased(Key::Tilde))
     {
-        _camFollower->GetComponent<SmoothFollow>()->SetTarget(cueball->GetTransform());
-        _camTracker->GetComponent<Tracker>()->SetTarget(cueball->GetTransform());
+        _camFollower->GetComponent<SmoothFollow>()->SetTarget(_Cueball->GetTransform());
+		_camTracker->GetComponent<Tracker>()->SetTarget(_Cueball->GetTransform());
     }
 
     // Mouse stuff
-    if (Input::WasButtonPressed(MouseButton::Left))
-    {
-        mouseClickPos = inputController->GetMousePosition();
-    }
-
+	if (Input::WasButtonPressed(MouseButton::Left))
+	{
+		mouseClickPos = inputController->GetMousePosition();
+	}
     if (Input::WasButtonReleased(MouseButton::Left))
     {
         std::cout << "mouseX" << mouseClickPos.x << std::endl;
         std::cout << "mouseY" << mouseClickPos.y << std::endl;
         vec2 mouseReleasePos = inputController->GetMousePosition();
         vec2 mousePosDifference = mouseClickPos - mouseReleasePos;
-        cueball->GetComponent<RigidBody>()->AddForce(vec3(mousePosDifference.x, 0, mousePosDifference.y));
+		mousePosDifference *= 4.0f;
+		glm::clamp(mousePosDifference, -MAX_FORCE, MAX_FORCE);
+		
+        _Cueball->GetComponent<RigidBody>()->AddForce(vec3(mousePosDifference.x, 0, mousePosDifference.y));
     }
 
-	_TextRenderer->SetText(std::to_string(score) + '/' + std::to_string(balls.size()) + "   Is table settled: " + (_Ready ? "True" : "False"));
+
+	// Sets the text
+	_TextRenderer->SetText(std::to_string(_Score) + '/' + std::to_string(_Balls.size())
+		+ "\nIs table settled: " + (_IsTableSettled ? "Yes" : "No")
+		+ "\nCamera Mode: " + _ActiveCamera->GetGameObject()->GetName()
+		);
 }
 
-
+/*
+	This is called when a ball collides with a pocket colliders
+	This is subscribed to the "OnCollide" event of the pocket colliders
+*/
 void BilliardGameManager::HandlePocketCollision(GameObject* gameObject)
 {
 	string name = gameObject->GetName();
+
+	// Checks if game object is the Cueball
 	if (name == "Cueball")
     {
-		cueball->GetComponent<RigidBody>()->SetPosition(vec3(-11, BALL_SIZE * 0.5f, 0));
-		if (score == balls.size())
+		_Cueball->GetComponent<RigidBody>()->SetPosition(vec3(-11, BALL_SIZE * 0.5f, 0));
+		if (_Score == _Balls.size())
 		{
 			std::printf("You Win");
 			PreparePoolBalls();
@@ -443,12 +432,20 @@ void BilliardGameManager::HandlePocketCollision(GameObject* gameObject)
 			PreparePoolBalls();
 		}
     }
-	else if (name.substr(0,4) == "Ball")
+	// Checks if the game object is a numbered ball
+	else if (name.substr(0,4) == "Ball")	// The first four characters of the name of the numbered balls is "Ball"
 	{
-		gameObject->GetTransform()->SetPosition(vec3(-50 + score * BALL_SIZE, 4, -25));
-		score++;
+		// Place ball over wall
+		gameObject->GetTransform()->SetPosition(vec3(-50 + _Score * BALL_SIZE, 10, -25));
+		_Score++;
 		gameObject->GetComponent<RigidBody>()->SetVelocity(vec3(0));
+
+		// Removes object from simulation
 		Physics::UnregisterRigidbody(gameObject->GetComponent<RigidBody>());
 	}
 }
 
+GameObject* BilliardGameManager::GetCueball(){ return _Cueball; }
+vector<GameObject*> BilliardGameManager::GetNumberedPoolBalls() { return _Balls; }
+
+Camera* BilliardGameManager::GetActiveCamera() { return _ActiveCamera; }

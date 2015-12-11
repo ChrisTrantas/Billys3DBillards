@@ -37,7 +37,7 @@ vec3 RigidBody::GetPosition(){ return m_v3Position; }
 
 void RigidBody::SetVelocity(glm::vec3 a_v3Velocity)
 {
-	m_v3Velocity = a_v3Velocity;
+    m_v3Velocity = a_v3Velocity;
 }
 
 vec3 RigidBody::GetVelocity(){ return m_v3Velocity; }
@@ -71,41 +71,33 @@ void RigidBody::AddForce(const glm::vec3& force)
 
 void RigidBody::Update(void)
 {
-	// Apply Friction
-	AddForce(-m_v3Velocity * m_fBallFriction);
-
-
-
-	m_v3Velocity = m_v3Velocity + (m_v3Acceleration * Time::GetElapsedTime());
-	m_v3Acceleration = glm::vec3(0);
-
-	//m_v3Position = m_v3Position + m_v3Velocity;
-
 	if (_IsMovable)
 	{
+		// Apply Friction
+		AddForce(-m_v3Velocity * m_fBallFriction);
+
+		m_v3Velocity = m_v3Velocity + (m_v3Acceleration * Time::GetElapsedTime());
+		m_v3Acceleration = glm::vec3(0);
+
+		//m_v3Position = m_v3Position + m_v3Velocity;
 		m_v3Position = transform->GetPosition();
+
+
 		m_v3Position += m_v3Velocity * Time::GetElapsedTime();
 		transform->SetPosition(m_v3Position);
+
+		if (glm::abs(m_v3Velocity.x) < MIN_SPEED) m_v3Velocity.x = 0;
+		if (glm::abs(m_v3Velocity.y) < MIN_SPEED) m_v3Velocity.y = 0;
+		if (glm::abs(m_v3Velocity.z) < MIN_SPEED) m_v3Velocity.z = 0;
+
+		_AtRest = (0 == glm::dot(m_v3Velocity, m_v3Velocity));
 	}
-
-
-
-	m_v3Position += m_v3Velocity * Time::GetElapsedTime();
-	transform->SetPosition(m_v3Position);
-
-	if (glm::abs(m_v3Velocity.x) < MIN_SPEED) m_v3Velocity.x = 0;
-	if (glm::abs(m_v3Velocity.y) < MIN_SPEED) m_v3Velocity.y = 0;
-	if (glm::abs(m_v3Velocity.z) < MIN_SPEED) m_v3Velocity.z = 0;
-
-	_AtRest = (0 == glm::dot(m_v3Velocity, m_v3Velocity));
-
 }
 
 bool RigidBody::IsAtRest()
 {
     return _AtRest;
 }
-
 
 bool RigidBody::IsMovable()
 {

@@ -11,6 +11,7 @@
 
 class Component;
 class Transform;
+class Physics;
 
 /// <summary>
 /// Defines a game object.

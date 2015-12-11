@@ -145,11 +145,11 @@ void Game::Run()
 		std::shared_ptr<Font> font = std::make_shared<Font>();
 		assert(font->LoadFromFile("Fonts\\OpenSans-Regular.ttf"));
 		tr->SetFont(font);
-		tr->SetFontSize(32U);
+		tr->SetFontSize(12U);
 		tr->SetText("Hello, world!");
 		tm->SetTextColor(vec4(1, 0, 0, 1));
 
-		go->GetTransform()->SetPosition(glm::vec3(10, 10, 0));
+		go->GetTransform()->SetPosition(glm::vec3(5, 5, 0));
 	}
 
 	gameManager = std::make_shared<BilliardGameManager>();
@@ -238,7 +238,7 @@ void Game::Update()
             object->Update();
         }
     }
-
+    
 
     gameManager->Update();
 

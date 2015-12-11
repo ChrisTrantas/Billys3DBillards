@@ -35,7 +35,7 @@ Camera::~Camera(){}
 
 void Camera::CalculateView()
 {
-	CalculateDirectionVectors();
+	//CalculateDirectionVectors();
 
 	glm::vec3 v3Position = m_Transform->GetPosition();
 
@@ -112,8 +112,9 @@ void Camera::LookAtDirection(glm::vec3 a_v3Direction)
 	// Makes sure the new direction vector actually points somewhere.
 	if (a_v3Direction.length() != 0)
 	{
-		m_v3Forward = a_v3Direction;
+		m_v3Forward = glm::normalize(a_v3Direction);
 
+		CalculateDirectionVectors();
 		CalculateView();
 	}
 }
@@ -124,8 +125,9 @@ void Camera::LookAtPosition(glm::vec3 a_v3Target)
 	// Makes sure the new target location is not the current location
 	if (a_v3Target != v3Position)
 	{
-		m_v3Forward = a_v3Target - v3Position;
-
+		m_v3Forward = glm::normalize(a_v3Target - v3Position);
+		
+		CalculateDirectionVectors();
 		CalculateView();
 	}
 }
