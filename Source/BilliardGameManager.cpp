@@ -4,7 +4,7 @@
 #include "Physics.hpp"
 
 #define BALL_SIZE 2.0f
-#define TABLE_TEXTURE "Textures\\Rocks.jpg"
+#define TABLE_TEXTURE "Textures\\Tabel_Texture.png"
 #define MAX_FORCE 10000.0f
 
 Input* inputController;
