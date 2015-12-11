@@ -28,6 +28,18 @@ glm::vec3 SphereCollider::GetGlobalCenter() const
     return TransformVector( _gameObject->GetWorldMatrix(), _center );
 }
 
+// Gets the maximum point of this collider
+glm::vec3 SphereCollider::GetMaxPoint() const
+{
+    return GetGlobalCenter() + glm::vec3( _radius );
+}
+
+// Gets the minimum point of this collider
+glm::vec3 SphereCollider::GetMinPoint() const
+{
+    return GetGlobalCenter() - glm::vec3( _radius );
+}
+
 // Gets this sphere's radius
 float SphereCollider::GetRadius() const
 {

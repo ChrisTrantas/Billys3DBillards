@@ -35,6 +35,16 @@ public:
     glm::vec3 GetGlobalCenter() const;
 
     /// <summary>
+    /// Gets the maximum point of this collider.
+    /// </summary>
+    virtual glm::vec3 GetMaxPoint() const;
+
+    /// <summary>
+    /// Gets the minimum point of this collider.
+    /// </summary>
+    virtual glm::vec3 GetMinPoint() const;
+
+    /// <summary>
     /// Gets this box collider's size.
     /// </summary>
     glm::vec3 GetSize() const;

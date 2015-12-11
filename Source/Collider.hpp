@@ -1,14 +1,16 @@
 #pragma once
 
 #include "Component.hpp"
+#include "Math.hpp"
 
 /// <summary>
 /// An enumeration of possible collider types.
 /// </summary>
 enum class ColliderType
 {
-    Box,
-    Sphere
+    Unknown = 0,
+    Box     = ( 1 << 0 ),
+    Sphere  = ( 1 << 1 )
 };
 
 /// <summary>
@@ -36,6 +38,16 @@ public:
     /// Gets this collider's type.
     /// </summary>
     ColliderType GetColliderType() const;
+
+    /// <summary>
+    /// Gets the maximum point of this collider.
+    /// </summary>
+    virtual glm::vec3 GetMaxPoint() const = 0;
+
+    /// <summary>
+    /// Gets the minimum point of this collider.
+    /// </summary>
+    virtual glm::vec3 GetMinPoint() const = 0;
 
     /// <summary>
     /// Checks to see if this collider collides with the given collider.
