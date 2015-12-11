@@ -1,8 +1,9 @@
 #pragma once
 
+#include "Config.hpp"
 #include "Component.hpp"
 #include "Mesh.hpp"
-#include "LineRenderer.hpp"
+#include "LineMaterial.hpp"
 
 /// <summary>
 /// Defines a Line renderer.
@@ -13,6 +14,7 @@ class LineRenderer : public Component
 
 private:
 
+	LineVertex _points[ 2 ];
 	std::shared_ptr<Mesh> _mesh;
 	bool _isMeshDirty;
 
@@ -33,6 +35,15 @@ public:
 	/// </summary>
 	~LineRenderer();
 
+	/// <summary>
+	/// Gets the starting point.
+	/// </summary>
+	glm::vec2 GetStartPoint() const;
+
+	/// <summary>
+	/// Gets the ending point.
+	/// </summary>
+	glm::vec2 GetEndPoint() const;
 
 	/// <summary>
 	/// Gets the text mesh.
@@ -51,9 +62,9 @@ public:
 	/// <param name="value">The new text.</param>
 	void SetLine(const std::string& value);
 
-	void SetStart(vec2 startPoint);
+	void SetStartPoint(glm::vec2& startPoint);
 
-	void SetEnd(vec2 endPoint);
+	void SetEndPoint(glm::vec2& endPoint);
 
 	/// <summary>
 	/// Updates this line renderer.
