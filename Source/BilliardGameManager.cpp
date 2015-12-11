@@ -5,6 +5,8 @@
 
 #define BALL_SIZE 2.0f
 
+Input* inputController;
+vec2 mouseClickPos = inputController->GetMousePosition();
 
 BilliardGameManager::BilliardGameManager()
 {
@@ -236,6 +238,15 @@ void BilliardGameManager::PreparePoolBalls(int rows)
     activeCamera = _camTopDown->GetComponent<Camera>();
 
 
+
+    GameObject* line = _game->AddGameObject("Line");
+    LineMaterial* lineMaterial = line->AddComponent<LineMaterial>();
+    MeshRenderer* lineMeshRenderer = line->AddComponent<MeshRenderer>();
+
+    lineMeshRenderer->SetMaterial(lineMaterial);
+
+
+
     _camFollower->GetComponent<SmoothFollow>()->SetTarget(cueball->GetTransform());
     _camFollower->GetTransform()->SetPosition(vec3(0.0f, 50.0f, 10.0f));
     _camTracker->GetComponent<Tracker>()->SetTarget(cueball->GetTransform());
@@ -260,7 +271,7 @@ void BilliardGameManager::Update()
         _Ready = false;
     }
 
-    for (size_t i = 0; i < balls.size(); i++)
+    for (auto i = 0; i < balls.size(); i++)
     {
         vec3 position = balls[i]->GetTransform()->GetPosition();
         if (glm::abs(position.x) > 70.0f
@@ -350,6 +361,21 @@ void BilliardGameManager::Update()
     {
         _camFollower->GetComponent<SmoothFollow>()->SetTarget(cueball->GetTransform());
         _camTracker->GetComponent<Tracker>()->SetTarget(cueball->GetTransform());
+    }
+
+    // Mouse stuff
+    if (Input::WasButtonPressed(MouseButton::Left))
+    {
+        mouseClickPos = inputController->GetMousePosition();
+    }
+
+    if (Input::WasButtonReleased(MouseButton::Left))
+    {
+        std::cout << "mouseX" << mouseClickPos.x << std::endl;
+        std::cout << "mouseY" << mouseClickPos.y << std::endl;
+        vec2 mouseReleasePos = inputController->GetMousePosition();
+        vec2 mousePosDifference = mouseClickPos - mouseReleasePos;
+        cueball->GetComponent<RigidBody>()->AddForce(vec3(mousePosDifference.x, 0, mousePosDifference.y));
     }
 }
 
