@@ -5,6 +5,8 @@
 
 #define BALL_SIZE 2.0f
 
+#define CUEBALL_NAME "Cueball"
+
 Input* inputController;
 vec2 mouseClickPos = inputController->GetMousePosition();
 
@@ -125,24 +127,56 @@ void BilliardGameManager::CreateTable()
 		}
 	}
 
-	GameObject* pocket = _game->AddGameObject("Pocket");
-	SimpleMaterial* pocketMaterial = pocket->AddComponent<SimpleMaterial>();
-	MeshRenderer* pocketMeshRenderer = pocket->AddComponent<MeshRenderer>();
-	SphereCollider* pocketCollider = pocket->AddComponent<SphereCollider>();
-	RigidBody* pocketRigidbody = pocket->AddComponent<RigidBody>();
 
-	pocketCollider->SetRadius(BALL_SIZE* 0.5f);
-	pocketRigidbody->SetMass(0.0f);
 
-	pocketMeshRenderer->SetMesh(MeshLoader::Load("Models\\Sphere.obj"));
-	pocketMeshRenderer->SetMaterial(pocketMaterial);
+	std::function<void(GameObject*)> func = std::bind(&BilliardGameManager::PocketCollision, this, _1);
 
-	pocket->GetTransform()->SetScale(vec3(5, 2, 5));
-	pocket->GetTransform()->SetPosition(vec3(0, 0, 0));
+	for (unsigned int i = 0; i < 6; i++)
+	{
+		GameObject* pocket = _game->AddGameObject("Pocket_" + std::to_string(i));
+		SimpleMaterial* pocketMaterial = pocket->AddComponent<SimpleMaterial>();
+		MeshRenderer* pocketMeshRenderer = pocket->AddComponent<MeshRenderer>();
+		SphereCollider* pocketCollider = pocket->AddComponent<SphereCollider>();
+		RigidBody* pocketRigidbody = pocket->AddComponent<RigidBody>();
 
-	pocketMaterial->SetMyTexture(Texture2D::FromFile("Textures\\Cue-Ball.png"));
+		pocketCollider->SetRadius(3.1);
+		pocketRigidbody->SetMass(0.0f);
+		pocketRigidbody->SetMovable(false);
 
-	pocketColliders.push_back(pocket);
+		pocketMeshRenderer->SetMesh(MeshLoader::Load("Models\\Sphere.obj"));
+		pocketMeshRenderer->SetMaterial(pocketMaterial);
+
+		pocket->GetTransform()->SetScale(vec3(8, 4, 8));
+
+		pocketMaterial->SetMyTexture(Texture2D::FromFile("Textures\\Cue-Ball.png"));
+
+		pocket->GetEventListener()->AddEventListener("OnCollide", func);
+
+
+		switch (i)
+		{
+		case 0:
+			pocket->GetTransform()->SetPosition(vec3(50, 0, 25));
+			break;
+		case 1:
+			pocket->GetTransform()->SetPosition(vec3(0, 0, 25));
+			break;
+		case 2:
+			pocket->GetTransform()->SetPosition(vec3(-50, 0, 25));
+			break;
+		case 3:
+			pocket->GetTransform()->SetPosition(vec3(50, 0, -25));
+			break;
+		case 4:
+			pocket->GetTransform()->SetPosition(vec3(0, 0, -25));
+			break;
+		case 5:
+			pocket->GetTransform()->SetPosition(vec3(-50, 0, -25));
+			break;
+		}
+
+		pocketColliders.push_back(pocket);
+	}
 }
 
 // Places the pool balls into starting position
@@ -152,7 +186,7 @@ void BilliardGameManager::PreparePoolBalls(int rows)
 
 	if (cueball == nullptr)
 	{
-		cueball = _game->AddGameObject("CueBall");
+		cueball = _game->AddGameObject(CUEBALL_NAME);
 		SimpleMaterial* material = cueball->AddComponent<SimpleMaterial>();
 		MeshRenderer* meshRenderer = cueball->AddComponent<MeshRenderer>();
 		RigidBody* rigidBody = cueball->AddComponent<RigidBody>();
@@ -166,16 +200,16 @@ void BilliardGameManager::PreparePoolBalls(int rows)
 		meshRenderer->SetMaterial(material);
 
 		material->SetMyTexture(Texture2D::FromFile("Textures\\Cue-Ball.png"));
-
-		std::function<void(GameObject*)> func = std::bind(&BilliardGameManager::AddToScore, this, _1);
-		cueball->GetEventListener()->AddEventListener("OnCollide", func);
 	}
 
-
+	cueball->SetActive(true);
 	cueball->GetTransform()->SetPosition(vec3(-11, BALL_SIZE * 0.5f, 0));
     cueball->GetTransform()->SetScale( vec3( BALL_SIZE ) );
-    cueball->GetComponent<RigidBody>()->SetVelocity( vec3( 0 ) );
-    cueball->GetComponent<RigidBody>()->SetAcceleration( vec3( 0 ) );
+	RigidBody* cueballRigidBody = cueball->GetComponent<RigidBody>();
+	cueballRigidBody->SetVelocity(vec3(0));
+	cueballRigidBody->SetAcceleration(vec3(0));
+
+
 
 
 	for (GameObject* ball : balls)
@@ -257,15 +291,24 @@ void BilliardGameManager::Update()
 		_Ready = false;
 	}
 
+	{
+		vec3 position = cueball->GetTransform()->GetPosition();
+		if (glm::abs(position.x) > 70.0f
+			|| glm::abs(position.z) > 35.0f)
+		{
+			cueball->GetTransform()->SetPosition(vec3(-11, BALL_SIZE * 0.5f, 0));
+		}
+	}
+
 	for (auto i = 0; i < balls.size(); i++)
 	{
 		vec3 position = balls[i]->GetTransform()->GetPosition();
 		if (glm::abs(position.x) > 70.0f
-			|| glm::abs(position.z) > 25.0f)
+			|| glm::abs(position.z) > 35.0f)
 		{
-			_game->Destroy(balls[i]);
-			balls.erase(balls.begin() + i);
-			i--;
+			RigidBody* rigidBody = balls[i]->GetComponent<RigidBody>();
+			rigidBody->SetVelocity(vec3(0));
+			Physics::UnregisterRigidbody(rigidBody);
 		}
 	}
 
@@ -365,12 +408,24 @@ void BilliardGameManager::Update()
 	}
 }
 
-void BilliardGameManager::AddToScore(GameObject* gameObject)
+void BilliardGameManager::PocketCollision(GameObject* gameObject)
 {
-	if (gameObject->GetName() == "Pocket")
+	string name = gameObject->GetName();
+	if (name == CUEBALL_NAME)
 	{
+		std::cout << "Cueball in pocket." << endl;
+		PreparePoolBalls();
+	}
+	else if (name.substr(0,4) == "Ball" )
+	{
+		std::cout << "Numbered ball in pocket" << endl;
 		score++;
 		std::cout << score << endl;
+		RigidBody* rigidBody = gameObject->GetComponent<RigidBody>();
+		rigidBody->SetVelocity(vec3(0));
+		Physics::UnregisterRigidbody(gameObject->GetComponent<RigidBody>());
+		gameObject->GetTransform()->SetPosition(vec3(-55 + score * 2, 4, -30));
 	}
+
 }
 

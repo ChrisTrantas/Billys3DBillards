@@ -238,40 +238,7 @@ void Game::Update()
             object->Update();
         }
     }
-    
 
-    // Sets positons
-    //vec3 cubePosition(glm::sin(Time::GetTotalTime() / 4) * 4, 0, glm::cos(Time::GetTotalTime() / 4) * 4);
-    //vec3 spherePosition = vec3(-5.0f, abs(sin(Time::GetTotalTime()) * 4) , -5);
-    //vec3 otherSpherePosition = vec3(5.0f, abs(cos(Time::GetTotalTime()) * 4), -5);
-    
-    /*
-    // get transformations then set positons
-    cube->GetTransform()->SetPosition(cubePosition);
-    sphere->GetComponent<RigidBody>()->SetAcceleration(vec3(1.0f, 1.0f, 1.0f));
-    sphere->GetTransform()->SetPosition(vec3(1.0f,1.0f,1.0f));
-    otherSphere->GetTransform()->SetPosition(vec3(2.0f, 2.0f, 2.0f));
-
-    // Test positions
-    testSphere->GetTransform()->SetPosition(vec3(5.0f, 0.0f, 0.0f));	
-    testSphere->GetComponent<RigidBody>()->SetPosition(testSphere->GetTransform()->GetPosition());
-    testSphere->GetComponent<RigidBody>()->SetVelocity(vec3(-1.0f, 0.0f, 0.0f));
-    testSphere->GetComponent<RigidBody>()->SetAcceleration(vec3(-.5f, .0f, .0f));
-
-
-    otherTestSphere->GetTransform()->SetPosition(vec3(-5.0f, 0.0f, 0.0f));
-    otherTestSphere->GetComponent<RigidBody>()->SetPosition(otherTestSphere->GetTransform()->GetPosition());
-    otherTestSphere->GetComponent<RigidBody>()->SetVelocity(vec3(1.0f, 0.0f, 0.0f));
-    otherTestSphere->GetComponent<RigidBody>()->SetAcceleration(vec3(.5f, .0f, .0f));
-
-    // Test for sphere on box
-    boxSphereTest->GetTransform()->SetPosition(vec3(-5.0f, 0.0f, 0.0f));
-    boxSphereTest->GetComponent<RigidBody>()->SetPosition(boxSphereTest->GetTransform()->GetPosition());
-    boxSphereTest->GetComponent<RigidBody>()->SetVelocity(vec3(1.0f, 0.0f, 0.0f));
-    boxSphereTest->GetComponent<RigidBody>()->SetAcceleration(vec3(.5f, .0f, .0f));
-    
-    box->GetTransform()->SetPosition(vec3(0.0f, 0.0f, 0.0f));
-    */
 
     gameManager->Update();
 

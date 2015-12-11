@@ -12,6 +12,7 @@ RigidBody::RigidBody(GameObject* gameObject)
     , m_fMaxAcc( 100.0f )
     , m_v3Position( 0, 0, 0 )
     , m_v3Velocity( 0, 0, 0 )
+	, _IsMovable(true)
 {
     Physics::RegisterRigidbody(this);
 	transform = gameObject->GetTransform();
@@ -25,15 +26,18 @@ RigidBody::~RigidBody()
 
 void RigidBody::SetPosition(glm::vec3 a_v3Position)
 {
-    m_v3Position = a_v3Position;
-	transform->SetPosition(m_v3Position);
+	if (_IsMovable)
+	{
+		m_v3Position = a_v3Position;
+		transform->SetPosition(m_v3Position);
+	}
 }
 
 vec3 RigidBody::GetPosition(){ return m_v3Position; }
 
 void RigidBody::SetVelocity(glm::vec3 a_v3Velocity)
 {
-    m_v3Velocity = a_v3Velocity;
+	m_v3Velocity = a_v3Velocity;
 }
 
 vec3 RigidBody::GetVelocity(){ return m_v3Velocity; }
@@ -70,14 +74,18 @@ void RigidBody::Update(void)
     // Apply Friction
 	AddForce(-m_v3Velocity * m_fBallFriction);
 
+
 	m_v3Velocity = m_v3Velocity + (m_v3Acceleration * Time::GetElapsedTime()); 
 	m_v3Acceleration = glm::vec3(0);
 
     //m_v3Position = m_v3Position + m_v3Velocity;
-	m_v3Position = transform->GetPosition();
-	m_v3Position += m_v3Velocity * Time::GetElapsedTime();
-    transform->SetPosition(m_v3Position);
-	
+
+	if (_IsMovable)
+	{
+		m_v3Position = transform->GetPosition();
+		m_v3Position += m_v3Velocity * Time::GetElapsedTime();
+		transform->SetPosition(m_v3Position);
+	}
 
 	if (glm::abs(m_v3Velocity.x) < MIN_SPEED
 		&& glm::abs(m_v3Velocity.y) < MIN_SPEED
@@ -95,4 +103,14 @@ void RigidBody::Update(void)
 bool RigidBody::IsAtRest()
 {
 	return _AtRest;
+}
+
+void RigidBody::SetMovable(bool isMovable)
+{
+	_IsMovable = isMovable;
+}
+
+bool RigidBody::GetMovable()
+{
+	return _IsMovable;
 }

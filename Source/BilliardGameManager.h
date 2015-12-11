@@ -52,6 +52,6 @@ public:
 		return activeCamera;
 	}
 
-	void AddToScore(GameObject*);
+	void PocketCollision(GameObject*);
 };
 
