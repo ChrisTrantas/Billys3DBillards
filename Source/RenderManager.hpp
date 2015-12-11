@@ -3,6 +3,7 @@
 #include "Config.hpp"
 #include "MeshRenderer.hpp"
 #include "TextRenderer.hpp"
+#include "LineRenderer.hpp"
 #include <vector>
 
 /// <summary>
@@ -15,6 +16,7 @@ class RenderManager
 private:
     static std::vector<MeshRenderer*> _meshRenderers;
     static std::vector<TextRenderer*> _textRenderers;
+	static std::vector<LineRenderer*> _lineRenderers;
 
 public:
     /// <summary>
@@ -28,6 +30,12 @@ public:
     /// </summary>
     /// <param name="renderer">The renderer.</param>
     static void AddRenderer( TextRenderer* renderer );
+
+	/// <summary>
+	/// Adds the given renderer to be managed.
+	/// </summary>
+	/// <param name="renderer">The renderer.</param>
+	static void AddRenderer(LineRenderer* renderer);
 
     /// <summary>
     /// Draws all of the renderer.
@@ -45,4 +53,10 @@ public:
     /// </summary>
     /// <param name="renderer">The renderer.</param>
     static void RemoveRenderer( TextRenderer* renderer );
+
+	/// <summary>
+	/// Removes the given renderer.
+	/// </summary>
+	/// <param name="renderer">The renderer.</param>
+	static void RemoveRenderer(LineRenderer* renderer);
 };
