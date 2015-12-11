@@ -60,14 +60,25 @@ void LineRenderer::RebuildMesh()
 	_mesh = std::make_shared<Mesh>(vertices, indices);
 }
 
-void LineRenderer::SetStart(vec2 startPoint)
+glm::vec2 LineRenderer::GetStartPoint() const
 {
-	vec2 _start = startPoint;
+	return _points[0].Position;
+}
+
+glm::vec2 LineRenderer::GetEndPoint() const
+{
+	return _points[0].Position;
+}
+
+
+void LineRenderer::SetStartPoint(glm::vec2& startPoint)
+{
+	glm::vec2 _start = startPoint;
 };
 
-void LineRenderer::SetEnd(vec2 endPoint)
+void LineRenderer::SetEndPoint(glm::vec2& endPoint)
 {
-	vec2 _end = endPoint;
+	glm::vec2 _end = endPoint;
 };
 
 // Updates this text renderer
@@ -85,7 +96,8 @@ void LineRenderer::Draw()
 {
 	LineMaterial* lm = _gameObject->GetComponent<LineMaterial>();
 	_mesh->Draw(lm);
-
+	
 	glDepthFunc(GL_LESS);
 	glBlendFunc(GL_ONE, GL_ZERO);
+
 }
