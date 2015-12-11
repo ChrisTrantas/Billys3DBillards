@@ -223,7 +223,7 @@ void Physics::ResolveBoxSphereCollision( BoxCollider* box, SphereCollider* spher
     RigidBody* sphereRigidBody = sphere->GetGameObject()->GetComponent<RigidBody>();
 
     // Find the sphere global center
-    glm::vec3 sphereCenter = sphere->GetGlobalCenter();
+    glm::vec3 sphereCenter = sphere->GetGlobalCenter() - sphereRigidBody->GetVelocity() * Time::GetElapsedTime();
     glm::vec3 boxCenter = box->GetGlobalCenter();
     glm::vec3 betweenCenters = box->GetGlobalCenter() - sphereCenter;
 
@@ -236,6 +236,12 @@ void Physics::ResolveBoxSphereCollision( BoxCollider* box, SphereCollider* spher
 
     // Finds the vector between the closest point and the sphere's center
     glm::vec3 collisionDistance = closestPoint - sphereCenter;
+	
+	if (collisionDistance == vec3(0))
+	{
+		sphereRigidBody->SetVelocity(-sphereRigidBody->GetVelocity());
+		return;
+	}
 
     // Finds the magnitude of penetration based off the length of the collision and the sphere's radius.
     float penetration = sphere->GetRadius() - glm::length(collisionDistance);	
@@ -244,7 +250,7 @@ void Physics::ResolveBoxSphereCollision( BoxCollider* box, SphereCollider* spher
     glm::vec3 collisionNormal = glm::normalize( collisionDistance );
 
     // Moves the sphere back until it is no longer penetrating.
-    sphereRigidBody->SetPosition( sphereCenter - collisionNormal * penetration );
+    sphereRigidBody->SetPosition( sphereCenter - collisionNormal * penetration);
 
     // Reflects the sphere's velocity by the collision normal
     glm::vec3 newVelocity = glm::reflect( sphereRigidBody->GetVelocity(), collisionNormal );
@@ -264,7 +270,7 @@ void Physics::ResolveSphereSphereCollision( SphereCollider* sphere1, SphereColli
     glm::vec3 betweenCenters = sphere2->GetGlobalCenter() - sphere1->GetGlobalCenter();
     float sumOfRadii = sphere2->GetRadius() + sphere1->GetRadius();
     float distanceCenters = glm::length( betweenCenters );
-    float penetrationDepth = sumOfRadii - distanceCenters;
+    float penetrationDepth = sumOfRadii - distanceCenters + 0.01f;
 
     // The vector between centers
     betweenCenters = glm::normalize( betweenCenters );
@@ -371,7 +377,7 @@ void Physics::Update()
     float time = Time::GetElapsedTime();
     Collision collision( nullptr, nullptr, CollisionType::Sphere_Sphere );
 
-#if 0
+
     for (unsigned int i = 0; i < _rigidbodies.size() - 1; i++)
     {
         RigidBody* thisRigidBody = _rigidbodies[i];
@@ -400,7 +406,7 @@ void Physics::Update()
             }
         }
     }
-#else
+
     // Build the octree if this is our first time
     static bool isFirstUpdate = true;
     if ( isFirstUpdate )
@@ -434,5 +440,4 @@ void Physics::Update()
 
     // Rebuild the octree
     _octree.Rebuild( _colliders );
-#endif
 }
