@@ -2,6 +2,7 @@
 
 std::vector<MeshRenderer*> RenderManager::_meshRenderers;
 std::vector<TextRenderer*> RenderManager::_textRenderers;
+std::vector<LineRenderer*> RenderManager::_lineRenderers;
 
 // Adds the given renderer to be managed
 void RenderManager::AddRenderer( MeshRenderer* renderer )
@@ -13,6 +14,12 @@ void RenderManager::AddRenderer( MeshRenderer* renderer )
 void RenderManager::AddRenderer( TextRenderer* renderer )
 {
     _textRenderers.push_back( renderer );
+}
+
+// Adds the given renderer to be managed
+void RenderManager::AddRenderer(LineRenderer* renderer)
+{
+	_lineRenderers.push_back(renderer);
 }
 
 // Draws all of the renderer
@@ -32,6 +39,13 @@ void RenderManager::Draw()
             textRenderer->Draw();
         }
     }
+	for (auto& lineRenderer : _lineRenderers)
+	{
+		if (lineRenderer->IsEnabled() && lineRenderer->GetGameObject()->GetActive())
+		{
+			lineRenderer->Draw();
+		}
+	}
 }
 
 // Removes the given renderer
@@ -58,4 +72,17 @@ void RenderManager::RemoveRenderer( TextRenderer* renderer )
             break;
         }
     }
+}
+
+// Removes the given renderer
+void RenderManager::RemoveRenderer(LineRenderer* renderer)
+{
+	for (size_t i = 0; i < _lineRenderers.size(); ++i)
+	{
+		if (_lineRenderers[i] == renderer)
+		{
+			_lineRenderers.erase(_lineRenderers.begin() + i);
+			break;
+		}
+	}
 }

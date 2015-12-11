@@ -29,6 +29,7 @@ class BilliardGameManager
 	int score = 0;
 
 	// Text
+	TextRenderer* _TextRenderer;
 
 public:
 	BilliardGameManager();
@@ -52,6 +53,7 @@ public:
 		return activeCamera;
 	}
 
-	void PocketCollision(GameObject*);
+
+	void HandlePocketCollision(GameObject*);
 };
 

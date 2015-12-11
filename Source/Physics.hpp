@@ -5,11 +5,14 @@
 #include <set>
 #include <vector>
 #include "Collider.hpp"
+#include "Octree.hpp"
 
 class Collider;
 class BoxCollider;
 class SphereCollider;
 class RigidBody;
+
+#define EnumOR(a, b) ( static_cast<unsigned>( a ) | static_cast<unsigned>( b ) )
 
 /// <summary>
 /// Defines a static class used for physics constants and methods.
@@ -23,9 +26,9 @@ class Physics
     /// </summary>
     enum CollisionType
     {
-        Sphere_Sphere,
-        Box_Sphere,
-        Box_Box
+        Sphere_Sphere = EnumOR( ColliderType::Sphere, ColliderType::Sphere ),
+        Box_Sphere    = EnumOR( ColliderType::Box, ColliderType::Sphere ),
+        Box_Box       = EnumOR( ColliderType::Box, ColliderType::Box )
     };
 
     /// <summary>
@@ -44,7 +47,8 @@ private:
     static std::vector<glm::vec3> _lhsCorners;
     static std::vector<glm::vec3> _rhsCorners;
     static std::vector<RigidBody*> _rigidbodies;
-    static std::vector<Collision> _collisions;
+    static std::vector<Collider*> _colliders;
+    static Octree _octree;
 
     /// <summary>
     /// Resolves box <--> sphere collision.
@@ -65,6 +69,11 @@ private:
     /// </summary>
     /// <param name="collision">The collision to resolve.</param>
     static void ResolveCollision( Collision& collision );
+
+    /// <summary>
+    /// Gets the collision type between two colliders.
+    /// </summary>
+    static CollisionType GetCollisionType( Collider* a, Collider* b );
 
 public:
     /// <summary>
@@ -92,13 +101,13 @@ public:
     /// Registers a rigid body to be managed by physics.
     /// </summary>
     /// <param name="rigidBody">The rigid body.</param>
-    static void RegisterRigidbody(RigidBody* rigidBody);
+    static void RegisterRigidbody( RigidBody* rigidBody );
 
     /// <summary>
     /// Un-registers a rigid body to be managed by physics.
     /// </summary>
     /// <param name="rigidBody">The rigid body.</param>
-    static void UnregisterRigidbody(RigidBody* rigidBody);
+    static void UnregisterRigidbody( RigidBody* rigidBody );
 
     /// <summary>
     /// Updates the physics system.

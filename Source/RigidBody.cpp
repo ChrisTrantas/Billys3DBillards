@@ -15,8 +15,8 @@ RigidBody::RigidBody(GameObject* gameObject)
 	, _IsMovable(true)
 {
     Physics::RegisterRigidbody(this);
-	transform = gameObject->GetTransform();
-	m_v3Position = transform->GetPosition();
+    transform = gameObject->GetTransform();
+    m_v3Position = transform->GetPosition();
 }
 
 RigidBody::~RigidBody()
@@ -26,7 +26,7 @@ RigidBody::~RigidBody()
 
 void RigidBody::SetPosition(glm::vec3 a_v3Position)
 {
-	if (_IsMovable)
+	if(_IsMovable)
 	{
 		m_v3Position = a_v3Position;
 		transform->SetPosition(m_v3Position);
@@ -71,14 +71,15 @@ void RigidBody::AddForce(const glm::vec3& force)
 
 void RigidBody::Update(void)
 {
-    // Apply Friction
+	// Apply Friction
 	AddForce(-m_v3Velocity * m_fBallFriction);
 
 
-	m_v3Velocity = m_v3Velocity + (m_v3Acceleration * Time::GetElapsedTime()); 
+
+	m_v3Velocity = m_v3Velocity + (m_v3Acceleration * Time::GetElapsedTime());
 	m_v3Acceleration = glm::vec3(0);
 
-    //m_v3Position = m_v3Position + m_v3Velocity;
+	//m_v3Position = m_v3Position + m_v3Velocity;
 
 	if (_IsMovable)
 	{
@@ -87,30 +88,31 @@ void RigidBody::Update(void)
 		transform->SetPosition(m_v3Position);
 	}
 
-	if (glm::abs(m_v3Velocity.x) < MIN_SPEED
-		&& glm::abs(m_v3Velocity.y) < MIN_SPEED
-		&& glm::abs(m_v3Velocity.z) < MIN_SPEED)
-	{
-		m_v3Velocity = glm::vec3(0);
-		_AtRest = true;
-	}
-	else
-	{
-		_AtRest = false;
-	}
+
+
+	m_v3Position += m_v3Velocity * Time::GetElapsedTime();
+	transform->SetPosition(m_v3Position);
+
+	if (glm::abs(m_v3Velocity.x) < MIN_SPEED) m_v3Velocity.x = 0;
+	if (glm::abs(m_v3Velocity.y) < MIN_SPEED) m_v3Velocity.y = 0;
+	if (glm::abs(m_v3Velocity.z) < MIN_SPEED) m_v3Velocity.z = 0;
+
+	_AtRest = (0 == glm::dot(m_v3Velocity, m_v3Velocity));
+
 }
 
 bool RigidBody::IsAtRest()
 {
-	return _AtRest;
+    return _AtRest;
 }
 
-void RigidBody::SetMovable(bool isMovable)
-{
-	_IsMovable = isMovable;
-}
 
-bool RigidBody::GetMovable()
+bool RigidBody::IsMovable()
 {
 	return _IsMovable;
+}
+
+void RigidBody::SetIsMovable(bool isMovable)
+{
+	_IsMovable = isMovable;
 }

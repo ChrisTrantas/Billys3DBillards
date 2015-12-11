@@ -24,7 +24,7 @@ class RigidBody : public Component
 	//const float m_CushionFriction = 0.2f;
 
 	bool _AtRest; // Is true when the object has no velocity
-	bool _IsMovable; // When, true the object stays in place.
+	bool _IsMovable;	// Is true when the object can move
 
 public:
 
@@ -48,7 +48,7 @@ public:
 
 	bool IsAtRest();
 
-	void SetMovable(bool isMovable);
-	bool GetMovable();
+	bool IsMovable();
+	void SetIsMovable(bool isMovable);
 };
 

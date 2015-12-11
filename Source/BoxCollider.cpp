@@ -24,13 +24,35 @@ glm::vec3 BoxCollider::GetLocalCenter() const
 // Gets this box collider's global center
 glm::vec3 BoxCollider::GetGlobalCenter() const
 {
-    return TransformVector( _gameObject->GetWorldMatrix(), _center );
+    if ( _gameObject )
+    {
+        return TransformVector( _gameObject->GetWorldMatrix(), _center );
+    }
+    return _center;
+}
+
+// Gets the maximum point of this collider
+glm::vec3 BoxCollider::GetMaxPoint() const
+{
+    return GetGlobalCenter() + _size * 0.5f;
+}
+
+// Gets the minimum point of this collider
+glm::vec3 BoxCollider::GetMinPoint() const
+{
+    return GetGlobalCenter() - _size * 0.5f;
 }
 
 // Gets this box collider's size
 glm::vec3 BoxCollider::GetSize() const
 {
-	glm::vec3 scale = _gameObject->GetTransform()->GetScale();
+    glm::vec3 scale( 1, 1, 1 );
+
+    if ( _gameObject )
+    {
+        scale = scale = _gameObject->GetTransform()->GetScale();
+    }
+
     return _size * scale;
 }
 

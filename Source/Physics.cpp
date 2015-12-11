@@ -4,11 +4,19 @@
 #include "RigidBody.h"
 #include "Time.hpp"
 #include "GameObject.hpp"
+#if defined( _DEBUG )
+#   include <iostream>
+#endif
 
-std::vector<glm::vec3>          Physics::_lhsCorners( 8 );
-std::vector<glm::vec3>          Physics::_rhsCorners( 8 );
-std::vector<RigidBody*>         Physics::_rigidbodies;
-std::vector<Physics::Collision> Physics::_collisions;
+using namespace glm;
+
+#define MakeCollisionType(a, b) static_cast<Physics::CollisionType>( EnumOR( a, b ) )
+
+std::vector<glm::vec3>  Physics::_lhsCorners( 8 );
+std::vector<glm::vec3>  Physics::_rhsCorners( 8 );
+std::vector<RigidBody*> Physics::_rigidbodies;
+std::vector<Collider*>  Physics::_colliders;
+Octree                  Physics::_octree;
 
 // Creates new collision information
 Physics::Collision::Collision(Collider* lhs, Collider* rhs, CollisionType collisionType)
@@ -21,6 +29,7 @@ Physics::Collision::Collision(Collider* lhs, Collider* rhs, CollisionType collis
 // Perform box <--> box collision
 bool Physics::AreColliding( BoxCollider* lhs, BoxCollider* rhs )
 {
+#if 1
     // Gets the half widths of the box colliders.
     glm::vec3 lhsHalfWidth = lhs->GetSize() / 2.0f;
     glm::vec3 rhsHalfWidth = lhs->GetSize() / 2.0f;
@@ -133,16 +142,14 @@ bool Physics::AreColliding( BoxCollider* lhs, BoxCollider* rhs )
     lhsProjectedRadius = lhsHalfWidth[0] * absRotation[2][1] + lhsHalfWidth[1] * absRotation[2][0];
     if (abs(translation[1] * rotation[0][2] - translation[0] * rotation[1][2]) > rhsProjectedRadius + lhsProjectedRadius) return false;
 
-
-    // Add to list of collisions.
-    _collisions.push_back(Collision(lhs, rhs, CollisionType::Box_Box));
-
     return true;
+#endif
 }
 
 // Perform box <--> sphere collision
 bool Physics::AreColliding( BoxCollider* lhs, SphereCollider* rhs )
 {
+#if 1
     float sphereRadius = rhs->GetRadius();
     glm::vec3 lhsHalfWidth = lhs->GetSize() * 0.5f;
 
@@ -152,11 +159,13 @@ bool Physics::AreColliding( BoxCollider* lhs, SphereCollider* rhs )
     glm::vec3 vectorBetween = lhs->GetGlobalCenter() - rhs->GetGlobalCenter();
 
     // Does the sphere collision pre-test
-	float distBetween2 = glm::dot(vectorBetween, vectorBetween);
-	float rad2 = sphereRadius * sphereRadius;
-	float halfWidth2 = glm::dot(lhsHalfWidth, lhsHalfWidth);
-    if (distBetween2 > rad2 + halfWidth2)
+    float distBetween2 = glm::dot(vectorBetween, vectorBetween);
+    float rad2 = sphereRadius * sphereRadius;
+    float halfWidth2 = glm::dot(lhsHalfWidth, lhsHalfWidth);
+    if ( distBetween2 > rad2 + halfWidth2 )
+    {
         return false;
+    }
 
     // Finds the distances between the centers in the cubes local axis.
     glm::vec3 distance;
@@ -165,17 +174,15 @@ bool Physics::AreColliding( BoxCollider* lhs, SphereCollider* rhs )
     distance.z = glm::abs(glm::dot(vectorBetween, lhsCoordinateSystem[2]));
 
     // Checks if the distance is greater than the sum of radii for each axis of the box
-    if (distance.x >= lhsHalfWidth.x + sphereRadius)
+    if ( ( distance.x >= lhsHalfWidth.x + sphereRadius ) ||
+         ( distance.y >= lhsHalfWidth.y + sphereRadius ) ||
+         ( distance.z >= lhsHalfWidth.z + sphereRadius ) )
+    {
         return false;
-    if (distance.y >= lhsHalfWidth.y + sphereRadius)
-        return false;
-    if (distance.z >= lhsHalfWidth.z + sphereRadius)
-        return false;
+    }
 
-
-    // Adds collision to the list of collisions to resolve
-    _collisions.push_back(Collision(lhs, rhs, CollisionType::Box_Sphere));
     return true;
+#endif
 }
 
 // Perform sphere <--> sphere collision
@@ -184,19 +191,29 @@ bool Physics::AreColliding( SphereCollider* lhs, SphereCollider* rhs )
     float centerDistance = glm::distance( lhs->GetGlobalCenter(), rhs->GetGlobalCenter() );
     float sumOfRadii = lhs->GetRadius() + rhs->GetRadius();
 
-    if ( centerDistance <= sumOfRadii )
-    {
-        // Adds collision to the list of collisions to resolve
-        _collisions.push_back(Collision(lhs, rhs, CollisionType::Sphere_Sphere));
-        return true;
-    }
-    return false;
+    return ( centerDistance <= sumOfRadii );
+}
+
+// Gets a collision type between two colliders
+Physics::CollisionType Physics::GetCollisionType( Collider* a, Collider* b )
+{
+    return MakeCollisionType( a->GetColliderType(), b->GetColliderType() );
 }
 
 // Register a rigid body
 void Physics::RegisterRigidbody(RigidBody* rigidBody)
 {
+    GameObject* obj = rigidBody->GetGameObject();
+    Collider* collider = obj->GetComponentOfType<Collider>();
+#if defined( _DEBUG )
+    if ( !collider )
+    {
+        std::cout << "[ERROR] " << obj->GetName() << " does not have a collider yet!!!" << std::endl;
+    }
+#endif
+
     _rigidbodies.push_back( rigidBody );
+    _colliders.push_back( collider );
 }
 
 // Resolves box <--> sphere collision
@@ -206,19 +223,25 @@ void Physics::ResolveBoxSphereCollision( BoxCollider* box, SphereCollider* spher
     RigidBody* sphereRigidBody = sphere->GetGameObject()->GetComponent<RigidBody>();
 
     // Find the sphere global center
-    glm::vec3 sphereCenter = sphere->GetGlobalCenter();
-	glm::vec3 boxCenter = box->GetGlobalCenter();
+    glm::vec3 sphereCenter = sphere->GetGlobalCenter() - sphereRigidBody->GetVelocity() * Time::GetElapsedTime();
+    glm::vec3 boxCenter = box->GetGlobalCenter();
     glm::vec3 betweenCenters = box->GetGlobalCenter() - sphereCenter;
 
     // Find the range of values inside the box.
-	glm::vec3 boxMin = boxCenter - box->GetSize() * 0.5f;
-	glm::vec3 boxMax = boxCenter + box->GetSize() * 0.5f;
+    glm::vec3 boxMin = boxCenter - box->GetSize() * 0.5f;
+    glm::vec3 boxMax = boxCenter + box->GetSize() * 0.5f;
 
     // Finds the closest point on the box to the sphere.
     glm::vec3 closestPoint = glm::clamp( sphereCenter, boxMin, boxMax );
 
     // Finds the vector between the closest point and the sphere's center
     glm::vec3 collisionDistance = closestPoint - sphereCenter;
+	
+	if (collisionDistance == vec3(0))
+	{
+		sphereRigidBody->SetVelocity(-sphereRigidBody->GetVelocity());
+		return;
+	}
 
     // Finds the magnitude of penetration based off the length of the collision and the sphere's radius.
     float penetration = sphere->GetRadius() - glm::length(collisionDistance);	
@@ -227,7 +250,7 @@ void Physics::ResolveBoxSphereCollision( BoxCollider* box, SphereCollider* spher
     glm::vec3 collisionNormal = glm::normalize( collisionDistance );
 
     // Moves the sphere back until it is no longer penetrating.
-    sphereRigidBody->SetPosition( sphereCenter - collisionNormal * penetration );
+    sphereRigidBody->SetPosition( sphereCenter - collisionNormal * penetration);
 
     // Reflects the sphere's velocity by the collision normal
     glm::vec3 newVelocity = glm::reflect( sphereRigidBody->GetVelocity(), collisionNormal );
@@ -247,7 +270,7 @@ void Physics::ResolveSphereSphereCollision( SphereCollider* sphere1, SphereColli
     glm::vec3 betweenCenters = sphere2->GetGlobalCenter() - sphere1->GetGlobalCenter();
     float sumOfRadii = sphere2->GetRadius() + sphere1->GetRadius();
     float distanceCenters = glm::length( betweenCenters );
-    float penetrationDepth = sumOfRadii - distanceCenters;
+    float penetrationDepth = sumOfRadii - distanceCenters + 0.01f;
 
     // The vector between centers
     betweenCenters = glm::normalize( betweenCenters );
@@ -335,15 +358,15 @@ void Physics::ResolveCollision( Collision& collision )
 // Un-register a rigid body
 void Physics::UnregisterRigidbody(RigidBody* rigidBody)
 {
-    if ( _rigidbodies.size() > 0 )
+    for ( size_t i = 0; i < _rigidbodies.size(); ++i )
     {
-        for ( auto iter = _rigidbodies.begin(); iter != _rigidbodies.end(); ++iter )
+        if ( _rigidbodies[ i ] == rigidBody )
         {
-            if ( *iter == rigidBody )
-            {
-                _rigidbodies.erase( iter );
-                break;
-            }
+            _rigidbodies.erase( _rigidbodies.begin() + i );
+            _colliders.erase( _colliders.begin() + i );
+
+            _octree.Rebuild( _colliders );
+            break;
         }
     }
 }
@@ -352,21 +375,14 @@ void Physics::UnregisterRigidbody(RigidBody* rigidBody)
 void Physics::Update()
 {
     float time = Time::GetElapsedTime();
+    Collision collision( nullptr, nullptr, CollisionType::Sphere_Sphere );
 
-    //  Update physics
-    // List of collisions with first rigid body
+
     for (unsigned int i = 0; i < _rigidbodies.size() - 1; i++)
     {
         RigidBody* thisRigidBody = _rigidbodies[i];
         Collider* thisCollider = thisRigidBody->GetGameObject()->GetComponentOfType<Collider>();
-
-        if ( thisCollider == nullptr )
-        {
-#if defined( _DEBUG )
-            std::cout << thisRigidBody->GetGameObject()->GetName() << " does not have a Collider!" << std::endl;
-#endif
-            continue;
-        }
+        collision._lhs = thisCollider;
 
         // List of collisions with rest of list 
         for (unsigned int j = i + 1; j < _rigidbodies.size(); j++)
@@ -375,31 +391,53 @@ void Physics::Update()
 
             // Check the others
             Collider* otherCollider = otherRigidBody->GetGameObject()->GetComponentOfType<Collider>();
-            if ( otherCollider == nullptr )
-            {
-#if defined( _DEBUG )
-                std::cout << otherRigidBody->GetGameObject()->GetName() << " does not have a Collider!" << std::endl;
-#endif
-                continue;
-            }
+            collision._rhs = otherCollider;
 
             // Checks if collides
-            if (thisCollider->CollidesWith(otherCollider))
+            if ( thisCollider->CollidesWith( otherCollider ) )
             {
-                ResolveCollision( _collisions.back() );
+                collision._collisionType = GetCollisionType( collision._lhs, collision._rhs );
+                ResolveCollision( collision );
 
-				thisCollider->GetGameObject()->GetEventListener()->FireEvent("OnCollide", otherCollider->GetGameObject());
-				otherCollider->GetGameObject()->GetEventListener()->FireEvent("OnCollide", thisCollider->GetGameObject());
+                thisCollider->GetGameObject()->GetEventListener()->FireEvent( "OnCollide", otherCollider->GetGameObject() );
+                otherCollider->GetGameObject()->GetEventListener()->FireEvent( "OnCollide", thisCollider->GetGameObject() );
+
+                break;
             }
         }
-
-        // thisRigidBody->Update();
     }
 
-    // Resolve all of the collisions
-    //for (auto& collision : _collisions)
-    //{
-    //    ResolveCollision( collision );
-    //}
-    _collisions.clear();
+    // Build the octree if this is our first time
+    static bool isFirstUpdate = true;
+    if ( isFirstUpdate )
+    {
+        _octree.Rebuild( _colliders );
+        isFirstUpdate = false;
+    }
+
+    for ( size_t i = 0; i < _colliders.size(); ++i )
+    {
+        // Get the first collider
+        collision._lhs = _colliders[ i ];
+
+        // If we're colliding according to the octree
+        if ( _octree.IsColliding( collision._lhs, &( collision._rhs ) ) )
+        {
+            // Get the collision type
+            collision._collisionType = GetCollisionType( collision._lhs, collision._rhs );
+
+            // Resolve the collision
+            ResolveCollision( collision );
+
+            // Dispatch the "OnCollide" event
+            collision._lhs->GetGameObject()->GetEventListener()->FireEvent( "OnCollide", collision._rhs );
+            collision._rhs->GetGameObject()->GetEventListener()->FireEvent( "OnCollide", collision._lhs );
+
+            // Rebuild the octree
+            _octree.Rebuild( _colliders );
+        }
+    }
+
+    // Rebuild the octree
+    _octree.Rebuild( _colliders );
 }
