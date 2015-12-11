@@ -12,6 +12,20 @@ BilliardGameManager::BilliardGameManager()
 {
     _game = Game::GetInstance();
 
+	// Add a test text renderer
+	{
+		auto go = _game->AddGameObject("TableTextRenderer");
+		auto tm = go->AddComponent<TextMaterial>();
+		_TextRenderer = go->AddComponent<TextRenderer>();
+
+		std::shared_ptr<Font> font = std::make_shared<Font>();
+		assert(font->LoadFromFile("Fonts\\OpenSans-Regular.ttf"));
+		_TextRenderer->SetFont(font);
+		_TextRenderer->SetFontSize(16U);
+		tm->SetTextColor(vec4(0, 0, 0, 1));
+
+		go->GetTransform()->SetPosition(glm::vec3(500, 10, 0));
+	}
     
     // Default Camera
     _camTopDown = _game->AddGameObject("CameraObject");
@@ -132,8 +146,8 @@ void BilliardGameManager::CreateTable()
 	for (int i = 0; i < 6; i++)
 	{
 		GameObject* pocket = _game->AddGameObject("Pocket_" + std::to_string(i));
-		SimpleMaterial* pocketMaterial = pocket->AddComponent<SimpleMaterial>();
-		MeshRenderer* pocketMeshRenderer = pocket->AddComponent<MeshRenderer>();
+		
+		
 		SphereCollider* pocketCollider = pocket->AddComponent<SphereCollider>();
 		RigidBody* pocketRigidbody = pocket->AddComponent<RigidBody>();
 
@@ -141,14 +155,18 @@ void BilliardGameManager::CreateTable()
 		pocketRigidbody->SetMass(0.0f);
 		pocketRigidbody->SetIsMovable(false);
 
+
+		/*SimpleMaterial* pocketMaterial = pocket->AddComponent<SimpleMaterial>();
+		MeshRenderer* pocketMeshRenderer = pocket->AddComponent<MeshRenderer>();
 		pocketMeshRenderer->SetMesh(MeshLoader::Load("Models\\Sphere.obj"));
 		pocketMeshRenderer->SetMaterial(pocketMaterial);
+		pocketMaterial->SetMyTexture(Texture2D::FromFile("Textures\\Cue-Ball.png"));
+		*/
 
 		pocket->GetTransform()->SetScale(vec3(4, 4, 4));
 
 		pocket->GetEventListener()->AddEventListener("OnCollide", func);
 
-		pocketMaterial->SetMyTexture(Texture2D::FromFile("Textures\\Cue-Ball.png"));
 
 		switch (i)
 		{
@@ -307,11 +325,11 @@ void BilliardGameManager::Update()
     }
 
 
-    if (_Ready && Input::WasKeyReleased(Key::Space))
+    if (Input::WasKeyReleased(Key::Space))
     {
         cueball->GetComponent<RigidBody>()->AddForce(vec3(4000.0f, 0, 0));
     }
-    else if (_Ready && Input::WasKeyReleased(Key::Enter))
+    else if (Input::WasKeyReleased(Key::Enter))
     {
         cueball->GetComponent<RigidBody>()->AddForce(vec3(10000.0f, 0, 0));
     }
@@ -400,6 +418,8 @@ void BilliardGameManager::Update()
         vec2 mousePosDifference = mouseClickPos - mouseReleasePos;
         cueball->GetComponent<RigidBody>()->AddForce(vec3(mousePosDifference.x, 0, mousePosDifference.y));
     }
+
+	_TextRenderer->SetText(std::to_string(score) + '/' + std::to_string(balls.size()) + "   Is table settled: " + (_Ready ? "True" : "False"));
 }
 
 void BilliardGameManager::HandlePocketCollision(GameObject* gameObject)

@@ -29,6 +29,7 @@ class BilliardGameManager
 	int score = 0;
 
 	// Text
+	TextRenderer* _TextRenderer;
 
 public:
 	BilliardGameManager();
