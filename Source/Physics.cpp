@@ -381,7 +381,7 @@ void Physics::Update()
     float time = Time::GetElapsedTime();
     Collision collision( nullptr, nullptr, CollisionType::Sphere_Sphere );
 
-#if 0
+
     for (unsigned int i = 0; i < _rigidbodies.size() - 1; i++)
     {
         RigidBody* thisRigidBody = _rigidbodies[i];
@@ -410,7 +410,7 @@ void Physics::Update()
             }
         }
     }
-#else
+
     // Build the octree if this is our first time
     static bool isFirstUpdate = true;
     if ( isFirstUpdate )
@@ -444,5 +444,4 @@ void Physics::Update()
 
     // Rebuild the octree
     _octree.Rebuild( _colliders );
-#endif
 }
